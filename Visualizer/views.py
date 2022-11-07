@@ -60,8 +60,9 @@ options = {
      "minVelocity": 0.75
    }
  }
+ 
 #########################################################################
-def viewAll(uploaded_file):
+def viewAll(uploaded_file, physics):
   df = pd.read_csv(uploaded_file)
   # fill empty cells in specifc column with nil
   df["Alternative"].fillna("nil", inplace = True) 
@@ -117,7 +118,11 @@ def viewAll(uploaded_file):
 
   G2 = Network(height="800px", width="100%", bgcolor="#222222", font_color="white", notebook=True,heading='', directed=True)
   G2.from_nx(G)
-  G2.options = options
+  if physics:
+    G2.height = "500px"
+    G2.show_buttons()
+  else:
+    G2.options = options
   for node in G2.nodes:
     id_string = node["label"]
     width = 10

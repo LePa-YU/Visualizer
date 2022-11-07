@@ -11,8 +11,10 @@ import views
 #### this file contains code for streamlit deployment
 
 st.title('LePa: Learning Path Project')
+cont = st.container
 st.sidebar.title('Choose your view')
 option=st.sidebar.selectbox('select graph',('whole LePa','view 2', 'view 3'))
+physics=st.sidebar.checkbox('add physics interactivity?')
 demo = st.checkbox("use demo file")
 
 # physics=st.sidebar.checkbox('add physics interactivity?')
@@ -34,13 +36,14 @@ else:
     uploaded_file = st.file_uploader("Choose a file")
 if uploaded_file is not None:
     if option=='whole LePa':
-        views.viewAll(uploaded_file)
+        views.viewAll(uploaded_file, physics)
         HtmlFile = open("viewAll.html", 'r', encoding='utf-8')
         source_code = HtmlFile.read() 
-        components.html(source_code, height = 900,width=900)
+        st.components.v1.html(source_code, height=1500,width=700, scrolling=True)
+        # components.html(source_code, height = 900,width=900)
 
     if option=='view 2':
         views.view_2(uploaded_file)
         HtmlFile = open("view2.html", 'r', encoding='utf-8')
         source_code = HtmlFile.read() 
-        components.html(source_code, height = 900,width=900)
+        st.components.v1.html(source_code, height=1500,width=700, scrolling=True)
