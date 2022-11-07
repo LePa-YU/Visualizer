@@ -5,6 +5,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from pyvis.network import Network
 import views 
+import requests
 
 
 
@@ -20,15 +21,15 @@ demo = st.checkbox("use demo file")
 # physics=st.sidebar.checkbox('add physics interactivity?')
 if demo: 
     # get demo file from github
-    # url = "https://drive.google.com/file/d/1kWkw57BPSKQ-my37NvHXszcMbuKFw7B0/view?usp=sharing"
-    # res = requests.get(url, allow_redirects=True)
-    # with open('demo.csv','wb') as file:
-    #     file.write(res.content)
+    url = "https://raw.githubusercontent.com/LePa-YU/Visualizer/main/Data/demo.csv"
+    res = requests.get(url, allow_redirects=True)
+    with open('demo.csv','wb') as file:
+        file.write(res.content)
     # from google drive
-    url="https://drive.google.com/file/d/1kWkw57BPSKQ-my37NvHXszcMbuKFw7B0/view?usp=sharing"
-    url='https://drive.google.com/uc?id=' + url.split('/')[-2]
-    df = pd.read_csv(url)
-    df.to_csv("demo.csv")
+    # url="https://drive.google.com/file/d/1kWkw57BPSKQ-my37NvHXszcMbuKFw7B0/view?usp=sharing"
+    # url='https://drive.google.com/uc?id=' + url.split('/')[-2]
+    # df = pd.read_csv(url)
+    # df.to_csv("demo.csv")
 
     uploaded_file = "demo.csv"
 
