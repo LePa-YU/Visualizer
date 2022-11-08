@@ -18,10 +18,6 @@ st.title('LePa: Learning Path Project')
 # physics=st.sidebar.checkbox('add physics interactivity?')
 # demo = st.checkbox("use demo file")
 
-# option menu:
-with st.expander("Options"):
-    option=st.selectbox('select graph',('whole LePa','view 2', 'view 3'))
-    physics=st.checkbox('add physics interactivity?')
 
 demo = st.checkbox("use demo file")
 if demo: 
@@ -31,10 +27,13 @@ if demo:
     with open('demo.csv','wb') as file:
         file.write(res.content)
     uploaded_file = "demo.csv"
-
 else:
     uploaded_file = st.file_uploader("Choose a file")
+
 if uploaded_file is not None:
+    with st.expander("Options"):
+        option=st.selectbox('select graph',('whole LePa','view 2', 'view 3'))
+        physics=st.checkbox('add physics interactivity?')
     if option == 'whole LePa':
         views.viewAll(uploaded_file, physics)
         HtmlFile = open("viewAll.html", 'r', encoding='utf-8')
