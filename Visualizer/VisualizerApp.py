@@ -40,7 +40,6 @@ if uploaded_file is not None:
         HtmlFile = open("viewAll.html", 'r', encoding='utf-8')
         source_code = HtmlFile.read() 
         st.components.v1.html(source_code, height=1080, scrolling=True)
-        # components.html(source_code, height = 900,width=900)
 
     # if option=='view 2':
     #     views.view_2(uploaded_file)
