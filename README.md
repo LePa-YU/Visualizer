@@ -45,6 +45,15 @@ You can also pull the project on VS code (or any other platform that work with p
 2. run Visualizer/VisualizerApp.py in the same manner as in step 1. 
 3. run script `streamlit run Visualizer\VisualizerApp.py`in terminal. This will open the streamlit application in the web where you can use the same data as web based to use the application. 
 
+## Glossary of Terms, Nomenclature
+
+**dataset**: refers to a csv file containing elements, one per roow.  The list of attributes per row adheres to schema <<INSERT SCHEMA IDENTIFIER>>
+
+**layout**: refers to a particular spatial arrangement of the visualization elements (nodes, edges).  Not to be confused with **view**.
+
+**view**: refers to a particular presentation of the underlying data model, in terms of the subset of data displayed and how the data is represented (e.g., the use of different types of node shapes and colours to correspond to different data attributes).
+ 
+
 ### Version history
 - v 01: initial release
 
