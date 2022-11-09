@@ -41,17 +41,5 @@ if uploaded_file is not None:
             HtmlFile = open("viewAll.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
-
-        elif option=='view 2':
-            views.view_2(uploaded_file)
-            HtmlFile = open("view2.html", 'r', encoding='utf-8')
-            source_code = HtmlFile.read() 
-            st.components.v1.html(source_code, height=1080, scrolling=True)
-   
-        elif option=='view 3':
-            views.view_3(uploaded_file)
-            HtmlFile = open("view3.html", 'r', encoding='utf-8')
-            source_code = HtmlFile.read() 
-            st.components.v1.html(source_code, height=1080, scrolling=True)
     
 ####

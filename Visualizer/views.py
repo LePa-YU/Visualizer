@@ -7,6 +7,26 @@ import textwrap
 
 ## this file contains code for different visualzation/ views of the LePa visualizer --> aka model
 
+def setData(uploaded_file):
+  df = pd.read_csv(uploaded_file)
+  # fill empty cells in specifc column with nil
+  df["Alternative"].fillna("nil", inplace = True) 
+  df_id = df['ID']
+  df_title = df['Title']
+  df_alt = df['Alternative']
+  df_tURL = df['targetUrl']
+  df_type = df['Type']
+  df_isPartOf = df['isPartOf']
+  df_assesses = df['assesses']
+  df_requires = df['requires']
+  data_ER = zip(df_id, df_title, df_alt, df_tURL, df_type, df_isPartOf, df_assesses, df_requires) # making tuples 
+  return data_ER
+
+def get_Id_Rows(uploaded_file):
+  df = pd.read_csv(uploaded_file)
+  df_id = df['ID']
+  return df_id
+
 options = {
    "nodes": {
      "borderWidth": 3,
@@ -63,33 +83,22 @@ options = {
  
 #########################################################################
 def viewAll(uploaded_file, physics):
-  df = pd.read_csv(uploaded_file)
-  # fill empty cells in specifc column with nil
-  df["Alternative"].fillna("nil", inplace = True) 
-  df_id = df['ID']
-  df_title = df['Title']
-  df_alt = df['Alternative']
-  df_tURL = df['targetUrl']
-  df_type = df['Type']
-  df_isPartOf = df['isPartOf']
-  df_assesses = df['assesses']
-  df_requires = df['requires']
-
-  data_ER = zip(df_id, df_title, df_alt, df_tURL, df_type, df_isPartOf, df_assesses, df_requires) # making tuples  
   G = nx.DiGraph()
+  data_ER = setData(uploaded_file)
+  df_id = get_Id_Rows(uploaded_file)
   for d in data_ER:
     d_id = d[0]
     d_title = d[1]
     d_type = d[4]
     d_alt = d[2]
     if(d_type=="aER"):
-      G.add_node(d_id, label = d_title, shape="box", title=d_alt)
+      G.add_node(d_id, label = d_title, shape="box", title=d_alt, color="#FF7273")
     elif(d_type == "rER"):
-      G.add_node(d_id, label = d_title, shape="triangle", title=d_alt) 
+      G.add_node(d_id, label = d_title, shape="triangle", title=d_alt, color = "#FF7273") 
     elif(d_type == "iER"):
-      G.add_node(d_id, label = d_title, shape="circle", title=d_alt)
+      G.add_node(d_id, label = d_title, shape="circle", title=d_alt, color="#F69159")
     else:
-      G.add_node(d_id, label = d_title, title=d_alt)
+      G.add_node(d_id, label = d_title, title=d_alt, color="#ECD19A")
         
     ## relationship assesses:
     d_assesses = d[6]
@@ -97,7 +106,7 @@ def viewAll(uploaded_file, physics):
     for d1 in data_assess:
       d1_id = d1[0]
       if(d_assesses == d1_id):
-        G.add_edge(d_id, d1_id, color="red")
+        G.add_edge(d_id, d1_id, color="#FF7273")
         
     ## relationship requires:
     d_requires = d[7]
@@ -106,7 +115,7 @@ def viewAll(uploaded_file, physics):
       d2_id = d2[0]
       if(d_requires == d2_id):
         #use label to label the edges
-        G.add_edge( d2_id, d_id, weight = 5)
+        G.add_edge( d2_id, d_id, weight = 5, color="#C0CB6B")
 
     ## relationship isPartOf:
     d_isPartOf = d[5]
@@ -114,9 +123,9 @@ def viewAll(uploaded_file, physics):
     for d3 in data_isPartOf:
       d3_id = d3[0]
       if(d_isPartOf == d3_id):     
-        G.add_edge( d3_id,d_id, color = "green")
+        G.add_edge( d3_id,d_id, color = "#ECD19A")
 
-  G2 = Network(height="800px", width="100%", bgcolor="#222222", font_color="white", notebook=True,heading='', directed=True)
+  G2 = Network(height="800px", width="100%", notebook=True,heading='', directed=True)
   G2.from_nx(G)
   if physics:
     G2.height = "500px"
@@ -168,7 +177,7 @@ def view_2(uploaded_file):
       if(d_assesses == d1_id):
         G.add_edge(d_id, d1_id, color="red")
 
-  G2 = Network(height="800px", width="100%", bgcolor="#222222", font_color="white", notebook=True,heading='', directed=True)
+  G2 = Network(height="100%", width="100%", bgcolor="#222222", font_color="white", notebook=True,heading='', directed=True)
   G2.from_nx(G)
   G2.options = options
   for node in G2.nodes:
@@ -192,6 +201,7 @@ def view_3(uploaded_file):
   G.add_node("D")
   G.add_edge("A", "B")
   M = nx.identified_nodes(G, "A", "B", self_loops=False)
+  
   G2 = Network(height="800px", width="100%", bgcolor="#222222", font_color="white", notebook=True,heading='', directed=True)
   G2.from_nx(M)
   G2.options = options
