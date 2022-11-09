@@ -136,37 +136,56 @@ def viewAll(uploaded_file, physics):
 
 ########################################################################    
 def view_2(uploaded_file):
-  # df = pd.read_csv(uploaded_file)
-  # # fill empty cells in specifc column with nil
-  # df["Alternative"].fillna("nil", inplace = True) 
-  # df_id = df['ID']
-  # df_title = df['Title']
-  # df_alt = df['Alternative']
-  # df_tURL = df['targetUrl']
-  # df_type = df['Type']
-  # df_isPartOf = df['isPartOf']
-  # df_assesses = df['assesses']
-  # df_requires = df['requires']
+  df = pd.read_csv(uploaded_file)
+  # fill empty cells in specifc column with nil
+  df["Alternative"].fillna("nil", inplace = True) 
+  df_id = df['ID']
+  df_title = df['Title']
+  df_alt = df['Alternative']
+  df_tURL = df['targetUrl']
+  df_type = df['Type']
+  df_isPartOf = df['isPartOf']
+  df_assesses = df['assesses']
+  df_requires = df['requires']
     
-  # data_ER = zip(df_id, df_title, df_alt, df_tURL, df_type, df_isPartOf, df_assesses, df_requires) # making tuples  
+  data_ER = zip(df_id, df_title, df_alt, df_tURL, df_type, df_isPartOf, df_assesses, df_requires) # making tuples  
   G = nx.DiGraph()
-  # for d in data_ER:  
-  #   d_id = d[0]
-  #   d_title = d[1]
-  #   d_type = d[4]
-  #   d_alt = d[2]
-  #   if(d_type=="aER"):
-  #     G.add_node(d_id, label = d_title, shape="box", title=d_alt)
-  #   elif(d_type == "rER"):
-  #     G.add_node(d_id, label = d_title, shape="triangle", title=d_alt) 
+  for d in data_ER:  
+    d_id = d[0]
+    d_title = d[1]
+    d_type = d[4]
+    d_alt = d[2]
+    if(d_type=="aER"):
+      G.add_node(d_id, label = d_title, shape="box", title=d_alt)
+    elif(d_type == "rER"):
+      G.add_node(d_id, label = d_title, shape="triangle", title=d_alt) 
         
-  #   ## relationship assesses:
-  #   d_assesses = d[6]
-  #   data_assess = zip(df_id)
-  #   for d1 in data_assess:
-  #     d1_id = d1[0]
-  #     if(d_assesses == d1_id):
-  #       G.add_edge(d_id, d1_id, color="red")
+    ## relationship assesses:
+    d_assesses = d[6]
+    data_assess = zip(df_id)
+    for d1 in data_assess:
+      d1_id = d1[0]
+      if(d_assesses == d1_id):
+        G.add_edge(d_id, d1_id, color="red")
+
+  G2 = Network(height="800px", width="100%", bgcolor="#222222", font_color="white", notebook=True,heading='', directed=True)
+  G2.from_nx(G)
+  G2.options = options
+  for node in G2.nodes:
+    id_string = node["label"]
+    width = 10
+    wrapped_strings = textwrap.wrap(id_string, width)
+    wrapped_id =""; 
+    for line in wrapped_strings:
+      wrapped_id = textwrap.fill(id_string, width)
+    node["label"] = wrapped_id
+    
+    G2.show('view2.html') 
+
+##########################################################
+########################################################################    
+def view_3(uploaded_file):
+  G = nx.DiGraph()
   G.add_node("A")
   G.add_node("B")
   G.add_node("C")
@@ -185,4 +204,4 @@ def view_2(uploaded_file):
       wrapped_id = textwrap.fill(id_string, width)
     node["label"] = wrapped_id
     
-    G2.show('view2.html') 
+    G2.show('view3.html') 
