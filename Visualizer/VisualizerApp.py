@@ -30,18 +30,27 @@ if demo:
 else:
     uploaded_file = st.file_uploader("Choose a file")
 
+container = st.container()
 if uploaded_file is not None:
-    with st.expander("Options"):
-        option=st.selectbox('select graph',('whole LePa','view 2', 'view 3'))
-        physics=st.checkbox('add physics interactivity?')
-    if option == 'whole LePa':
-        views.viewAll(uploaded_file, physics)
-        HtmlFile = open("viewAll.html", 'r', encoding='utf-8')
-        source_code = HtmlFile.read() 
-        st.components.v1.html(source_code, height=1080, scrolling=True)
+    with container:
+        with st.expander("Options"):
+            option=st.selectbox('select graph',('whole LePa','view 2', 'view 3'))
+            physics=st.checkbox('add physics interactivity?')
+        if option == 'whole LePa':
+            views.viewAll(uploaded_file, physics)
+            HtmlFile = open("viewAll.html", 'r', encoding='utf-8')
+            source_code = HtmlFile.read() 
+            st.components.v1.html(source_code, height=1080, scrolling=True)
 
-    # if option=='view 2':
-    #     views.view_2(uploaded_file)
-    #     HtmlFile = open("view2.html", 'r', encoding='utf-8')
-    #     source_code = HtmlFile.read() 
-    #     st.components.v1.html(source_code, height=1500,width=700, scrolling=True)
+        elif option=='view 2':
+            views.view_2(uploaded_file)
+            HtmlFile = open("view2.html", 'r', encoding='utf-8')
+            source_code = HtmlFile.read() 
+            st.components.v1.html(source_code, height=1080, scrolling=True)
+   
+        elif option=='view 3':
+            views.view_3(uploaded_file)
+            HtmlFile = open("view3.html", 'r', encoding='utf-8')
+            source_code = HtmlFile.read() 
+            st.components.v1.html(source_code, height=1080, scrolling=True)
+    
