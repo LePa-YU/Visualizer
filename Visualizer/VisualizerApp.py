@@ -50,4 +50,4 @@ if uploaded_file is not None: # if a file a selected then we go through visualiz
             HtmlFile = open("view3.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
-    
+ ###   
