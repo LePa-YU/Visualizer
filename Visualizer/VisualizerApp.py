@@ -73,17 +73,17 @@ if uploaded_file is not None:
         # set views bassed on view options
         if option == 'whole LePa':
             views.viewAll(physics, bg)
-            HtmlFile = open("viewAll.html", 'r', encoding='utf-8')
+            HtmlFile = open("view.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
         elif option == 'AIR view':
             views.AIR_view(physics, bg)
-            HtmlFile = open("AIR_view.html", 'r', encoding='utf-8')
+            HtmlFile = open("view.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
         elif option == 'view 3':
             views.view_3(physics, bg)
-            HtmlFile = open("view3.html", 'r', encoding='utf-8')
+            HtmlFile = open("view.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
  ###   

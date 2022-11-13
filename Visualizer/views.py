@@ -80,6 +80,25 @@ options = {
      "minVelocity": 0.75
    }
  }
+ 
+def convert_to_pyvis(G,bg, physics):
+  G2 = Network(height="800px", width="100%", bgcolor=bg, font_color=setFontColor(bg), notebook=True,heading='', directed=True)
+  G2.from_nx(G)
+  if physics:
+    G2.height = "500px"
+    G2.show_buttons()
+  else:
+    G2.options = options
+  for node in G2.nodes:
+    id_string = node["label"]
+    width = 10
+    wrapped_strings = textwrap.wrap(id_string, width)
+    wrapped_id =""; 
+    for line in wrapped_strings:
+      wrapped_id = textwrap.fill(id_string, width)
+    node["label"] = wrapped_id
+    
+  G2.show('view.html')
 #########################################################################
 
 def setColors(aER, rER, iER, general, assess, requires, isPartOf):
@@ -151,24 +170,7 @@ def viewAll(physics, bg):
       d3_id = d3[0]
       if(d_isPartOf == d3_id):     
         G.add_edge( d3_id,d_id, color = isPartOf_edge_color)
-
-  G2 = Network(height="800px", width="100%", bgcolor=bg, font_color=setFontColor(bg), notebook=True,heading='', directed=True)
-  G2.from_nx(G)
-  if physics:
-    G2.height = "500px"
-    G2.show_buttons()
-  else:
-    G2.options = options
-  for node in G2.nodes:
-    id_string = node["label"]
-    width = 10
-    wrapped_strings = textwrap.wrap(id_string, width)
-    wrapped_id =""; 
-    for line in wrapped_strings:
-      wrapped_id = textwrap.fill(id_string, width)
-    node["label"] = wrapped_id
-    
-  G2.show('viewAll.html')
+  convert_to_pyvis(G,bg, physics)
 
 ########################################################################    
 def AIR_view(physics, bg):
@@ -203,23 +205,7 @@ def AIR_view(physics, bg):
       if(d_requires == d2_id):
         G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
 
-  G2 = Network(height="800px", width="100%", bgcolor=bg, font_color= setFontColor(bg), notebook=True,heading='', directed=True)
-  G2.from_nx(G)
-  if physics:
-    G2.height = "500px"
-    G2.show_buttons()
-  else:
-    G2.options = options
-  for node in G2.nodes:
-    id_string = node["label"]
-    width = 10
-    wrapped_strings = textwrap.wrap(id_string, width)
-    wrapped_id =""; 
-    for line in wrapped_strings:
-      wrapped_id = textwrap.fill(id_string, width)
-    node["label"] = wrapped_id
-    
-    G2.show('AIR_view.html') 
+  convert_to_pyvis(G,bg, physics)
 
 ##########################################################
 ########################################################################    
@@ -233,20 +219,4 @@ def view_3(physics, bg):
   G.add_edge("B", "C")
   # M = nx.identified_nodes(G, "A", "B", self_loops=False)
   
-  G2 = Network(height="800px", width="100%", bgcolor="#222222", font_color="white", notebook=True,heading='', directed=True)
-  G2.from_nx(G)
-  if physics:
-    G2.height = "500px"
-    G2.show_buttons()
-  else:
-    G2.options = options
-  for node in G2.nodes:
-    id_string = node["label"]
-    width = 10
-    wrapped_strings = textwrap.wrap(id_string, width)
-    wrapped_id =""; 
-    for line in wrapped_strings:
-      wrapped_id = textwrap.fill(id_string, width)
-    node["label"] = wrapped_id
-    
-    G2.show('view3.html') 
+  convert_to_pyvis(G,bg, physics)
