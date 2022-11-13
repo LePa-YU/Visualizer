@@ -90,21 +90,21 @@ options = {
 # requires_edge_color = ""
 # isPartOf_edge_color = ""
 
-def setColors():
+def setColors(aER, rER, iER, general, assess, requires, isPartOf):
   global aER_node_color
-  aER_node_color = "#FF7273"
+  aER_node_color = aER
   global rER_node_color
-  rER_node_color = "#FF7273"
+  rER_node_color = rER
   global iER_node_color
-  iER_node_color = "#F69159"
+  iER_node_color = iER
   global general_node_color
-  general_node_color = "#ECD19A"
+  general_node_color = general
   global assess_edge_color
-  assess_edge_color = "#FF7273"
+  assess_edge_color = assess
   global requires_edge_color
-  requires_edge_color = "#C0CB6B"
+  requires_edge_color = requires
   global isPartOf_edge_color
-  isPartOf_edge_color = "#ECD19A"
+  isPartOf_edge_color = isPartOf
 
 def setFontColor(bg):
   # set font color based on bg:
@@ -117,7 +117,7 @@ def setFontColor(bg):
  
 #########################################################################
 def viewAll(uploaded_file, physics, bg):
-  setColors()
+  # setColors()
   G = nx.DiGraph()
   data_ER = setData(uploaded_file)
   df_id = get_Id_Rows(uploaded_file)
@@ -180,6 +180,7 @@ def viewAll(uploaded_file, physics, bg):
 
 ########################################################################    
 def AIR_view(uploaded_file, physics, bg):
+  # setColors()
   data_ER = setData(uploaded_file)
   df_id = get_Id_Rows(uploaded_file)
   G = nx.DiGraph()

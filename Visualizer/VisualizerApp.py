@@ -37,7 +37,22 @@ if uploaded_file is not None: # if a file a selected then we go through visualiz
         # customization menu
         with st.expander("Customization"):
             bg = st.selectbox('select bakground color', ('white', "black"))
-            color = st.color_picker('Pick A Color', '#00f900')
+            col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
+            with col1:
+                aER_node_color = st.color_picker('Pick aER node color', "#FF7273")
+            with col2:
+                rER_node_color = st.color_picker('Pick rER node color', "#FF7273")
+            with col3:
+                iER_node_color = st.color_picker('Pick iER node color', "#F69159")
+            with col4:
+                general_node_color = st.color_picker('Pick general node color', "#ECD19A")
+            with col5:
+                assess_edge_color = st.color_picker('Pick assess edge color', "#FF7273")
+            with col6:
+                requires_edge_color = st.color_picker('Pick requires edge color', "#C0CB6B")
+            with col7:
+                isPartOf_edge_color = st.color_picker('Pick isPartOf edge color', "#ECD19A")
+        views.setColors(aER_node_color, rER_node_color, iER_node_color, general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color)
         if option == 'whole LePa':
             views.viewAll(uploaded_file, physics, bg)
             HtmlFile = open("viewAll.html", 'r', encoding='utf-8')
