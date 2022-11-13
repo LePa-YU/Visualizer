@@ -30,19 +30,22 @@ else:
 container = st.container()
 if uploaded_file is not None: # if a file a selected then we go through visualization
     with container: # add items to container
+       #options menu
         with st.expander("Options"):
-            option=st.selectbox('select graph',('whole LePa','view 2', 'view 3'))
+            option=st.selectbox('select graph',('whole LePa','AIR view', 'view 3'))
             physics=st.checkbox('add physics interactivity?')
+        # customization menu
         with st.expander("Customization"):
             bg = st.selectbox('select bakground color', ('white', "black"))
+            color = st.color_picker('Pick A Color', '#00f900')
         if option == 'whole LePa':
             views.viewAll(uploaded_file, physics, bg)
             HtmlFile = open("viewAll.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
-        elif option == 'view 2':
-            views.view_2(uploaded_file, physics, bg)
-            HtmlFile = open("view2.html", 'r', encoding='utf-8')
+        elif option == 'AIR view':
+            views.AIR_view(uploaded_file, physics, bg)
+            HtmlFile = open("AIR_view.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
         elif option == 'view 3':
