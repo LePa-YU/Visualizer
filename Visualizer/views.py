@@ -11,21 +11,26 @@ def setData(df):
   # df = pd.read_csv(uploaded_file)
   # fill empty cells in specifc column with nil
   df["Alternative"].fillna("nil", inplace = True) 
+  global df_id
   df_id = df['ID']
+  global df_title
   df_title = df['Title']
+  global df_alt
   df_alt = df['Alternative']
   df_tURL = df['targetUrl']
+  global df_type
   df_type = df['Type']
+  global df_isPartOf
   df_isPartOf = df['isPartOf']
   df_assesses = df['assesses']
   df_requires = df['requires']
   global data_ER
   data_ER = zip(df_id, df_title, df_alt, df_tURL, df_type, df_isPartOf, df_assesses, df_requires) # making tuples 
 
-def get_Id_Rows(df):
-  # df = pd.read_csv(uploaded_file)
-  global df_id
-  df_id = df['ID']
+# def get_Id_Rows(df):
+#   # df = pd.read_csv(uploaded_file)
+#   global df_id
+#   df_id = df['ID']
 
 options = {
    "nodes": {
@@ -41,7 +46,8 @@ options = {
      "shapeProperties": {
        "borderRadius": 4
      },
-     "size": 29
+     "size": 29,
+      
    },
    "edges": {
      "color": {
@@ -76,6 +82,9 @@ options = {
    "manipulation": {
      "enabled": True
    },
+   "layout": {
+    "randomSeed":10
+  },
    "physics": {
      "minVelocity": 0.75
    }
@@ -89,6 +98,7 @@ def convert_to_pyvis(G,bg, physics):
     G2.show_buttons()
   else:
     G2.options = options
+
   for node in G2.nodes:
     id_string = node["label"]
     width = 10
@@ -97,6 +107,7 @@ def convert_to_pyvis(G,bg, physics):
     for line in wrapped_strings:
       wrapped_id = textwrap.fill(id_string, width)
     node["label"] = wrapped_id
+    
     
   G2.show('view.html')
 #########################################################################
@@ -214,9 +225,28 @@ def view_3(physics, bg):
   G.add_node("A", x=0, y=0)
   G.add_node("B", x=5, y = 0)
   G.add_node("C", x=10, y=0)
-  G.add_node("D", x = 15, y = 0)
+  G.add_node("D")
   G.add_edge("A", "B")
   G.add_edge("B", "C")
+  G.add_edge("B", "D")
+  pos = nx.spring_layout(G)
   # M = nx.identified_nodes(G, "A", "B", self_loops=False)
   
-  convert_to_pyvis(G,bg, physics)
+  # convert_to_pyvis(G,bg, physics)
+  G2 = Network(height="800px", width="100%", bgcolor=bg, font_color=setFontColor(bg), notebook=True,heading='', directed=True)
+  G2.from_nx(G)
+  if physics:
+    G2.height = "500px"
+    G2.show_buttons()
+  else:
+    G2.options = options
+  for node in G2.nodes:
+    id_string = node["label"]
+    width = 10
+    wrapped_strings = textwrap.wrap(id_string, width)
+    wrapped_id =""; 
+    for line in wrapped_strings:
+      wrapped_id = textwrap.fill(id_string, width)
+    node["label"] = wrapped_id
+    
+  G2.show('view.html')

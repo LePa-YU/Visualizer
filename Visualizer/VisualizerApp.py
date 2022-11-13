@@ -38,7 +38,6 @@ if uploaded_file is not None:
     dataframe = pd.read_csv(uploaded_file)
     # set data based on dataframe
     views.setData(dataframe)
-    views.get_Id_Rows(dataframe)
 
     with container: # add items to container
        #options menu
