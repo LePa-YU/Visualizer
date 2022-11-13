@@ -7,8 +7,8 @@ import textwrap
 
 ## this file contains code for different visualzation/ views of the LePa visualizer --> aka model
 
-def setData(uploaded_file):
-  df = pd.read_csv(uploaded_file)
+def setData(df):
+  # df = pd.read_csv(uploaded_file)
   # fill empty cells in specifc column with nil
   df["Alternative"].fillna("nil", inplace = True) 
   df_id = df['ID']
@@ -19,13 +19,13 @@ def setData(uploaded_file):
   df_isPartOf = df['isPartOf']
   df_assesses = df['assesses']
   df_requires = df['requires']
+  global data_ER
   data_ER = zip(df_id, df_title, df_alt, df_tURL, df_type, df_isPartOf, df_assesses, df_requires) # making tuples 
-  return data_ER
 
-def get_Id_Rows(uploaded_file):
-  df = pd.read_csv(uploaded_file)
+def get_Id_Rows(df):
+  # df = pd.read_csv(uploaded_file)
+  global df_id
   df_id = df['ID']
-  return df_id
 
 options = {
    "nodes": {
@@ -81,14 +81,6 @@ options = {
    }
  }
 #########################################################################
-# #customization
-# aER_node_color = " "
-# rER_node_color = ""
-# iER_node_color = ""
-# general_node_color = ""
-# assess_edge_color = ""
-# requires_edge_color = ""
-# isPartOf_edge_color = ""
 
 def setColors(aER, rER, iER, general, assess, requires, isPartOf):
   global aER_node_color
@@ -116,11 +108,11 @@ def setFontColor(bg):
   return font_color
  
 #########################################################################
-def viewAll(uploaded_file, physics, bg):
+def viewAll(physics, bg):
   # setColors()
   G = nx.DiGraph()
-  data_ER = setData(uploaded_file)
-  df_id = get_Id_Rows(uploaded_file)
+  # data_ER = setData(uploaded_file)
+  # df_id = get_Id_Rows(uploaded_file)
   for d in data_ER:
     d_id = d[0]
     d_title = d[1]
@@ -179,10 +171,10 @@ def viewAll(uploaded_file, physics, bg):
   G2.show('viewAll.html')
 
 ########################################################################    
-def AIR_view(uploaded_file, physics, bg):
+def AIR_view(physics, bg):
   # setColors()
-  data_ER = setData(uploaded_file)
-  df_id = get_Id_Rows(uploaded_file)
+  # data_ER = setData(uploaded_file)
+  # df_id = get_Id_Rows(uploaded_file)
   G = nx.DiGraph()
   for d in data_ER:  
     d_id = d[0]
@@ -231,7 +223,7 @@ def AIR_view(uploaded_file, physics, bg):
 
 ##########################################################
 ########################################################################    
-def view_3(uploaded_file, physics):
+def view_3(physics, bg):
   G = nx.DiGraph()
   G.add_node("A", x=0, y=0)
   G.add_node("B", x=5, y = 0)
