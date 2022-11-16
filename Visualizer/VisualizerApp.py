@@ -46,6 +46,9 @@ if uploaded_file is not None:
             option=st.selectbox('select graph',('whole LePa','AIR view', 'view 3'))
             # adding physics interactivity
             physics=st.checkbox('add physics interactivity?')
+            fix = False
+            if not physics:
+                fix = st.checkbox("Fix the position?")
         # customization menu
         with st.expander("Customization"):
             # background options
@@ -71,17 +74,17 @@ if uploaded_file is not None:
         
         # set views bassed on view options
         if option == 'whole LePa':
-            views.viewAll(physics, bg)
+            views.viewAll(physics, bg, fix)
             HtmlFile = open("view.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
         elif option == 'AIR view':
-            views.AIR_view(physics, bg)
+            views.AIR_view(physics, bg, fix)
             HtmlFile = open("view.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
         elif option == 'view 3':
-            views.view_3(physics, bg)
+            views.view_3(physics, bg, fix)
             HtmlFile = open("view.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)

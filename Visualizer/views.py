@@ -89,15 +89,67 @@ options = {
      "minVelocity": 0.75
    }
  }
- 
-def convert_to_pyvis(G,bg, physics):
+edges = {
+    "color": {
+      "inherit": True
+    },
+    "dashes": True,
+    "font": {
+      "strokeWidth": 5
+    },
+    "hoverWidth": 3.2,
+    "scaling": {
+      "label": {
+        "min": 24
+      }
+    },
+    "selfReference": {
+      "angle": 0.7853981633974483
+    },
+    "smooth": {
+      "roundness": 0.7
+    }
+ }
+nodes = {
+   "borderWidth": 3,
+     "borderWidthSelected": 6,
+     "shadow": {
+       "enabled": True,
+       "color": "white",
+       "size": 9,
+       "x": -1,
+       "y": -2
+     },
+     "shapeProperties": {
+       "borderRadius": 4
+     },
+     "size": 29,
+}
+def convert_to_pyvis(G,bg, physics, fix):
   G2 = Network(height="800px", width="100%", bgcolor=bg, font_color=setFontColor(bg), notebook=True,heading='', directed=True)
   G2.from_nx(G)
-  if physics:
+  G2.options.edges = edges
+  G2.options.nodes = nodes
+  if physics and not fix:
     G2.height = "500px"
     G2.show_buttons()
   else:
-    G2.options = options
+    # G2.options = options
+    if fix:
+      n = nodes
+      n.update({ "fixed": {
+      "x": True,
+      "y": True
+    }})
+      G2.options.nodes = n
+      G2.toggle_drag_nodes(False)
+    else:
+      G2.toggle_drag_nodes(True)
+      n = nodes
+      n.update({ "fixed": {
+      "x": False,
+      "y": False
+    }})
 
   for node in G2.nodes:
     id_string = node["label"]
@@ -107,6 +159,7 @@ def convert_to_pyvis(G,bg, physics):
     for line in wrapped_strings:
       wrapped_id = textwrap.fill(id_string, width)
     node["label"] = wrapped_id
+    
     
     
   G2.show('view.html')
@@ -138,7 +191,7 @@ def setFontColor(bg):
   return font_color
  
 #########################################################################
-def viewAll(physics, bg):
+def viewAll(physics, bg, fix):
   # setColors()
   G = nx.DiGraph()
   # data_ER = setData(uploaded_file)
@@ -181,10 +234,10 @@ def viewAll(physics, bg):
       d3_id = d3[0]
       if(d_isPartOf == d3_id):     
         G.add_edge( d3_id,d_id, color = isPartOf_edge_color)
-  convert_to_pyvis(G,bg, physics)
+  convert_to_pyvis(G,bg, physics, fix)
 
 ########################################################################    
-def AIR_view(physics, bg):
+def AIR_view(physics, bg, fix):
   # setColors()
   # data_ER = setData(uploaded_file)
   # df_id = get_Id_Rows(uploaded_file)
@@ -216,7 +269,7 @@ def AIR_view(physics, bg):
       if(d_requires == d2_id):
         G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
 
-  convert_to_pyvis(G,bg, physics)
+  convert_to_pyvis(G,bg, physics, fix)
 
 ##########################################################
 ########################################################################    
