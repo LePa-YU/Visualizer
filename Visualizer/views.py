@@ -10,27 +10,24 @@ import textwrap
 def setData(df):
   # df = pd.read_csv(uploaded_file)
   # fill empty cells in specifc column with nil
-  df["Alternative"].fillna("nil", inplace = True) 
+  df.columns = df.columns.str.lower()
+  df["alternative"].fillna("nil", inplace = True) 
   global df_id
-  df_id = df['ID']
+  df_id = df['id']
   global df_title
-  df_title = df['Title']
+  df_title = df['title']
   global df_alt
-  df_alt = df['Alternative']
-  df_tURL = df['targetUrl']
+  df_alt = df['alternative']
+  df_tURL = df['targeturl']
   global df_type
-  df_type = df['Type']
+  df_type = df['type']
   global df_isPartOf
-  df_isPartOf = df['isPartOf']
+  df_isPartOf = df['ispartof']
   df_assesses = df['assesses']
   df_requires = df['requires']
   global data_ER
   data_ER = zip(df_id, df_title, df_alt, df_tURL, df_type, df_isPartOf, df_assesses, df_requires) # making tuples 
 
-# def get_Id_Rows(df):
-#   # df = pd.read_csv(uploaded_file)
-#   global df_id
-#   df_id = df['ID']
 
 options = {
    "nodes": {
