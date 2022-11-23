@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from pyvis.network import Network
 import views 
 import requests
+from selenium import webdriver
+import time
 
 #### this file contains code for streamlit deployment
 
@@ -75,17 +77,17 @@ if uploaded_file is not None:
         # set views bassed on view options
         if option == 'whole LePa':
             views.viewAll(physics, bg, fix)
-            HtmlFile = open("view.html", 'r', encoding='utf-8')
+            HtmlFile = open("index.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
         elif option == 'AIR view':
             views.AIR_view(physics, bg, fix)
-            HtmlFile = open("view.html", 'r', encoding='utf-8')
+            HtmlFile = open("index.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
         elif option == 'view 3':
             views.view_3(physics, bg, fix)
-            HtmlFile = open("view.html", 'r', encoding='utf-8')
+            HtmlFile = open("index.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
  ###   
