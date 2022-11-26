@@ -2,12 +2,9 @@ import streamlit as st
 import pandas as pd
 import streamlit.components.v1 as components
 import networkx as nx
-import matplotlib.pyplot as plt
 from pyvis.network import Network
 import views 
 import requests
-from selenium import webdriver
-import time
 
 #### this file contains code for streamlit deployment
 
