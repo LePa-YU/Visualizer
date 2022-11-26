@@ -1,16 +1,14 @@
 import networkx as nx
-import matplotlib.pyplot as plt
+import pyvisToHtml
 from pyvis.network import Network
 import pandas as pd
 import streamlit as st
 import textwrap
-import json
 import sys
 
 ## this file contains code for different visualzation/ views of the LePa visualizer --> aka model
 
 def setData(df):
-  # df = pd.read_csv(uploaded_file)
   # fill empty cells in specifc column with nil
   df.columns = df.columns.str.lower()
   df["alternative"].fillna("nil", inplace = True) 
@@ -30,7 +28,7 @@ def setData(df):
   global data_ER
   data_ER = zip(df_id, df_title, df_alt, df_tURL, df_type, df_isPartOf, df_assesses, df_requires) # making tuples 
 
-
+# initial options
 physics = {
      "minVelocity": 0.75
 }
@@ -86,6 +84,8 @@ nodes = {
      },
      "size": 29,
 }
+
+# method  that converst networkx to pyvis
 def convert_to_pyvis(G,bg, physics, fix):
   G2 = Network(height="800px", width="100%", bgcolor=bg, font_color=setFontColor(bg), notebook=True,heading='', directed=True)
   G2.from_nx(G)
@@ -95,31 +95,10 @@ def convert_to_pyvis(G,bg, physics, fix):
   G2.options.manipulation = manipulation
   G2.options.layout = layout
 
-  if physics and not fix:
+  if physics:
     G2.height = "500px"
     G2.show_buttons()
-  if fix:
-      n = nodes
-      n.update({ "fixed": {
-      "x": True,
-      "y": True
-      }})
-      G2.options.nodes = n
-      i = interaction
-      i.update({"dragNodes": False})
-      G2.options.interaction = i
-      # G2.toggle_drag_nodes(False)
-  else:
-      # G2.toggle_drag_nodes(True)
-      n = nodes
-      n.update({ "fixed": {
-      "x": False,
-      "y": False
-      }})
-      i = interaction
-      i.update({"dragNodes": True})
-      G2.options.interaction = i
-  x = 0
+  
   for node in G2.nodes:
     id_string = node["label"]
     width = 10
@@ -128,43 +107,9 @@ def convert_to_pyvis(G,bg, physics, fix):
     for line in wrapped_strings:
       wrapped_id = textwrap.fill(id_string, width)
     node["label"] = wrapped_id
-    # n = node.update({"x": x})
-    
-  #Extract info
-  f = open('network.js', 'w')
 
   data = G2.get_network_data()
-  nodes_data = data[0]
-  jsonOb_node = json.dumps(nodes_data)
-  jsonOb_node_format = format(jsonOb_node)
-  f.write("var nodes = "+str(jsonOb_node_format) +";"+"\n")
-  
-  edges_data = data[1]
-  jsonOb_edges = json.dumps(edges_data)
-  jsonOb_edges_format = format(jsonOb_edges)
-  f.write("var edges = "+str(jsonOb_edges_format) +";"+"\n")
-  
-  heading_data = data[2]
-  jsonOb_heading = json.dumps(heading_data)
-  jsonOb_heading_format = format(jsonOb_heading)
-  f.write("var heading = "+str(jsonOb_heading_format) +";"+"\n")
-
-  height_data = data[3]
-  jsonOb_height = json.dumps(height_data)
-  jsonOb_height_format = format(jsonOb_height)
-  f.write("var height = "+str(jsonOb_height_format) +";"+"\n")
-
-  width_data = data[4]
-  jsonOb_width = json.dumps(width_data)
-  jsonOb_width_format = format(jsonOb_width)
-  f.write("var width = "+str(jsonOb_width_format) +";"+"\n")
-
-  options_data = data[5]
-  jsonOb_options = json.dumps(options_data)
-  jsonOb_options_format = format(jsonOb_options)
-  f.write("var options = "+str(jsonOb_options_format) +";"+"\n")   
-    
-  G2.show('view.html')
+  pyvisToHtml.convertToHtml(data, bg)
 
 #########################################################################
 
@@ -197,8 +142,6 @@ def setFontColor(bg):
 def viewAll(physics, bg, fix):
   # setColors()
   G = nx.DiGraph()
-  # data_ER = setData(uploaded_file)
-  # df_id = get_Id_Rows(uploaded_file)
   for d in data_ER:
     d_id = d[0]
     d_title = d[1]
@@ -241,9 +184,6 @@ def viewAll(physics, bg, fix):
 
 ########################################################################    
 def AIR_view(physics, bg, fix):
-  # setColors()
-  # data_ER = setData(uploaded_file)
-  # df_id = get_Id_Rows(uploaded_file)
   G = nx.DiGraph()
   for d in data_ER:  
     d_id = d[0]
@@ -298,16 +238,6 @@ def view_3(physics, bg, fix):
   if physics:
     G2.height = "500px"
     G2.show_buttons()
-  # else:
-    # G2.options = options
-  # for node in G2.nodes:
-  #   id_string = node["label"]
-  #   width = 10
-  #   wrapped_strings = textwrap.wrap(id_string, width)
-  #   wrapped_id =""; 
-  #   for line in wrapped_strings:
-  #     wrapped_id = textwrap.fill(id_string, width)
-  #   node["label"] = wrapped_id
   
   G2.options.edges = edges
   G2.options.nodes = nodes
@@ -315,41 +245,6 @@ def view_3(physics, bg, fix):
   G2.options.manipulation = manipulation
   G2.options.layout = layout
   
-  #Extract info
-  f = open('network.js', 'w')
-
-  data = G2.get_network_data()
-  nodes_data = data[0]
-  jsonOb_node = json.dumps(nodes_data)
-  jsonOb_node_format = format(jsonOb_node)
-  f.write("var nodes = "+str(jsonOb_node_format) +";"+"\n")
-  
-  edges_data = data[1]
-  jsonOb_edges = json.dumps(edges_data)
-  jsonOb_edges_format = format(jsonOb_edges)
-  f.write("var edges = "+str(jsonOb_edges_format) +";"+"\n")
-  
-  heading_data = data[2]
-  jsonOb_heading = json.dumps(heading_data)
-  jsonOb_heading_format = format(jsonOb_heading)
-  f.write("var heading = "+str(jsonOb_heading_format) +";"+"\n")
-
-  height_data = data[3]
-  jsonOb_height = json.dumps(height_data)
-  jsonOb_height_format = format(jsonOb_height)
-  f.write("var height = "+str(jsonOb_height_format) +";"+"\n")
-
-  width_data = data[4]
-  jsonOb_width = json.dumps(width_data)
-  jsonOb_width_format = format(jsonOb_width)
-  f.write("var width = "+str(jsonOb_width_format) +";"+"\n")
-
-  options_data = data[5]
-  jsonOb_options = json.dumps(options_data)
-  jsonOb_options_format = format(jsonOb_options)
-  f.write("var options = "+str(jsonOb_options_format) +";"+"\n")
-  
-  # G2.show('view.html')
-
+  convert_to_pyvis(G,bg, physics, fix)
  
   
