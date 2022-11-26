@@ -77,7 +77,6 @@ if uploaded_file is not None:
             HtmlFile = open("index.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
-            print(type(source_code))
         elif option == 'AIR view':
             views.AIR_view(physics, bg, fix)
             HtmlFile = open("index.html", 'r', encoding='utf-8')
