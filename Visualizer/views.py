@@ -109,7 +109,7 @@ def convert_to_pyvis(G,bg, physics, fix):
     node["label"] = wrapped_id
 
   data = G2.get_network_data()
-  pyvisToHtml.convertToHtml(data, bg)
+  pyvisToHtml.convertToHtml(data, bg, fix)
 
 #########################################################################
 

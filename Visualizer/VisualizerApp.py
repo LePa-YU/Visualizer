@@ -19,7 +19,7 @@ st.title('LePa: Learning Path Project')
 demo = st.checkbox("use demo file")
 if demo: 
     # get demo file from github
-    url = "https://raw.githubusercontent.com/LePa-YU/Visualizer/main/Data/demo.csv"
+    url = "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Data/demo.csv"
     res = requests.get(url, allow_redirects=True)
     with open('demo.csv','wb') as file:
         file.write(res.content)
@@ -46,8 +46,8 @@ if uploaded_file is not None:
             # adding physics interactivity
             physics=st.checkbox('add physics interactivity?')
             fix = False
-            if not physics:
-                fix = st.checkbox("Fix the position?")
+            # if not physics:
+            #     fix = st.checkbox("Fix the position?")
         # customization menu
         with st.expander("Customization"):
             # background options

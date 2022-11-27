@@ -1,6 +1,6 @@
 import json
 
-def convertToHtml(data, bg):
+def convertToHtml(data, bg, fix):
     file_html = open("index.html", "w")
     # Adding the input data to the HTML file
     file_html.write('''
@@ -20,6 +20,7 @@ def convertToHtml(data, bg):
     </head>
     <body>
     <div id="mynetwork"></div>
+    <div id="demo"></div>
     <!-- <script type="text/javascript" src="network.js"></script> -->
     <script type="text/javascript"> \n''')
     
@@ -58,8 +59,14 @@ def convertToHtml(data, bg):
     jsonOb_bg_format = format(jsonOb_bg)  
     file_html.write("\t var bgColor = "+str(jsonOb_bg_format) +";"+"\n")
 
+    # # add fix to js
+    # jsonOb_fix = json.dumps(fix)
+    # jsonOb_fix_format = format(jsonOb_fix)  
+    # file_html.write("\t var isFixed = "+str(jsonOb_fix_format) +";"+"\n")
+
     # add rest of the html
     file_html.write('''
+    
     document.getElementById("mynetwork").style.background = bgColor; 
     var nodeList = new vis.DataSet();
     for(let i = 0; i<nodes.length; i++){
@@ -75,26 +82,31 @@ def convertToHtml(data, bg):
             };
             nodeList.add(n_info);
         }
-        var edgeList = new vis.DataSet();
-        for(let i = 0; i<edges.length; i++){
-            var e = edges[i];
-            var e_info = {
-                from: e.from, 
-                to: e.to,
-                color: e.color, 
-                width: e.width
-            };
-            edgeList.add(e_info);
-        }
-
-        var container = document.getElementById('mynetwork');
-        var data = {
-            nodes: nodeList,
-            edges: edgeList
+        
+    var edgeList = new vis.DataSet();
+    for(let i = 0; i<edges.length; i++){
+        var e = edges[i];
+        var e_info = {
+            from: e.from, 
+            to: e.to,
+            color: e.color, 
+            width: e.width,
+            arrows: e.arrows
         };
-        var opt = JSON.parse(options);
-        var network = new vis.Network(container, data, opt);
-        network.setSize(width, height);
+         edgeList.add(e_info);
+    }
+    
+    var container = document.getElementById('mynetwork');
+    var data = {
+        nodes: nodeList,
+        edges: edgeList
+    };
+    var opt = JSON.parse(options);
+    
+    var network = new vis.Network(container, data, opt);
+    network.setSize(width, height);
+    
+       
 
     </script>
     </body>
