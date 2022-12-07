@@ -16,7 +16,13 @@ st.set_page_config(page_title = "LePa Visualizer", layout="wide", initial_sideba
 st.title('LePa: Learning Path Project')
 
 # demo check box --> boolean
-demo = st.checkbox("Load FAKE1001 dataset")
+# demo = st.checkbox("Load FAKE1001 dataset")
+# st.write("check out this [link]()")
+col1, col2 = st.columns([1,5])
+with col1:
+        demo = st.checkbox("Load FAKE1001 dataset")
+with col2:
+        st.write("[Other datasets](https://github.com/LePa-YU/Datasets)")
 if demo: 
     # get demo file from github
     url = "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Data/FAKE1001.csv"
@@ -40,9 +46,9 @@ if uploaded_file is not None:
 
     with container: # add items to container
        #options menu
-        with st.expander("Options"):
+        with st.expander("Select View"):
             #  different views
-            option=st.selectbox('select graph',('All ERs','Course Overview', 'Summative assessment only'))
+            option=st.selectbox('',('View 1: Summative assessment only','View 2: Course Overview','View 3: All ERs'))
             # adding physics interactivity
             physics = False
             # physics=st.checkbox('add physics interactivity?')
@@ -73,17 +79,17 @@ if uploaded_file is not None:
         views.setColors(aER_node_color, rER_node_color, iER_node_color, general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color)
         
         # set views bassed on view options
-        if option == 'All ERs':
+        if option == 'View 3: All ERs':
             views.All_ERs(physics, bg, fix)
             HtmlFile = open("index.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
-        elif option == 'Course Overview':
+        elif option == 'View 2: Course Overview':
             views.Course_Overview(physics, bg, fix)
             HtmlFile = open("index.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
-        elif option == 'Summative assessment only':
+        elif option == 'View 1: Summative assessment only':
             views.Summative_assessment_only(physics, bg, fix)
             HtmlFile = open("index.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
