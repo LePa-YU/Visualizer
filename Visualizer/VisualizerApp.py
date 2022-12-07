@@ -21,9 +21,9 @@ if demo:
     # get demo file from github
     url = "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Data/demo.csv"
     res = requests.get(url, allow_redirects=True)
-    with open('demo.csv','wb') as file:
+    with open('FAKE1001.csv','wb') as file:
         file.write(res.content)
-    uploaded_file = "demo.csv"
+    uploaded_file = "FAKE1001.csv"
 else:
     # user enters csv file
     uploaded_file = st.file_uploader(label="Enter your csv file", type="csv")
