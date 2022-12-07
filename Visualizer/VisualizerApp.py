@@ -55,6 +55,7 @@ if uploaded_file is not None:
             fix = False
             # if not physics:
             #     fix = st.checkbox("Fix the position?")
+        
         # customization menu
         with st.expander("Customization"):
             # background options
@@ -75,23 +76,32 @@ if uploaded_file is not None:
                 requires_edge_color = st.color_picker('Pick comes_after edge color', "#C0CB6B")
             with col7:
                 isPartOf_edge_color = st.color_picker('Pick isPartOf edge color', "#ECD19A")
+            
         # set colors based on the selection
         views.setColors(aER_node_color, rER_node_color, iER_node_color, general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color)
         
+        container_html = st.container()
         # set views bassed on view options
-        if option == 'View 3: All ERs':
-            views.All_ERs(physics, bg, fix)
-            HtmlFile = open("index.html", 'r', encoding='utf-8')
+        with container_html:
+            if option == 'View 3: All ERs':
+                views.All_ERs(physics, bg, fix)
+                HtmlFile = open("index.html", 'r', encoding='utf-8')
+                source_code = HtmlFile.read() 
+                st.components.v1.html(source_code, height=820, scrolling=True)
+            elif option == 'View 2: Course Overview':
+                views.Course_Overview(physics, bg, fix)
+                HtmlFile = open("index.html", 'r', encoding='utf-8')
+                source_code = HtmlFile.read() 
+                st.components.v1.html(source_code, height=820, scrolling=True)
+            elif option == 'View 1: Summative assessment only':
+                views.Summative_assessment_only(physics, bg, fix)
+                HtmlFile = open("index.html", 'r', encoding='utf-8')
+                source_code = HtmlFile.read() 
+                st.components.v1.html(source_code, height=820, scrolling=True)
+        
+        with st.expander("Legend"):
+            views.create_Legend(physics, bg, fix)
+            HtmlFile = open("index_Legend.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
-            st.components.v1.html(source_code, height=1080, scrolling=True)
-        elif option == 'View 2: Course Overview':
-            views.Course_Overview(physics, bg, fix)
-            HtmlFile = open("index.html", 'r', encoding='utf-8')
-            source_code = HtmlFile.read() 
-            st.components.v1.html(source_code, height=1080, scrolling=True)
-        elif option == 'View 1: Summative assessment only':
-            views.Summative_assessment_only(physics, bg, fix)
-            HtmlFile = open("index.html", 'r', encoding='utf-8')
-            source_code = HtmlFile.read() 
-            st.components.v1.html(source_code, height=1080, scrolling=True)
+            st.components.v1.html(source_code, height = 300)
  ###   

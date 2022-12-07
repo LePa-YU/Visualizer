@@ -270,4 +270,73 @@ def Summative_assessment_only(physics, bg, fix):
         G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
 
   convert_to_pyvis(G,bg, physics, fix)
+
+########################################################################    
+def create_Legend(physics, bg, fix):
+  # setColors()
+  G = nx.DiGraph()
+  G.add_node(1, label = "aER", shape="box", title="legend", color= aER_node_color, x = 0, y = 0)
+  G.add_node(2, label = "rER", shape="triangle", title="legend", color = rER_node_color, x = 0, y = 50 ) 
+  G.add_node(3, label = "iER", shape="circle", title="legend", color= iER_node_color, x = 0, y = 100)
+  G.add_node(4, label = "general", title="legend", color= general_node_color, x = 0, y = 150)
+  G.add_node("a", title="legend", color= 'black', x = 200, y = 0)
+  G.add_node("b", title="legend", color= 'black', x = 400, y = 0)
+  G.add_edge("a", "b", label = "assesses",color= assess_edge_color)
+  G.add_node("c", title="legend", color= 'black', x = 200, y = 50)
+  G.add_node("d", title="legend", color= 'black', x = 400, y = 50)
+  G.add_edge( "c", "d", label = "Comes after", weight = 5, color= requires_edge_color)
+  G.add_node("e", title="legend", color= 'black', x = 200, y = 100)
+  G.add_node("f", title="legend", color= 'black', x = 400, y = 100)
+  G.add_edge( "e", "f", label = "isPartOf", color = isPartOf_edge_color)
+
+
+  G2 = Network(height="800px", width="100%", bgcolor=bg, font_color=setFontColor(bg), notebook=True,heading='', directed=True)
+  G2.from_nx(G)
+  edges = {
+    "color": {
+      "inherit": True
+    },
+    "dashes": True,
+    "font": {
+      "strokeWidth": 5
+    },
+    "hoverWidth": 3.2,
+    "scaling": {
+      "label": {
+        "min": 24
+      }
+    },
+    "selfReference": {
+      "angle": 0.7853981633974483
+    },
+    "smooth": {
+      "roundness": 0.7
+    }
+ }
+  nodes = {
+   "borderWidth": 3,
+    "borderWidthSelected": 6,
+    "shadow": {
+       "enabled": True,
+       "color": "white",
+       "size": 9,
+       "x": -1,
+       "y": -2
+    },
+    "shapeProperties": {
+       "borderRadius": 4
+    },
+    
+     "fixed": {
+      "x": True,
+      "y": True
+    }
+}
+  G2.options.edges = edges
+  G2.options.nodes = nodes
+  G2.options.layout = layout
+
+  data = G2.get_network_data()
+  pyvisToHtml.convertToHtml_Legend(data, bg, fix)
+  
   
