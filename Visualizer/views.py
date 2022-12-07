@@ -11,7 +11,7 @@ import sys
 def setData(df):
   # fill empty cells in specifc column with nil
   df.columns = df.columns.str.lower()
-  df["alternative"].fillna("nil", inplace = True) 
+  df["alternative"].fillna("nil", inplace = True)
   global df_id
   df_id = df['id']
   global df_title
@@ -148,6 +148,7 @@ def viewAll(physics, bg, fix):
     d_title = d[1]
     d_type = d[4]
     d_alt = d[2]
+    d_isPartOf = d[5]
     if(d_type=="aER"):
       G.add_node(d_id, label = d_title, shape="box", title=d_alt, color= aER_node_color)
     elif(d_type == "rER"):
@@ -155,7 +156,7 @@ def viewAll(physics, bg, fix):
     elif(d_type == "iER"):
       G.add_node(d_id, label = d_title, shape="circle", title=d_alt, color= iER_node_color)
     else:
-      G.add_node(d_id, label = d_title, title=d_alt, color= general_node_color)
+      G.add_node(d_id, label = d_title, title=d_alt, color= general_node_color, isPartOf=int(d_isPartOf))
         
     ## relationship assesses:
     d_assesses = d[6]
@@ -184,7 +185,7 @@ def viewAll(physics, bg, fix):
         G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
 
     ## relationship isPartOf:
-    d_isPartOf = d[5]
+    # d_isPartOf = d[5]
     data_isPartOf = zip(df_id)
     for d3 in data_isPartOf:
       d3_id = d3[0]

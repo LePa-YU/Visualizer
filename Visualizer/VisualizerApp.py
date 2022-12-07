@@ -44,7 +44,8 @@ if uploaded_file is not None:
             #  different views
             option=st.selectbox('select graph',('whole LePa','AIR view', 'view 3'))
             # adding physics interactivity
-            physics=st.checkbox('add physics interactivity?')
+            physics = False
+            # physics=st.checkbox('add physics interactivity?')
             fix = False
             # if not physics:
             #     fix = st.checkbox("Fix the position?")
