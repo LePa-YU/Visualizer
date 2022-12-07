@@ -103,7 +103,7 @@ def convert_to_pyvis(G,bg, physics, fix):
   
   for node in G2.nodes:
     id_string = node["label"]
-    width = 10
+    width = 15
     wrapped_strings = textwrap.wrap(id_string, width)
     wrapped_id =""; 
     for line in wrapped_strings:
@@ -268,6 +268,6 @@ def Summative_assessment_only(physics, bg, fix):
       if(d_comesAfter_aER == d2_id):
         #use label to label the edges
         G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
-        
+
   convert_to_pyvis(G,bg, physics, fix)
   
