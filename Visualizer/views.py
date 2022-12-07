@@ -275,20 +275,32 @@ def Summative_assessment_only(physics, bg, fix):
 def create_Legend(physics, bg, fix):
   # setColors()
   G = nx.DiGraph()
-  G.add_node(1, label = "aER", shape="box", title="legend", color= aER_node_color, x = 0, y = 0)
-  G.add_node(2, label = "rER", shape="triangle", title="legend", color = rER_node_color, x = 0, y = 50 ) 
-  G.add_node(3, label = "iER", shape="circle", title="legend", color= iER_node_color, x = 0, y = 100)
-  G.add_node(4, label = "general", title="legend", color= general_node_color, x = 0, y = 150)
-  G.add_node("a", title="legend", color= 'black', x = 200, y = 0)
-  G.add_node("b", title="legend", color= 'black', x = 400, y = 0)
-  G.add_edge("a", "b", label = "assesses",color= assess_edge_color)
-  G.add_node("c", title="legend", color= 'black', x = 200, y = 50)
-  G.add_node("d", title="legend", color= 'black', x = 400, y = 50)
-  G.add_edge( "c", "d", label = "Comes after", weight = 5, color= requires_edge_color)
-  G.add_node("e", title="legend", color= 'black', x = 200, y = 100)
-  G.add_node("f", title="legend", color= 'black', x = 400, y = 100)
-  G.add_edge( "e", "f", label = "isPartOf", color = isPartOf_edge_color)
+  G.add_node(1, label = " Activity ER", shape = "text", title="legend", color= aER_node_color, x = 0, y = 0)
+  G.add_node(2, label = "       ", shape="box", title="legend", color= aER_node_color, x = 100, y = 0)
+  
+  G.add_node(3, label = "Rubric ER", shape="text", title="legend", color = rER_node_color, x = 0, y = 50 )
+  G.add_node(4, label = "    ", shape="triangle", title="legend", color = rER_node_color, x = 100, y = 50 ) 
 
+  G.add_node(5, label = "Instructional ER", shape="text", title="legend", color= iER_node_color, x = 0, y = 100)
+  G.add_node(6, label = "           ", shape="circle", title="legend", color= iER_node_color, x = 100, y = 100)
+
+  G.add_node(7, label = "Non-composite iER", title="legend", shape = "text", color= general_node_color, x = 0, y = 150)
+  G.add_node(8, label = "      ", title="legend", color= general_node_color, x = 100, y = 150)
+
+  G.add_node(8, label = "Assesses", title="legend", shape = "text", color= general_node_color, x = 200, y = 0)
+  G.add_node(9, label = " ",title="legend", shape="text", x = 250, y = 0)
+  G.add_node(10, label = " ",title="legend", shape="text", x = 400, y = 0)
+  G.add_edge(9, 10,color= assess_edge_color)
+  
+  G.add_node(11, label = "Requires", title="legend", shape = "text", color= general_node_color, x = 200, y = 50)
+  G.add_node(12, label = " ",title="legend", shape="text", x = 250, y = 50)
+  G.add_node(13, label = " ",title="legend", shape="text", x = 400, y = 50)
+  G.add_edge(12, 13,weight = 5, color= requires_edge_color)
+ 
+  G.add_node(14, label = "isPartOf", title="legend", shape = "text", color= general_node_color, x = 200, y = 100)
+  G.add_node(15, label = " ",title="legend", shape="text", x = 250, y = 100)
+  G.add_node(16, label = " ",title="legend", shape="text", x = 400, y = 100)
+  G.add_edge(15, 16, color = isPartOf_edge_color)
 
   G2 = Network(height="800px", width="100%", bgcolor=bg, font_color=setFontColor(bg), notebook=True,heading='', directed=True)
   G2.from_nx(G)
@@ -336,6 +348,8 @@ def create_Legend(physics, bg, fix):
      "hover": True,
      "dragNodes": False,
     "dragView": False,
+    "zoomView": False,
+    "navigationButtons": True,
 
 }
   G2.options.edges = edges
