@@ -74,17 +74,17 @@ if uploaded_file is not None:
         
         # set views bassed on view options
         if option == 'All ERs':
-            views.viewAll(physics, bg, fix)
+            views.All_ERs(physics, bg, fix)
             HtmlFile = open("index.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
         elif option == 'Course Overview':
-            views.AIR_view(physics, bg, fix)
+            views.Course_Overview(physics, bg, fix)
             HtmlFile = open("index.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
         elif option == 'Summative assessment only':
-            views.view_3(physics, bg, fix)
+            views.Summative_assessment_only(physics, bg, fix)
             HtmlFile = open("index.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)

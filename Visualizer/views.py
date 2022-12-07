@@ -140,7 +140,7 @@ def setFontColor(bg):
   return font_color
  
 #########################################################################
-def viewAll(physics, bg, fix):
+def All_ERs(physics, bg, fix):
   # setColors()
   G = nx.DiGraph()
   for d in data_ER:
@@ -194,7 +194,7 @@ def viewAll(physics, bg, fix):
   convert_to_pyvis(G,bg, physics, fix)
 
 ########################################################################    
-def AIR_view(physics, bg, fix):
+def Course_Overview(physics, bg, fix):
   G = nx.DiGraph()
   for d in data_ER:  
     d_id = d[0]
@@ -236,7 +236,7 @@ def AIR_view(physics, bg, fix):
 
 ##########################################################
 ########################################################################    
-def view_3(physics, bg, fix):
+def Summative_assessment_only(physics, bg, fix):
   G = nx.DiGraph()
   G.add_node(1, label="A", x=0, y=0)
   G.add_node(2, label="B", x=5, y = 0)
