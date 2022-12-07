@@ -16,7 +16,7 @@ st.set_page_config(page_title = "LePa Visualizer", layout="wide", initial_sideba
 st.title('LePa: Learning Path Project')
 
 # demo check box --> boolean
-demo = st.checkbox("use demo file")
+demo = st.checkbox("Load FAKE1001 dataset")
 if demo: 
     # get demo file from github
     url = "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Data/demo.csv"
@@ -66,7 +66,7 @@ if uploaded_file is not None:
             with col5:
                 assess_edge_color = st.color_picker('Pick assess edge color', "#FF7273")
             with col6:
-                requires_edge_color = st.color_picker('Pick requires edge color', "#C0CB6B")
+                requires_edge_color = st.color_picker('Pick comes_after edge color', "#C0CB6B")
             with col7:
                 isPartOf_edge_color = st.color_picker('Pick isPartOf edge color', "#ECD19A")
         # set colors based on the selection
