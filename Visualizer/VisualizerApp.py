@@ -42,7 +42,7 @@ if uploaded_file is not None:
        #options menu
         with st.expander("Options"):
             #  different views
-            option=st.selectbox('select graph',('whole LePa','AIR view', 'view 3'))
+            option=st.selectbox('select graph',('All ERs','Course Overview', 'Summative assessment only'))
             # adding physics interactivity
             physics = False
             # physics=st.checkbox('add physics interactivity?')
@@ -73,17 +73,17 @@ if uploaded_file is not None:
         views.setColors(aER_node_color, rER_node_color, iER_node_color, general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color)
         
         # set views bassed on view options
-        if option == 'whole LePa':
+        if option == 'All ERs':
             views.viewAll(physics, bg, fix)
             HtmlFile = open("index.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
-        elif option == 'AIR view':
+        elif option == 'Course Overview':
             views.AIR_view(physics, bg, fix)
             HtmlFile = open("index.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height=1080, scrolling=True)
-        elif option == 'view 3':
+        elif option == 'Summative assessment only':
             views.view_3(physics, bg, fix)
             HtmlFile = open("index.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
