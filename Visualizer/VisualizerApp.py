@@ -19,7 +19,7 @@ st.title('LePa: Learning Path Project')
 demo = st.checkbox("Load FAKE1001 dataset")
 if demo: 
     # get demo file from github
-    url = "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Data/demo.csv"
+    url = "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Data/FAKE1001.csv"
     res = requests.get(url, allow_redirects=True)
     with open('FAKE1001.csv','wb') as file:
         file.write(res.content)
