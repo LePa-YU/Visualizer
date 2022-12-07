@@ -332,10 +332,16 @@ def create_Legend(physics, bg, fix):
       "y": True
     }
 }
+  interaction = {
+     "hover": True,
+     "dragNodes": False,
+    "dragView": False,
+
+}
   G2.options.edges = edges
   G2.options.nodes = nodes
   G2.options.layout = layout
-
+  G2.options.interaction = interaction
   data = G2.get_network_data()
   pyvisToHtml.convertToHtml_Legend(data, bg, fix)
   
