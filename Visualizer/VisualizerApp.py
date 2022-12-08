@@ -18,11 +18,8 @@ st.title('LePa: Learning Path Project')
 # demo check box --> boolean
 # demo = st.checkbox("Load FAKE1001 dataset")
 # st.write("check out this [link]()")
-col1, col2 = st.columns([1,5])
-with col1:
-        demo = st.checkbox("Load FAKE1001 dataset")
-with col2:
-        st.write("[Other datasets](https://github.com/LePa-YU/Datasets)")
+demo = st.checkbox("Load FAKE1001 dataset or  Load other dataset (default) ")
+st.write("[Other datasets](https://github.com/LePa-YU/Datasets)")
 if demo: 
     # get demo file from github
     url = "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Data/FAKE1001.csv"
@@ -31,8 +28,17 @@ if demo:
         file.write(res.content)
     uploaded_file = "FAKE1001.csv"
 else:
+    st.markdown(
+    """
+    <style>
+        .css-9ycgxx::before {
+            content: "Load dataset, ";
+        }
+    <style>
+    """, unsafe_allow_html=True)
     # user enters csv file
-    uploaded_file = st.file_uploader(label="Enter your csv file", type="csv")
+    uploaded_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
+
     
 # container that contains menus + visualizer --> helps with responsive attribute
 container = st.container()
