@@ -62,30 +62,37 @@ if uploaded_file is not None:
             # if not physics:
             #     fix = st.checkbox("Fix the position?")
         
-        # customization menu
-        with st.expander("Customization"):
-            # background options
-            bg = st.selectbox('select bakground color', ('white', "black"))
-            # 7 element color options
-            col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
-            with col1:
-                aER_node_color = st.color_picker('Pick aER node color', "#FF7273")
-            with col2:
-                rER_node_color = st.color_picker('Pick rER node color', "#FF7273")
-            with col3:
-                iER_node_color = st.color_picker('Pick iER node color', "#F69159")
-            with col4:
-                general_node_color = st.color_picker('Pick general node color', "#ECD19A")
-            with col5:
-                assess_edge_color = st.color_picker('Pick assess edge color', "#FF7273")
-            with col6:
-                requires_edge_color = st.color_picker('Pick comes_after edge color', "#C0CB6B")
-            with col7:
-                isPartOf_edge_color = st.color_picker('Pick isPartOf edge color', "#ECD19A")
+        # # customization menu
+        # with st.expander("Customization"):
+        #     # background options
+        #     bg = st.selectbox('select bakground color', ('white', "black"))
+        #     # 7 element color options
+        #     col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
+        #     with col1:
+        #         aER_node_color = st.color_picker('Pick aER node color', "#FF7273")
+        #     with col2:
+        #         rER_node_color = st.color_picker('Pick rER node color', "#FF7273")
+        #     with col3:
+        #         iER_node_color = st.color_picker('Pick iER node color', "#F69159")
+        #     with col4:
+        #         general_node_color = st.color_picker('Pick general node color', "#ECD19A")
+        #     with col5:
+        #         assess_edge_color = st.color_picker('Pick assess edge color', "#FF7273")
+        #     with col6:
+        #         requires_edge_color = st.color_picker('Pick comes_after edge color', "#C0CB6B")
+        #     with col7:
+        #         isPartOf_edge_color = st.color_picker('Pick isPartOf edge color', "#ECD19A")
             
         # set colors based on the selection
-        views.setColors(aER_node_color, rER_node_color, iER_node_color, general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color)
-        
+        views.setColors("#FF7273", "#FF7273", "#F69159", "#ECD19A", "#FF7273", "#C0CB6B", "#ECD19A")
+        bg = "white"
+
+        with st.expander("Legend"):
+            views.create_Legend(physics, bg, fix)
+            HtmlFile = open("index_Legend.html", 'r', encoding='utf-8')
+            source_code = HtmlFile.read() 
+            st.components.v1.html(source_code, height = 300)
+
         container_html = st.container()
         # set views bassed on view options
         with container_html:
@@ -105,9 +112,4 @@ if uploaded_file is not None:
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)
         
-        with st.expander("Legend"):
-            views.create_Legend(physics, bg, fix)
-            HtmlFile = open("index_Legend.html", 'r', encoding='utf-8')
-            source_code = HtmlFile.read() 
-            st.components.v1.html(source_code, height = 300)
  ###   
