@@ -275,17 +275,18 @@ def Summative_assessment_only(physics, bg, fix):
 def create_Legend(physics, bg, fix):
   # setColors()
   G = nx.DiGraph()
-  G.add_node(1, label = " Activity ER", shape = "text", title="legend", color= aER_node_color, x = 0, y = 0)
+                    
+  G.add_node(1, label = "Activity ER      ", shape = "text", title="legend", color= aER_node_color, x = 0, y = 0)
   G.add_node(2, label = "       ", shape="box", title="legend", color= aER_node_color, x = 100, y = 0)
   
-  G.add_node(3, label = "Rubric ER", shape="text", title="legend", color = rER_node_color, x = 0, y = 50 )
-  G.add_node(4, label = "    ", shape="triangle", title="legend", color = rER_node_color, x = 100, y = 50 ) 
+  G.add_node(3, label = "Rubric ER        ", shape="text", title="legend", color = rER_node_color, x = 0, y = 50 )
+  G.add_node(4, label = "", shape="triangle", title="legend", color = rER_node_color, x = 100, y = 50 ) 
 
-  G.add_node(5, label = "Instructional ER", shape="text", title="legend", color= iER_node_color, x = 0, y = 100)
-  G.add_node(6, label = "           ", shape="circle", title="legend", color= iER_node_color, x = 100, y = 100)
+  G.add_node(5, label = "Instructional ER ", shape="text", title="legend", color= iER_node_color, x = 0, y = 100)
+  G.add_node(6, label = "    ", shape="circle", title="legend", color= iER_node_color, x = 100, y = 100)
 
   G.add_node(7, label = "Non-composite iER", title="legend", shape = "text", color= general_node_color, x = 0, y = 150)
-  G.add_node(8, label = "      ", title="legend", color= general_node_color, x = 100, y = 150)
+  G.add_node(0, label = "", title="legend", color= general_node_color, x = 100, y = 150)
 
   G.add_node(8, label = "Assesses", title="legend", shape = "text", color= general_node_color, x = 200, y = 0)
   G.add_node(9, label = " ",title="legend", shape="text", x = 250, y = 0)

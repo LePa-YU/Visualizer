@@ -202,8 +202,9 @@ def convertToHtml_Legend(data, bg, fix):
             color: n.color,
                 size: n.size, 
                 shape: n.shape,
-                font: n.font
+                font: { face: "Monospace", align: "left" }
             };
+            
             nodeList.add(n_info); 
         }
         
