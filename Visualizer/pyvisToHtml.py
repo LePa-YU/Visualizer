@@ -67,7 +67,7 @@ def convertToHtml(data, bg, fix):
     # add rest of the html
     file_html.write('''
     
-    document.getElementById("mynetwork").style.background = bgColor; 
+    document.getElementById("mynetwork").style.background = bgColor;
     var nodeList = new vis.DataSet();
     for(let i = 0; i<nodes.length; i++){
         var n = nodes[i];
@@ -75,42 +75,91 @@ def convertToHtml(data, bg, fix):
             id: n.id,
             title: n.title,
             label: n.label,
+            isPartOf: n.isPartOf,
             color: n.color,
-                size: n.size, 
+                size: n.size,
                 shape: n.shape,
                 font: n.font
             };
             nodeList.add(n_info);
         }
-        
+
     var edgeList = new vis.DataSet();
     for(let i = 0; i<edges.length; i++){
         var e = edges[i];
         var e_info = {
-            from: e.from, 
+            from: e.from,
             to: e.to,
-            color: e.color, 
+            color: e.color,
             width: e.width,
             arrows: e.arrows
         };
          edgeList.add(e_info);
     }
-    
+
+
+
+
     var container = document.getElementById('mynetwork');
     var data = {
         nodes: nodeList,
         edges: edgeList
     };
     var opt = JSON.parse(options);
-    
+
+  // document.getElementById("demo").innerHTML = typeof(opt);
     var network = new vis.Network(container, data, opt);
     network.setSize(width, height);
-    
-       
+
+    network.on("selectNode", function (params) {
+      if (params.nodes.length == 1) {
+        if (network.isCluster(params.nodes[0]) == true) {
+          network.openCluster(params.nodes[0]);
+        }
+        else{
+            var v = params.nodes[0];
+            // document.getElementById("demo").innerHTML = v;
+            network.cluster(getC(v));
+        }
+      }
+    });
+
+    function getC(v){
+      var clusterOptionsByData = {
+          joinCondition: function (childOptions) {
+            return childOptions.isPartOf == v || childOptions.id == v;
+          },
+          processProperties: function (clusterOptions, childNodes, childEdges){
+            var node;
+            for(let i = 0; i<childNodes.length; i++){
+              n = childNodes[i];
+              if(n.id == v){
+                node = n;
+                break;
+              }
+            }
+
+            // document.getElementById("demo").innerHTML += node.id;
+
+            clusterOptions.shape = node.shape;
+            clusterOptions.label = node.label;
+            clusterOptions.color = node.color;
+            clusterOptions.size = node.size;
+            return clusterOptions;
+          }
+
+        };
+
+      return clusterOptionsByData;
+    }
+
+
 
     </script>
     </body>
-    </html>''')
+    </html>
+
+    ''')
     # Saving the data into the HTML file
     file_html.close()  
     # G2.show('view.html')
