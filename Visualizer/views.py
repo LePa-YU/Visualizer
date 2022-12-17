@@ -88,7 +88,7 @@ nodes = {
 }
 
 # method  that converst networkx to pyvis
-def convert_to_pyvis(G,bg, physics, fix):
+def convert_to_pyvis(G,bg, physics, file_name):
   G2 = Network(height="800px", width="100%", bgcolor=bg, font_color=setFontColor(bg), notebook=True,heading='', directed=True)
   G2.from_nx(G)
   G2.options.edges = edges
@@ -97,9 +97,9 @@ def convert_to_pyvis(G,bg, physics, fix):
   G2.options.manipulation = manipulation
   G2.options.layout = layout
 
-  if physics:
-    G2.height = "500px"
-    G2.show_buttons()
+  # if physics:
+  #   G2.height = "500px"
+  #   G2.show_buttons()
   
   for node in G2.nodes:
     id_string = node["label"]
@@ -111,7 +111,7 @@ def convert_to_pyvis(G,bg, physics, fix):
     node["label"] = wrapped_id
 
   data = G2.get_network_data()
-  pyvisToHtml.convertToHtml(data, bg, fix)
+  pyvisToHtml.convertToHtml(data, bg, file_name)
 
 #########################################################################
 
@@ -192,7 +192,8 @@ def All_ERs(physics, bg, fix):
       d3_id = d3[0]
       if(d_isPartOf == d3_id):     
         G.add_edge( d3_id,d_id, color = isPartOf_edge_color)
-  convert_to_pyvis(G,bg, physics, fix)
+  file_name = "All_ERs.html"
+  convert_to_pyvis(G,bg, physics, file_name)
 
 ########################################################################    
 def Course_Overview(physics, bg, fix):
@@ -232,8 +233,9 @@ def Course_Overview(physics, bg, fix):
       if(d_comesAfter == d2_id):
         #use label to label the edges
         G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
-
-  convert_to_pyvis(G,bg, physics, fix)
+  
+  file_name = "Course_Overview.html"
+  convert_to_pyvis(G,bg, physics, file_name)
 
 ##########################################################
 ########################################################################    
@@ -268,8 +270,9 @@ def Summative_assessment_only(physics, bg, fix):
       if(d_comesAfter_aER == d2_id):
         #use label to label the edges
         G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
-
-  convert_to_pyvis(G,bg, physics, fix)
+  
+  file_name = "Summative_assessment_only.html"
+  convert_to_pyvis(G,bg, physics, file_name)
 
 ########################################################################    
 def create_Legend(physics, bg, fix):
