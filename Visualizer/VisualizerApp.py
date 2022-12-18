@@ -55,12 +55,6 @@ if uploaded_file is not None:
         with st.expander("Select View"):
             #  different views
             option=st.selectbox('',('View 1: Summative assessment only','View 2: Course Overview','View 3: All ERs'))
-            # adding physics interactivity
-            physics = False
-            # physics=st.checkbox('add physics interactivity?')
-            fix = False
-            # if not physics:
-            #     fix = st.checkbox("Fix the position?")
         
         # # customization menu
         # with st.expander("Customization"):
@@ -85,10 +79,9 @@ if uploaded_file is not None:
             
         # set colors based on the selection
         views.setColors("#FF7273", "#FF7273", "#F69159", "#ECD19A", "#FF7273", "#C0CB6B", "#ECD19A")
-        bg = "white"
 
         with st.expander("Legend"):
-            views.create_Legend(physics, bg, fix)
+            views.create_Legend()
             HtmlFile = open("index_Legend.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             st.components.v1.html(source_code, height = 300)
@@ -97,17 +90,17 @@ if uploaded_file is not None:
         # set views bassed on view options
         with container_html:
             if option == 'View 3: All ERs':
-                views.All_ERs(physics, bg, fix)
+                views.All_ERs()
                 HtmlFile = open("All_ERs.html", 'r', encoding='utf-8')
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)
             elif option == 'View 2: Course Overview':
-                views.Course_Overview(physics, bg, fix)
+                views.Course_Overview()
                 HtmlFile = open("Course_Overview.html", 'r', encoding='utf-8')
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)
             elif option == 'View 1: Summative assessment only':
-                views.Summative_assessment_only(physics, bg, fix)
+                views.Summative_assessment_only()
                 HtmlFile = open("Summative_assessment_only.html", 'r', encoding='utf-8')
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)

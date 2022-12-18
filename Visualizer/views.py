@@ -11,22 +11,75 @@ import sys
 def setData(df):
   # fill empty cells in specifc column with nil
   df.columns = df.columns.str.lower()
-  df["alternative"].fillna("nil", inplace = True)
+  
   global df_id
-  df_id = df['id']
+  try:
+    df_id = df['id']
+  except:
+    df['id'] =""
+    df_id = df['id']
+
   global df_title
-  df_title = df['title']
+  try:
+    df_title = df['title']
+  except:
+    df['title'] = ""
+    df_title = df['title']
+
   global df_alt
-  df_alt = df['alternative']
-  df_tURL = df['targeturl']
+  try:
+    df["alternative"].fillna("nil", inplace = True)
+    df_alt = df['alternative']
+  except:
+    df['alternative']=""
+    df_alt = df['alternative']
+
+  global df_tURL
+  try:
+    df['targeturl'].fillna("nil", inplace = True)
+    df_tURL = df['targeturl']
+  except:
+    df['targeturl'] =""
+    df_tURL = df['targeturl']
+
   global df_type
-  df_type = df['type']
+  try:
+    df_type = df['type']
+  except:
+    df['type'] = ""
+    df_type = df['type']
+
   global df_isPartOf
-  df_isPartOf = df['ispartof']
-  df_assesses = df['assesses']
-  df_requires = df['requires']
-  df_comesAfter = df['comesafter']
-  df_comesAfter_aER = df["comesafter_aer"]
+  try:
+    df_isPartOf = df['ispartof']
+  except:
+    df['ispartof'] = ""
+    df_isPartOf = df['ispartof']
+
+  try:
+    df_assesses = df['assesses']
+  except:
+    df['assesses'] = ""
+    df_assesses = df['assesses']
+  
+  try:
+    df_requires = df['requires']
+  except:
+    df['requires']=""
+    df_requires = df['requires']
+  
+  try:
+    df_comesAfter = df['comesafter']
+  except:
+    df['comesafter']=""
+    df_comesAfter = df['comesafter']
+
+  try:
+    df_comesAfter_aER = df["comesafter_aer"]
+  except:
+    df["comesafter_aer"]=""
+    df_comesAfter_aER = df["comesafter_aer"]
+  
   global data_ER
   data_ER = zip(df_id, df_title, df_alt, df_tURL, df_type, df_isPartOf, df_assesses, df_requires, df_comesAfter, df_comesAfter_aER) # making tuples 
 
@@ -88,18 +141,14 @@ nodes = {
 }
 
 # method  that converst networkx to pyvis
-def convert_to_pyvis(G,bg, physics, file_name):
-  G2 = Network(height="800px", width="100%", bgcolor=bg, font_color=setFontColor(bg), notebook=True,heading='', directed=True)
+def convert_to_pyvis(G, file_name):
+  G2 = Network(height="800px", width="100%", bgcolor="white", font_color=setFontColor("white"), notebook=True,heading='', directed=True)
   G2.from_nx(G)
   G2.options.edges = edges
   G2.options.nodes = nodes
   G2.options.interaction = interaction
   G2.options.manipulation = manipulation
   G2.options.layout = layout
-
-  # if physics:
-  #   G2.height = "500px"
-  #   G2.show_buttons()
   
   for node in G2.nodes:
     id_string = node["label"]
@@ -111,7 +160,7 @@ def convert_to_pyvis(G,bg, physics, file_name):
     node["label"] = wrapped_id
 
   data = G2.get_network_data()
-  pyvisToHtml.convertToHtml(data, bg, file_name)
+  pyvisToHtml.convertToHtml(data, file_name)
 
 #########################################################################
 
@@ -141,7 +190,7 @@ def setFontColor(bg):
   return font_color
  
 #########################################################################
-def All_ERs(physics, bg, fix):
+def All_ERs():
   # setColors()
   G = nx.DiGraph()
   for d in data_ER:
@@ -193,10 +242,10 @@ def All_ERs(physics, bg, fix):
       if(d_isPartOf == d3_id):     
         G.add_edge( d3_id,d_id, color = isPartOf_edge_color)
   file_name = "All_ERs.html"
-  convert_to_pyvis(G,bg, physics, file_name)
+  convert_to_pyvis(G, file_name)
 
 ########################################################################    
-def Course_Overview(physics, bg, fix):
+def Course_Overview():
   G = nx.DiGraph()
   for d in data_ER:  
     d_id = d[0]
@@ -235,11 +284,11 @@ def Course_Overview(physics, bg, fix):
         G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
   
   file_name = "Course_Overview.html"
-  convert_to_pyvis(G,bg, physics, file_name)
+  convert_to_pyvis(G,file_name)
 
 ##########################################################
 ########################################################################    
-def Summative_assessment_only(physics, bg, fix):
+def Summative_assessment_only():
   # setColors()
   G = nx.DiGraph()
   for d in data_ER:
@@ -272,10 +321,10 @@ def Summative_assessment_only(physics, bg, fix):
         G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
   
   file_name = "Summative_assessment_only.html"
-  convert_to_pyvis(G,bg, physics, file_name)
+  convert_to_pyvis(G,file_name)
 
 ########################################################################    
-def create_Legend(physics, bg, fix):
+def create_Legend():
   # setColors()
   G = nx.DiGraph()
                     
@@ -306,7 +355,7 @@ def create_Legend(physics, bg, fix):
   G.add_node(16, label = " ",title="legend", shape="text", x = 400, y = 100)
   G.add_edge(15, 16, color = isPartOf_edge_color)
 
-  G2 = Network(height="800px", width="100%", bgcolor=bg, font_color=setFontColor(bg), notebook=True,heading='', directed=True)
+  G2 = Network(height="800px", width="100%", bgcolor="white", font_color=setFontColor("white"), notebook=True,heading='', directed=True)
   G2.from_nx(G)
   edges = {
     "color": {
@@ -361,6 +410,6 @@ def create_Legend(physics, bg, fix):
   G2.options.layout = layout
   G2.options.interaction = interaction
   data = G2.get_network_data()
-  pyvisToHtml.convertToHtml_Legend(data, bg, fix)
+  pyvisToHtml.convertToHtml_Legend(data)
   
   

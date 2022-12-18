@@ -1,6 +1,6 @@
 import json
 
-def convertToHtml(data, bg, file_name):
+def convertToHtml(data, file_name):
     file_html = open(file_name , "w")
     # Adding the input data to the HTML file
     file_html.write('''
@@ -54,20 +54,10 @@ def convertToHtml(data, bg, file_name):
     jsonOb_options_format = format(jsonOb_options)  
     file_html.write("\t var options = "+str(jsonOb_options_format) +";"+"\n")
 
-    # add bg color to js
-    jsonOb_bg = json.dumps(bg)
-    jsonOb_bg_format = format(jsonOb_bg)  
-    file_html.write("\t var bgColor = "+str(jsonOb_bg_format) +";"+"\n")
-
-    # # add fix to js
-    # jsonOb_fix = json.dumps(fix)
-    # jsonOb_fix_format = format(jsonOb_fix)  
-    # file_html.write("\t var isFixed = "+str(jsonOb_fix_format) +";"+"\n")
-
     # add rest of the html
     file_html.write('''
     
-    document.getElementById("mynetwork").style.background = bgColor;
+   
     var nodeList = new vis.DataSet();
     for(let i = 0; i<nodes.length; i++){
         var n = nodes[i];
@@ -169,7 +159,7 @@ def convertToHtml(data, bg, file_name):
 
 
 #######################################
-def convertToHtml_Legend(data, bg, fix):
+def convertToHtml_Legend(data):
     file_html = open("index_Legend.html", "w")
     # Adding the input data to the HTML file
     file_html.write('''
@@ -222,20 +212,9 @@ def convertToHtml_Legend(data, bg, fix):
     jsonOb_options_format = format(jsonOb_options)  
     file_html.write("\t var options = "+str(jsonOb_options_format) +";"+"\n")
 
-    # add bg color to js
-    jsonOb_bg = json.dumps(bg)
-    jsonOb_bg_format = format(jsonOb_bg)  
-    file_html.write("\t var bgColor = "+str(jsonOb_bg_format) +";"+"\n")
-
-    # # add fix to js
-    # jsonOb_fix = json.dumps(fix)
-    # jsonOb_fix_format = format(jsonOb_fix)  
-    # file_html.write("\t var isFixed = "+str(jsonOb_fix_format) +";"+"\n")
-
     # add rest of the html
     file_html.write('''
     
-    document.getElementById("mynetwork").style.background = bgColor; 
     var nodeList = new vis.DataSet();
     var x = 0; 
     var y = 0; 
