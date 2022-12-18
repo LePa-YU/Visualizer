@@ -198,7 +198,10 @@ def All_ERs():
     d_title = d[1]
     d_type = d[4]
     d_alt = d[2]
-    d_isPartOf = d[5]
+    try:
+      d_isPartOf = int(d[5])
+    except:
+      d_isPartOf = ""
     if(d_type=="aER"):
       G.add_node(d_id, label = d_title, shape="box", title=d_alt, color= aER_node_color)
     elif(d_type == "rER"):
@@ -209,7 +212,11 @@ def All_ERs():
       G.add_node(d_id, label = d_title, title=d_alt, color= general_node_color, isPartOf=int(d_isPartOf))
         
     ## relationship assesses:
-    d_assesses = d[6]
+    try:
+      d_assesses = int(d[6])
+    except:
+      d_assesses = ""
+
     data_assess = zip(df_id)
     for d1 in data_assess:
       d1_id = d1[0]
@@ -217,16 +224,20 @@ def All_ERs():
         G.add_edge(d_id, d1_id, color= assess_edge_color)
         
     ## relationship requires:
-    d_requires = d[7]
-    data_req = zip(df_id)
-    for d2 in data_req:
-      d2_id = d2[0]
-      if(d_requires == d2_id):
-        #use label to label the edges
-        G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
+    # d_requires = d[7]
+    # data_req = zip(df_id)
+    # for d2 in data_req:
+    #   d2_id = d2[0]
+    #   if(d_requires == d2_id):
+    #     #use label to label the edges
+    #     G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
 
     ## relationship comesAfter:
-    d_comesAfter = d[8]
+    try:
+      d_comesAfter = int(d[8])
+    except:
+      d_comesAfter = ""
+
     data_ca = zip(df_id)
     for d2 in data_ca:
       d2_id = d2[0]
@@ -241,6 +252,8 @@ def All_ERs():
       d3_id = d3[0]
       if(d_isPartOf == d3_id):     
         G.add_edge( d3_id,d_id, color = isPartOf_edge_color)
+  
+  
   file_name = "All_ERs.html"
   convert_to_pyvis(G, file_name)
 
@@ -260,22 +273,29 @@ def Course_Overview():
       G.add_node(d_id, label = d_title, shape="circle", title=d_alt, color= iER_node_color)
         
     ## relationship assesses:
-    d_assesses = d[6]
+    try:
+      d_assesses = int(d[6])
+    except:
+      d_assesses = ""
     data_assess = zip(df_id)
     for d1 in data_assess:
       d1_id = d1[0]
       if(d_assesses == d1_id):
         G.add_edge(d_id, d1_id, color= assess_edge_color)
+    
     ## relationship requires:
-    d_requires = d[7]
-    data_req = zip(df_id)
-    for d2 in data_req:
-      d2_id = d2[0]
-      if(d_requires == d2_id):
-        G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
+    # d_requires = d[7]
+    # data_req = zip(df_id)
+    # for d2 in data_req:
+    #   d2_id = d2[0]
+    #   if(d_requires == d2_id):
+    #     G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
     
     ## relationship comesAfter:
-    d_comesAfter = d[8]
+    try:
+      d_comesAfter = d[8]
+    except:
+      d_comesAfter = ""
     data_ca = zip(df_id)
     for d2 in data_ca:
       d2_id = d2[0]
@@ -296,7 +316,6 @@ def Summative_assessment_only():
     d_title = d[1]
     d_type = d[4]
     d_alt = d[2]
-    d_isPartOf = d[5]
     if(d_type=="aER"):
       G.add_node(d_id, label = d_title, shape="box", title=d_alt, color= aER_node_color)
     elif(d_type == "rER"):
@@ -304,7 +323,10 @@ def Summative_assessment_only():
    
         
     ## relationship assesses:
-    d_assesses = d[6]
+    try:
+      d_assesses = int(d[6])
+    except:
+      d_assesses = ""
     data_assess = zip(df_id)
     for d1 in data_assess:
       d1_id = d1[0]
@@ -312,7 +334,10 @@ def Summative_assessment_only():
         G.add_edge(d_id, d1_id, color= assess_edge_color)
 
     ## relationship comesAfter:
-    d_comesAfter_aER = d[9]
+    try:
+      d_comesAfter_aER = d[9]
+    except:
+      d_comesAfter_aER = ""
     data_ca = zip(df_id)
     for d2 in data_ca:
       d2_id = d2[0]
