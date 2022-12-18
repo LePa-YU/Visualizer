@@ -48,7 +48,7 @@ if uploaded_file is not None:
     # store file in a dataframe
     dataframe = pd.read_csv(uploaded_file)
     # set data based on dataframe
-    views.setData(dataframe)
+    # views.setData(dataframe)
 
     with container: # add items to container
        #options menu
@@ -88,19 +88,20 @@ if uploaded_file is not None:
 
         container_html = st.container()
         # set views bassed on view options
+        views.All_ERs(dataframe)
+        views.Course_Overview(dataframe)
+        views.Summative_assessment_only(dataframe)
+        
         with container_html:
             if option == 'View 3: All ERs':
-                views.All_ERs()
                 HtmlFile = open("All_ERs.html", 'r', encoding='utf-8')
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)
             elif option == 'View 2: Course Overview':
-                views.Course_Overview()
                 HtmlFile = open("Course_Overview.html", 'r', encoding='utf-8')
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)
             elif option == 'View 1: Summative assessment only':
-                views.Summative_assessment_only()
                 HtmlFile = open("Summative_assessment_only.html", 'r', encoding='utf-8')
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)

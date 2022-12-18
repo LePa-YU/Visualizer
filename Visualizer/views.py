@@ -84,9 +84,6 @@ def setData(df):
   data_ER = zip(df_id, df_title, df_alt, df_tURL, df_type, df_isPartOf, df_assesses, df_requires, df_comesAfter, df_comesAfter_aER) # making tuples 
 
 # initial options
-physics = {
-     "minVelocity": 0.75
-}
 layout = {
     "randomSeed":10
   }
@@ -116,12 +113,6 @@ edges = {
       "label": {
         "min": 24
       }
-    },
-    "selfReference": {
-      "angle": 0.7853981633974483
-    },
-    "smooth": {
-      "roundness": 0.7
     }
  }
 nodes = {
@@ -153,11 +144,14 @@ def convert_to_pyvis(G, file_name):
   for node in G2.nodes:
     id_string = node["label"]
     width = 15
-    wrapped_strings = textwrap.wrap(id_string, width)
-    wrapped_id =""; 
-    for line in wrapped_strings:
-      wrapped_id = textwrap.fill(id_string, width)
-    node["label"] = wrapped_id
+    try:
+      wrapped_strings = textwrap.wrap(id_string, width)
+      wrapped_id =""; 
+      for line in wrapped_strings:
+        wrapped_id = textwrap.fill(id_string, width)
+      node["label"] = wrapped_id
+    except:
+      node["label"] = id_string
 
   data = G2.get_network_data()
   pyvisToHtml.convertToHtml(data, file_name)
@@ -190,8 +184,8 @@ def setFontColor(bg):
   return font_color
  
 #########################################################################
-def All_ERs():
-  # setColors()
+def All_ERs(dataframe):
+  setData(dataframe)
   G = nx.DiGraph()
   for d in data_ER:
     d_id = d[0]
@@ -208,6 +202,10 @@ def All_ERs():
       G.add_node(d_id, label = d_title, shape="triangle", title=d_alt, color = rER_node_color) 
     elif(d_type == "iER"):
       G.add_node(d_id, label = d_title, shape="circle", title=d_alt, color= iER_node_color)
+    elif(d_type == "start"):
+      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = -1000, y=0)
+    elif(d_type == "end"):
+      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = 1000, y = 0)
     else:
       G.add_node(d_id, label = d_title, title=d_alt, color= general_node_color, isPartOf=int(d_isPartOf))
         
@@ -258,7 +256,8 @@ def All_ERs():
   convert_to_pyvis(G, file_name)
 
 ########################################################################    
-def Course_Overview():
+def Course_Overview(dataframe):
+  setData(dataframe)
   G = nx.DiGraph()
   for d in data_ER:  
     d_id = d[0]
@@ -271,6 +270,10 @@ def Course_Overview():
       G.add_node(d_id, label = d_title, shape="triangle", title=d_alt, color = rER_node_color) 
     elif(d_type == "iER"):
       G.add_node(d_id, label = d_title, shape="circle", title=d_alt, color= iER_node_color)
+    elif(d_type == "start"):
+      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = -1000, y=0)
+    elif(d_type == "end"):
+      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = 1000, y = 0)
         
     ## relationship assesses:
     try:
@@ -308,8 +311,8 @@ def Course_Overview():
 
 ##########################################################
 ########################################################################    
-def Summative_assessment_only():
-  # setColors()
+def Summative_assessment_only(dataframe):
+  setData(dataframe)
   G = nx.DiGraph()
   for d in data_ER:
     d_id = d[0]
@@ -320,6 +323,10 @@ def Summative_assessment_only():
       G.add_node(d_id, label = d_title, shape="box", title=d_alt, color= aER_node_color)
     elif(d_type == "rER"):
       G.add_node(d_id, label = d_title, shape="triangle", title=d_alt, color = rER_node_color) 
+    elif(d_type == "start"):
+      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = -1000, y=0)
+    elif(d_type == "end"):
+      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = 1000, y = 0)
    
         
     ## relationship assesses:

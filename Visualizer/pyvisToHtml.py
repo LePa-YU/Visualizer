@@ -22,74 +22,45 @@ def convertToHtml(data, file_name):
     <div id="mynetwork"></div>
     <div id="demo"></div>
     <!-- <script type="text/javascript" src="network.js"></script> -->
-    <script type="text/javascript"> \n''')
-    
-    nodes_data = data[0]
-    jsonOb_node = json.dumps(nodes_data)
-    jsonOb_node_format = format(jsonOb_node)
-    file_html.write("\t var nodes = "+str(jsonOb_node_format) +";"+"\n")
-
-    edges_data = data[1]
-    jsonOb_edges = json.dumps(edges_data)
-    jsonOb_edges_format = format(jsonOb_edges)
-    file_html.write("\t var edges = "+str(jsonOb_edges_format) +";"+"\n")
+    <script type="text/javascript"> 
+     var nodeList = new vis.DataSet();
+     var edgeList = new vis.DataSet();\n''')
 
     heading_data = data[2]
     jsonOb_heading = json.dumps(heading_data)
     jsonOb_heading_format = format(jsonOb_heading)
-    file_html.write("\t var heading = "+str(jsonOb_heading_format) +";"+"\n")
+    file_html.write("\t\t var heading = "+str(jsonOb_heading_format) +";"+"\n")
 
     height_data = data[3]
     jsonOb_height = json.dumps(height_data)
     jsonOb_height_format = format(jsonOb_height)
-    file_html.write("\t var height = "+str(jsonOb_height_format) +";"+"\n")
+    file_html.write("\t\t var height = "+str(jsonOb_height_format) +";"+"\n")
 
     width_data = data[4]
     jsonOb_width = json.dumps(width_data)
     jsonOb_width_format = format(jsonOb_width)
-    file_html.write("\t var width = "+str(jsonOb_width_format) +";"+"\n")
+    file_html.write("\t\t var width = "+str(jsonOb_width_format) +";"+"\n")
 
     options_data = data[5]
     jsonOb_options = json.dumps(options_data)
     jsonOb_options_format = format(jsonOb_options)  
-    file_html.write("\t var options = "+str(jsonOb_options_format) +";"+"\n")
+    file_html.write("\t\t var options = "+str(jsonOb_options_format) +";"+"\n\n")
 
+    nodes_data = data[0]
+    for n in nodes_data:
+        jsonOb_node = json.dumps(n)
+        jsonOb_node_format = format(jsonOb_node)
+        file_html.write("\t\t nodeList.add("+str(jsonOb_node_format) +");"+"\n")
+    file_html.write('''
+     ''')
+    edges_data = data[1]
+    for e in edges_data:
+        jsonOb_edges = json.dumps(e)
+        jsonOb_edges_format = format(jsonOb_edges)
+        file_html.write("\t\t edgeList.add("+str(jsonOb_edges_format) +");"+"\n")
     # add rest of the html
     file_html.write('''
-    
    
-    var nodeList = new vis.DataSet();
-    for(let i = 0; i<nodes.length; i++){
-        var n = nodes[i];
-        var n_info = {
-            id: n.id,
-            title: n.title,
-            label: n.label,
-            isPartOf: n.isPartOf,
-            color: n.color,
-                size: n.size,
-                shape: n.shape,
-                font: n.font
-            };
-            nodeList.add(n_info);
-        }
-
-    var edgeList = new vis.DataSet();
-    for(let i = 0; i<edges.length; i++){
-        var e = edges[i];
-        var e_info = {
-            from: e.from,
-            to: e.to,
-            color: e.color,
-            width: e.width,
-            arrows: e.arrows
-        };
-         edgeList.add(e_info);
-    }
-
-
-
-
     var container = document.getElementById('mynetwork');
     var data = {
         nodes: nodeList,
@@ -142,8 +113,6 @@ def convertToHtml(data, file_name):
 
       return clusterOptionsByData;
     }
-
-
 
     </script>
     </body>
@@ -211,6 +180,7 @@ def convertToHtml_Legend(data):
     jsonOb_options = json.dumps(options_data)
     jsonOb_options_format = format(jsonOb_options)  
     file_html.write("\t var options = "+str(jsonOb_options_format) +";"+"\n")
+
 
     # add rest of the html
     file_html.write('''
