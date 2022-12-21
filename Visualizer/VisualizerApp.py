@@ -57,28 +57,34 @@ if uploaded_file is not None:
             option=st.selectbox('',('View 1: Summative assessment only','View 2: Course Overview','View 3: All ERs'))
         
         # # customization menu
-        # with st.expander("Customization"):
-        #     # background options
-        #     bg = st.selectbox('select bakground color', ('white', "black"))
-        #     # 7 element color options
-        #     col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
-        #     with col1:
-        #         aER_node_color = st.color_picker('Pick aER node color', "#FF7273")
-        #     with col2:
-        #         rER_node_color = st.color_picker('Pick rER node color', "#FF7273")
-        #     with col3:
-        #         iER_node_color = st.color_picker('Pick iER node color', "#F69159")
-        #     with col4:
-        #         general_node_color = st.color_picker('Pick general node color', "#ECD19A")
-        #     with col5:
-        #         assess_edge_color = st.color_picker('Pick assess edge color', "#FF7273")
-        #     with col6:
-        #         requires_edge_color = st.color_picker('Pick comes_after edge color', "#C0CB6B")
-        #     with col7:
-        #         isPartOf_edge_color = st.color_picker('Pick isPartOf edge color', "#ECD19A")
+        with st.expander("Customization"):
+            # Theme options
+            bg = ""
+            dark = st.checkbox("dark theme")
+            if(dark):
+                bg = "black"
+            else:
+                bg = "white"
+            # 7 element color options
+            col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
+            with col1:
+                aER_node_color = st.color_picker('Pick aER node color', "#FF7273")
+            with col2:
+                rER_node_color = st.color_picker('Pick rER node color', "#FF7273")
+            with col3:
+                iER_node_color = st.color_picker('Pick iER node color', "#F69159")
+            with col4:
+                general_node_color = st.color_picker('Pick general node color', "#ECD19A")
+            with col5:
+                assess_edge_color = st.color_picker('Pick assess edge color', "#FF7273")
+            with col6:
+                requires_edge_color = st.color_picker('Pick comes_after edge color', "#C0CB6B")
+            with col7:
+                isPartOf_edge_color = st.color_picker('Pick isPartOf edge color', "#ECD19A")
             
         # set colors based on the selection
-        views.setColors("#FF7273", "#FF7273", "#F69159", "#ECD19A", "#FF7273", "#C0CB6B", "#ECD19A")
+        views.setColors(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color  )
+        # views.setColors("#FF7273", "#FF7273", "#F69159", "#ECD19A", "#FF7273", "#C0CB6B", "#ECD19A")
 
         with st.expander("Legend"):
             views.create_Legend()
@@ -88,9 +94,9 @@ if uploaded_file is not None:
 
         container_html = st.container()
         # set views bassed on view options
-        views.All_ERs(dataframe)
-        views.Course_Overview(dataframe)
-        views.Summative_assessment_only(dataframe)
+        views.All_ERs(dataframe, bg)
+        views.Course_Overview(dataframe, bg)
+        views.Summative_assessment_only(dataframe, bg)
         
         with container_html:
             if option == 'View 3: All ERs':

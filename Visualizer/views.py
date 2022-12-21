@@ -132,8 +132,8 @@ nodes = {
 }
 
 # method  that converst networkx to pyvis
-def convert_to_pyvis(G, file_name):
-  G2 = Network(height="800px", width="100%", bgcolor="white", font_color=setFontColor("white"), notebook=True,heading='', directed=True)
+def convert_to_pyvis(G, file_name, bg):
+  G2 = Network(height="800px", width="100%", bgcolor=bg, font_color=setFontColor(bg), notebook=True,heading='', directed=True)
   G2.from_nx(G)
   G2.options.edges = edges
   G2.options.nodes = nodes
@@ -154,7 +154,7 @@ def convert_to_pyvis(G, file_name):
       node["label"] = id_string
 
   data = G2.get_network_data()
-  pyvisToHtml.convertToHtml(data, file_name)
+  pyvisToHtml.convertToHtml(data, file_name, bg)
 
 #########################################################################
 
@@ -184,7 +184,7 @@ def setFontColor(bg):
   return font_color
  
 #########################################################################
-def All_ERs(dataframe):
+def All_ERs(dataframe, bg):
   setData(dataframe)
   G = nx.DiGraph()
   for d in data_ER:
@@ -254,10 +254,10 @@ def All_ERs(dataframe):
   
   
   file_name = "All_ERs.html"
-  convert_to_pyvis(G, file_name)
+  convert_to_pyvis(G, file_name, bg)
 
 ########################################################################    
-def Course_Overview(dataframe):
+def Course_Overview(dataframe, bg):
   setData(dataframe)
   G = nx.DiGraph()
   for d in data_ER:  
@@ -309,11 +309,11 @@ def Course_Overview(dataframe):
         G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
   
   file_name = "Course_Overview.html"
-  convert_to_pyvis(G,file_name)
+  convert_to_pyvis(G,file_name, bg)
 
 ##########################################################
 ########################################################################    
-def Summative_assessment_only(dataframe):
+def Summative_assessment_only(dataframe, bg):
   setData(dataframe)
   G = nx.DiGraph()
   for d in data_ER:
@@ -356,7 +356,7 @@ def Summative_assessment_only(dataframe):
         G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
   
   file_name = "Summative_assessment_only.html"
-  convert_to_pyvis(G,file_name)
+  convert_to_pyvis(G,file_name, bg)
 
 ########################################################################    
 def create_Legend():

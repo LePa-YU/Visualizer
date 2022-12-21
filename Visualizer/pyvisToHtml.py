@@ -1,6 +1,6 @@
 import json
 
-def convertToHtml(data, file_name):
+def convertToHtml(data, file_name, bg):
     file_html = open(file_name , "w")
     # Adding the input data to the HTML file
     file_html.write('''
@@ -26,26 +26,39 @@ def convertToHtml(data, file_name):
      var nodeList = new vis.DataSet();
      var edgeList = new vis.DataSet();\n''')
 
+    # heading from the network
     heading_data = data[2]
     jsonOb_heading = json.dumps(heading_data)
     jsonOb_heading_format = format(jsonOb_heading)
     file_html.write("\t\t var heading = "+str(jsonOb_heading_format) +";"+"\n")
 
+    # height of network
     height_data = data[3]
     jsonOb_height = json.dumps(height_data)
     jsonOb_height_format = format(jsonOb_height)
     file_html.write("\t\t var height = "+str(jsonOb_height_format) +";"+"\n")
 
+    #width of the network
     width_data = data[4]
     jsonOb_width = json.dumps(width_data)
     jsonOb_width_format = format(jsonOb_width)
     file_html.write("\t\t var width = "+str(jsonOb_width_format) +";"+"\n")
 
+    #network options such as nodes, edge, interaction, physics, etc. 
     options_data = data[5]
     jsonOb_options = json.dumps(options_data)
     jsonOb_options_format = format(jsonOb_options)  
     file_html.write("\t\t var options = "+str(jsonOb_options_format) +";"+"\n\n")
 
+    # background data
+    jsonOb_bg = json.dumps(bg)
+    jsonOb_bg_format = format(jsonOb_bg)  
+    file_html.write("\t\t var bg = "+str(jsonOb_bg_format) +";"+"\n")
+    file_html.write('''
+        document.getElementById('mynetwork').style.background = bg; 
+     ''')
+
+    # nodes data from network
     nodes_data = data[0]
     for n in nodes_data:
         jsonOb_node = json.dumps(n)
@@ -53,11 +66,14 @@ def convertToHtml(data, file_name):
         file_html.write("\t\t nodeList.add("+str(jsonOb_node_format) +");"+"\n")
     file_html.write('''
      ''')
+    
+    #edge data from network
     edges_data = data[1]
     for e in edges_data:
         jsonOb_edges = json.dumps(e)
         jsonOb_edges_format = format(jsonOb_edges)
         file_html.write("\t\t edgeList.add("+str(jsonOb_edges_format) +");"+"\n")
+    
     # add rest of the html
     file_html.write('''
    
