@@ -192,22 +192,23 @@ def All_ERs(dataframe):
     d_title = d[1]
     d_type = d[4]
     d_alt = d[2]
+    d_url = d[3]
     try:
       d_isPartOf = int(d[5])
     except:
       d_isPartOf = ""
     if(d_type=="aER"):
-      G.add_node(d_id, label = d_title, shape="box", title=d_alt, color= aER_node_color)
+      G.add_node(d_id, label = d_title, shape="box", title=d_alt, color= aER_node_color, url = d_url)
     elif(d_type == "rER"):
-      G.add_node(d_id, label = d_title, shape="triangle", title=d_alt, color = rER_node_color) 
+      G.add_node(d_id, label = d_title, shape="triangle", title=d_alt, color = rER_node_color, url = d_url) 
     elif(d_type == "iER"):
-      G.add_node(d_id, label = d_title, shape="circle", title=d_alt, color= iER_node_color)
+      G.add_node(d_id, label = d_title, shape="circle", title=d_alt, color= iER_node_color, url = d_url)
     elif(d_type == "start"):
-      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = -1000, y=0, fixed = True)
+      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = -1000, y=0, fixed = True, url = d_url)
     elif(d_type == "end"):
-      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = 1000, y = 0, fixed = True)
+      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = 1000, y = 0, fixed = True, url = d_url)
     else:
-      G.add_node(d_id, label = d_title, title=d_alt, color= general_node_color, isPartOf=int(d_isPartOf))
+      G.add_node(d_id, label = d_title, title=d_alt, color= general_node_color, isPartOf=int(d_isPartOf), url = d_url)
         
     ## relationship assesses:
     try:
@@ -264,16 +265,17 @@ def Course_Overview(dataframe):
     d_title = d[1]
     d_type = d[4]
     d_alt = d[2]
+    d_url = d[3]
     if(d_type=="aER"):
-      G.add_node(d_id, label = d_title, shape="box", title=d_alt, color = aER_node_color)
+      G.add_node(d_id, label = d_title, shape="box", title=d_alt, color = aER_node_color, url = d_url)
     elif(d_type == "rER"):
-      G.add_node(d_id, label = d_title, shape="triangle", title=d_alt, color = rER_node_color) 
+      G.add_node(d_id, label = d_title, shape="triangle", title=d_alt, color = rER_node_color, url = d_url) 
     elif(d_type == "iER"):
-      G.add_node(d_id, label = d_title, shape="circle", title=d_alt, color= iER_node_color)
+      G.add_node(d_id, label = d_title, shape="circle", title=d_alt, color= iER_node_color, url = d_url)
     elif(d_type == "start"):
-      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = -1000, y=0, fixed = True)
+      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = -1000, y=0, fixed = True, url = d_url)
     elif(d_type == "end"):
-      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = 1000, y = 0, fixed = True)
+      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = 1000, y = 0, fixed = True, url = d_url)
         
     ## relationship assesses:
     try:
@@ -319,14 +321,15 @@ def Summative_assessment_only(dataframe):
     d_title = d[1]
     d_type = d[4]
     d_alt = d[2]
+    d_url = d[3]
     if(d_type=="aER"):
-      G.add_node(d_id, label = d_title, shape="box", title=d_alt, color= aER_node_color)
+      G.add_node(d_id, label = d_title, shape="box", title=d_alt, color= aER_node_color, url = d_url)
     elif(d_type == "rER"):
-      G.add_node(d_id, label = d_title, shape="triangle", title=d_alt, color = rER_node_color) 
+      G.add_node(d_id, label = d_title, shape="triangle", title=d_alt, color = rER_node_color, url = d_url) 
     elif(d_type == "start"):
-      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = -1000, y=0, fixed = True)
+      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = -1000, y=0, fixed = True, url = d_url)
     elif(d_type == "end"):
-      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = 1000, y = 0, fixed = True)
+      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = 1000, y = 0, fixed = True, url = d_url)
    
         
     ## relationship assesses:
