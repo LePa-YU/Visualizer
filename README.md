@@ -22,19 +22,19 @@ the python used for this project is `Python 3.10.7`
 1. The visualizer tool is hosted on the streamlit cloud which can be accessed through the link 
 <a href="https://lepa-visualizer-development.streamlit.app/" target="_blank">here</a>. 
 
-![visualizer on streamlit cloud](https://github.com/LePa-YU/Visualizer/blob/main/images/appDemo1.JPG)
+![visualizer on streamlit cloud](https://github.com/LePa-YU/Visualizer/blob/a330661f7664f7dd617e8481dd4d012a415f538b/images/appDemo1.JPG)
 
 2. Browse for csv file representing the learning path. You can also visualize a demo learning path by checking `load FAKE1001 dataset or other datasets`. The demo csv file can be found @ `Data/demo.csv`. Additionally the link to "other datasets" is provided for ease of access
 
-![visualizer on streamlit cloud](https://github.com/LePa-YU/Visualizer/blob/main/images/appDemo2.jpg)
+![visualizer on streamlit cloud](https://github.com/LePa-YU/Visualizer/blob/a330661f7664f7dd617e8481dd4d012a415f538b/images/appDemo2.jpg)
 
 - using demo result in following graph:
 
-![visualizer demo on streamlit cloud](https://github.com/LePa-YU/Visualizer/blob/main/images/appDemo3.jpg)
+![visualizer demo on streamlit cloud](https://github.com/LePa-YU/Visualizer/blob/a330661f7664f7dd617e8481dd4d012a415f538b/images/appDemo3.jpg)
 
 3. You can use the `Select view` menu to access different views of the same dataset
 
-![visualizer on streamlit cloud](https://github.com/LePa-YU/Visualizer/blob/main/images/appDemo4.jpg)
+![visualizer on streamlit cloud](https://github.com/LePa-YU/Visualizer/blob/a330661f7664f7dd617e8481dd4d012a415f538b/images/appDemo4.jpg)
 
 - Additionally the `Legend` contains a legend to the graph
 - the temporary customization menu allows to experiment with different  colors for entities in both light and dark mode
