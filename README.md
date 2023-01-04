@@ -8,10 +8,10 @@ web based tool created using python and streamlit library to visualize the AIR m
 ### Dependencies
 the dependencies can be found in Visualizer/requirements.txt. Here is the list of dependencies:
 ```
-matplotlib==3.6.1
 networkx==2.8.7
 pandas==1.5.0
 pyvis==0.3.0
+requests==2.28.1
 streamlit==1.13.0
 
 ```
@@ -24,7 +24,7 @@ the python used for this project is `Python 3.10.7`
 
 ![visualizer on streamlit cloud](https://github.com/LePa-YU/Visualizer/blob/main/images/appDemo1.JPG)
 
-2. Browse for csv file representing the learning path or demo check box to visualize your learning path. you can also find the demo data @ `Data/demo.csv`
+2. Browse for csv file representing the learning path. You can also visualize a demo learning path by checking `load FAKE1001 dataset or other datasets`. The demo csv file can be found @ `Data/demo.csv`. Additionally the link to "other datasets" is provided for ease of access
 
 ![visualizer on streamlit cloud](https://github.com/LePa-YU/Visualizer/blob/main/images/appDemo2.jpg)
 
@@ -32,9 +32,12 @@ the python used for this project is `Python 3.10.7`
 
 ![visualizer demo on streamlit cloud](https://github.com/LePa-YU/Visualizer/blob/main/images/appDemo3.jpg)
 
-3. You can use the menu on left hand to visualize different views of the same dataset:
+3. You can use the `Select view` menu to access different views of the same dataset
 
 ![visualizer on streamlit cloud](https://github.com/LePa-YU/Visualizer/blob/main/images/appDemo4.jpg)
+
+- Additionally the `Legend` contains a legend to the graph
+- the temporary customization menu allows to experiment with different  colors for entities in both light and dark mode
 
 
 
