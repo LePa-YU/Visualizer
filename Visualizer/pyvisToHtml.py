@@ -142,6 +142,7 @@ def convertToHtml(data, file_name, bg):
             clusterOptions.label = node.label;
             clusterOptions.color = node.color;
             clusterOptions.size = node.size;
+            clusterOptions.font = node.font; 
             return clusterOptions;
           }
 
