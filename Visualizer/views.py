@@ -1,3 +1,4 @@
+# required imports
 import networkx as nx
 import pyvisToHtml
 from pyvis.network import Network
@@ -8,10 +9,14 @@ import sys
 
 ## this file contains code for different visualzation/ views of the LePa visualizer --> aka model
 
+# this method set the data for different global attributes based on given dataframe each representing a column of the dataframe
 def setData(df):
-  # fill empty cells in specifc column with nil
+  # we set all column heading to lowercase
   df.columns = df.columns.str.lower()
   
+  # all columns have try except clause. in case of missing column the attribute is assigned an empty value
+  # note that rows accessed cannot be empty. if there is a possibility of them being empty then they should be set
+  # to nil
   global df_id
   try:
     df_id = df['id']
@@ -68,18 +73,21 @@ def setData(df):
     df['requires']=""
     df_requires = df['requires']
   
+  # this relationship is used to show Chronological order of the ERs
   try:
     df_comesAfter = df['comesafter']
   except:
     df['comesafter']=""
     df_comesAfter = df['comesafter']
 
+ # this is  used for summative assessment only relationship
   try:
     df_comesAfter_aER = df["comesafter_aer"]
   except:
     df["comesafter_aer"]=""
     df_comesAfter_aER = df["comesafter_aer"]
   
+  # combine columns so each row represent one node 
   global data_ER
   data_ER = zip(df_id, df_title, df_alt, df_tURL, df_type, df_isPartOf, df_assesses, df_requires, df_comesAfter, df_comesAfter_aER) # making tuples 
 
@@ -154,10 +162,13 @@ def convert_to_pyvis(G, file_name, bg):
       node["label"] = id_string
 
   data = G2.get_network_data()
+
+  # the data is used to create an html file, args: data(network infor)/ file_name(name of the html file)/ bg(background selected by user-initially white)
   pyvisToHtml.convertToHtml(data, file_name, bg)
 
 #########################################################################
 
+# this method set the colors for different entities of the network
 def setColors(aER, rER, iER, general, assess, requires, isPartOf):
   global aER_node_color
   aER_node_color = aER
@@ -174,6 +185,7 @@ def setColors(aER, rER, iER, general, assess, requires, isPartOf):
   global isPartOf_edge_color
   isPartOf_edge_color = isPartOf
 
+#this methods set the font color based on the bg (String). if bg is white --> font is black else font is white
 def setFontColor(bg):
   # set font color based on bg:
   font_color = ""
@@ -184,6 +196,7 @@ def setFontColor(bg):
   return font_color
  
 #########################################################################
+# All ERs View
 def All_ERs(dataframe, bg):
   setData(dataframe)
   G = nx.DiGraph()
@@ -203,19 +216,22 @@ def All_ERs(dataframe, bg):
       G.add_node(d_id, label = d_title, shape="triangle", title=d_alt, color = rER_node_color, url = d_url) 
     elif(d_type == "iER"):
       G.add_node(d_id, label = d_title, shape="circle", title=d_alt, color= iER_node_color, url = d_url)
+    #start and end nodes that are fixed position to represent the start and end of a course
     elif(d_type == "start"):
       G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = -1000, y=0, fixed = True, url = d_url)
     elif(d_type == "end"):
       G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = 1000, y = 0, fixed = True, url = d_url)
+    # any entitiy that is not part of above. these can be part of isPartOf relationship. therefore isPartOf attribute is added
+    # to their attributes to be used for the collapsibility of the nodes that have the same relationship with a particualr node
     else:
       G.add_node(d_id, label = d_title, title=d_alt, color= general_node_color, isPartOf=int(d_isPartOf), url = d_url)
         
-    ## relationship assesses:
+    ## relationship assesses if it exists:
     try:
       d_assesses = int(d[6])
     except:
       d_assesses = ""
-
+    # finds the node that this node assesses
     data_assess = zip(df_id)
     for d1 in data_assess:
       d1_id = d1[0]
@@ -245,18 +261,19 @@ def All_ERs(dataframe, bg):
         G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
 
     ## relationship isPartOf:
-    # d_isPartOf = d[5]
     data_isPartOf = zip(df_id)
     for d3 in data_isPartOf:
       d3_id = d3[0]
       if(d_isPartOf == d3_id):     
         G.add_edge( d3_id,d_id, color = isPartOf_edge_color)
   
-  
+  # assign a file name
   file_name = "All_ERs.html"
+  #convert the network to pyvis
   convert_to_pyvis(G, file_name, bg)
 
 ########################################################################    
+# this method visualizes the course overview view which contains aER, rER, iER
 def Course_Overview(dataframe, bg):
   setData(dataframe)
   G = nx.DiGraph()
@@ -288,14 +305,6 @@ def Course_Overview(dataframe, bg):
       if(d_assesses == d1_id):
         G.add_edge(d_id, d1_id, color= assess_edge_color)
     
-    ## relationship requires:
-    # d_requires = d[7]
-    # data_req = zip(df_id)
-    # for d2 in data_req:
-    #   d2_id = d2[0]
-    #   if(d_requires == d2_id):
-    #     G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
-    
     ## relationship comesAfter:
     try:
       d_comesAfter = d[8]
@@ -313,6 +322,7 @@ def Course_Overview(dataframe, bg):
 
 ##########################################################
 ########################################################################    
+# this method visualizes the summative assessment only view which contains aER and their rER
 def Summative_assessment_only(dataframe, bg):
   setData(dataframe)
   G = nx.DiGraph()
@@ -343,7 +353,7 @@ def Summative_assessment_only(dataframe, bg):
       if(d_assesses == d1_id):
         G.add_edge(d_id, d1_id, color= assess_edge_color)
 
-    ## relationship comesAfter:
+    ## relationship comesAfter+4_aER:
     try:
       d_comesAfter_aER = d[9]
     except:
@@ -359,6 +369,7 @@ def Summative_assessment_only(dataframe, bg):
   convert_to_pyvis(G,file_name, bg)
 
 ########################################################################    
+# the legend is created manually but corresponds to the colors of entities
 def create_Legend():
   # setColors()
   G = nx.DiGraph()
