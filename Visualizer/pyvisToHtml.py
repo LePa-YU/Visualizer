@@ -78,16 +78,21 @@ def convertToHtml(data, file_name, bg):
     file_html.write('''
    
     var container = document.getElementById('mynetwork');
+    // creating the data to be used for visuaization
     var data = {
         nodes: nodeList,
         edges: edgeList
     };
+    // getting the options using Json
     var opt = JSON.parse(options);
 
   // document.getElementById("demo").innerHTML = typeof(opt);
+    //creating the vis network
     var network = new vis.Network(container, data, opt);
     network.setSize(width, height);
 
+    // node collapse. if only one node is selected if the node is clustred (collapsed) then the cluster is open
+    // else the node is collapsed if if they have the isPartOf relation corresponding to this node's id (var v)
     network.on("selectNode", function (params) {
       if (params.nodes.length == 1) {
         if (network.isCluster(params.nodes[0]) == true) {
@@ -112,13 +117,17 @@ def convertToHtml(data, file_name, bg):
       }
     });
 
+    // cluster/ collapse options based on isPartOf. this method returns the cluster options to be used for the clustering
     function getC(v){
       var clusterOptionsByData = {
+          // condition for clustering: nodes with ispartof same as v and node that has id v
           joinCondition: function (childOptions) {
             return childOptions.isPartOf == v || childOptions.id == v;
           },
+          // to have the clusters inherit the properties of the selected node
           processProperties: function (clusterOptions, childNodes, childEdges){
             var node;
+            // find the node with id v
             for(let i = 0; i<childNodes.length; i++){
               n = childNodes[i];
               if(n.id == v){
@@ -128,7 +137,7 @@ def convertToHtml(data, file_name, bg):
             }
 
             // document.getElementById("demo").innerHTML += node.id;
-
+            // adding the properties of the node to th cluster options
             clusterOptions.shape = node.shape;
             clusterOptions.label = node.label;
             clusterOptions.color = node.color;
