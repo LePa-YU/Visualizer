@@ -50,7 +50,7 @@ You can also pull the project on VS code (or any other platform that work with p
 
 ## Glossary of Terms, Nomenclature
 
-**dataset**: refers to a csv file containing elements, one per roow.  The list of attributes per row adheres to schema <<INSERT SCHEMA IDENTIFIER>>
+**dataset**: refers to a csv file containing elements, one per row.  The list of attributes per row adheres to schema <<INSERT SCHEMA IDENTIFIER>>
 
 **layout**: refers to a particular spatial arrangement of the visualization elements (nodes, edges).  Not to be confused with **view**.
 
@@ -59,5 +59,6 @@ You can also pull the project on VS code (or any other platform that work with p
 
 ### Version history
 - v 01: initial release
+- V 02: change in layout, additional views and relationships, and specific color palate
 
 ### License
