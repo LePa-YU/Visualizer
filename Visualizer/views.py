@@ -224,7 +224,7 @@ def All_ERs(dataframe, bg):
     # any entitiy that is not part of above. these can be part of isPartOf relationship. therefore isPartOf attribute is added
     # to their attributes to be used for the collapsibility of the nodes that have the same relationship with a particualr node
     else:
-      G.add_node(d_id, label = d_title, title=d_alt, color= general_node_color, isPartOf=int(d_isPartOf), url = d_url)
+      G.add_node(d_id, label = d_title, title=d_alt, color= general_node_color, isPartOf=d_isPartOf, url = d_url)
         
     ## relationship assesses if it exists:
     try:
