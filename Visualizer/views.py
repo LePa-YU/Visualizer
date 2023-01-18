@@ -74,6 +74,7 @@ def setData(df):
     df_requires = df['requires']
   
   # this relationship is used to show Chronological order of the ERs
+  global df_comesAfter
   try:
     df_comesAfter = df['comesafter']
   except:
@@ -354,16 +355,39 @@ def Summative_assessment_only(dataframe, bg):
         G.add_edge(d_id, d1_id, color= assess_edge_color)
 
     ## relationship comesAfter+4_aER:
+    # try:
+    #   d_comesAfter_aER = d[9]
+    # except:
+    #   d_comesAfter_aER = ""
+    # data_ca = zip(df_id)
+    # for d2 in data_ca:
+    #   d2_id = d2[0]
+    #   if(d_comesAfter_aER == d2_id):
+    #     #use label to label the edges
+    #     G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
+    ## relationship comesAfter:
     try:
-      d_comesAfter_aER = d[9]
+      d_comesAfter = d[8]
     except:
-      d_comesAfter_aER = ""
-    data_ca = zip(df_id)
+      d_comesAfter = ""
+    data_ca = zip(df_id, df_type, df_comesAfter)
     for d2 in data_ca:
       d2_id = d2[0]
-      if(d_comesAfter_aER == d2_id):
-        #use label to label the edges
-        G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
+      d2_type = d2[1]
+      d2_comesAfter = d2[2]
+      if(d_comesAfter == d2_id):
+        if((d2_type == "aER" and d_type == "aER") or d_type =="end"):
+          #use label to label the edges
+          G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
+        else:
+          data_ca2 = zip(df_id, df_type, df_comesAfter)
+          for d3 in data_ca2:
+            d3_id = d3[0]
+            d3_type = d3[1]
+            d3_comesAfter = d3[2]
+            if(d2_comesAfter == d3_id and (d3_type == "aER" or d3_type == "start")):
+              G.add_edge( d3_id, d_id, weight = 5, color= requires_edge_color)
+
   
   file_name = "Summative_assessment_only.html"
   convert_to_pyvis(G,file_name, bg)
