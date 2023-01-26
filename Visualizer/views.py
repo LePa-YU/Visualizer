@@ -342,7 +342,6 @@ def Summative_assessment_only(dataframe, bg):
     elif(d_type == "end"):
       G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = 1000, y = 0, fixed = True, url = d_url)
    
-        
     ## relationship assesses:
     try:
       d_assesses = int(d[6])
@@ -354,40 +353,36 @@ def Summative_assessment_only(dataframe, bg):
       if(d_assesses == d1_id):
         G.add_edge(d_id, d1_id, color= assess_edge_color)
 
-    ## relationship comesAfter+4_aER:
-    # try:
-    #   d_comesAfter_aER = d[9]
-    # except:
-    #   d_comesAfter_aER = ""
-    # data_ca = zip(df_id)
-    # for d2 in data_ca:
-    #   d2_id = d2[0]
-    #   if(d_comesAfter_aER == d2_id):
-    #     #use label to label the edges
-    #     G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
     ## relationship comesAfter:
     try:
       d_comesAfter = d[8]
     except:
       d_comesAfter = ""
     data_ca = zip(df_id, df_type, df_comesAfter)
-    for d2 in data_ca:
-      d2_id = d2[0]
-      d2_type = d2[1]
-      d2_comesAfter = d2[2]
-      if(d_comesAfter == d2_id):
-        if((d2_type == "aER" and d_type == "aER") or d_type =="end"):
-          #use label to label the edges
-          G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
-        else:
-          data_ca2 = zip(df_id, df_type, df_comesAfter)
-          for d3 in data_ca2:
-            d3_id = d3[0]
-            d3_type = d3[1]
-            d3_comesAfter = d3[2]
-            if(d2_comesAfter == d3_id and (d3_type == "aER" or d3_type == "start")):
-              G.add_edge( d3_id, d_id, weight = 5, color= requires_edge_color)
+    data_list = list(data_ca)
+    i = 0; 
+    while i< len(data_list):
+      d1_id = data_list[i][0]
+      if(d_comesAfter == d1_id):
+        d1_type = data_list[i][1]
+        d1_comesAfter = data_list[i][2]
+        if((d1_type == "aER" and d_type == "aER") or d_type == "end"):
+          G.add_edge( d1_id, d_id, weight = 5, color= requires_edge_color)
+        elif(d1_type == "iER"):
+          j = i
+          while j > -1:
+            d2_id = data_list[j][0]
+            d2_type = data_list[j][1]
+            if(d1_comesAfter == d2_id):
+              if(d2_type == "iER"):
+                d1_comesAfter = data_list[j][2]
+                j = i
+              elif((d2_type == "aER" or d2_type =="start") and d_type =="aER"):
+                G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
+              
+            j = j -1
 
+      i = i +1
   
   file_name = "Summative_assessment_only.html"
   convert_to_pyvis(G,file_name, bg)
