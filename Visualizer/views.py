@@ -141,8 +141,8 @@ nodes = {
 }
 
 # method  that converst networkx to pyvis
-def convert_to_pyvis(G, file_name, bg):
-  G2 = Network(height="800px", width="100%", bgcolor=bg, font_color=setFontColor(bg), notebook=True,heading='', directed=True)
+def convert_to_pyvis(G, file_name, bg, file_label, view):
+  G2 = Network(height="750px", width="100%", bgcolor=bg, font_color=setFontColor(bg), notebook=True,heading='', directed=True)
   G2.from_nx(G)
   G2.options.edges = edges
   G2.options.nodes = nodes
@@ -165,7 +165,7 @@ def convert_to_pyvis(G, file_name, bg):
   data = G2.get_network_data()
 
   # the data is used to create an html file, args: data(network infor)/ file_name(name of the html file)/ bg(background selected by user-initially white)
-  pyvisToHtml.convertToHtml(data, file_name, bg)
+  pyvisToHtml.convertToHtml(data, file_name, bg, file_label, view)
 
 #########################################################################
 
@@ -198,7 +198,7 @@ def setFontColor(bg):
  
 #########################################################################
 # All ERs View
-def All_ERs(dataframe, bg):
+def All_ERs(dataframe, bg, file_label, view):
   setData(dataframe)
   G = nx.DiGraph()
   for d in data_ER:
@@ -271,11 +271,11 @@ def All_ERs(dataframe, bg):
   # assign a file name
   file_name = "All_ERs.html"
   #convert the network to pyvis
-  convert_to_pyvis(G, file_name, bg)
+  convert_to_pyvis(G, file_name, bg, file_label, view)
 
 ########################################################################    
 # this method visualizes the course overview view which contains aER, rER, iER
-def Course_Overview(dataframe, bg):
+def Course_Overview(dataframe, bg, file_label, view):
   setData(dataframe)
   G = nx.DiGraph()
   for d in data_ER:  
@@ -319,12 +319,12 @@ def Course_Overview(dataframe, bg):
         G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
   
   file_name = "Course_Overview.html"
-  convert_to_pyvis(G,file_name, bg)
+  convert_to_pyvis(G,file_name, bg, file_label, view)
 
 ##########################################################
 ########################################################################    
 # this method visualizes the summative assessment only view which contains aER and their rER
-def Summative_assessment_only(dataframe, bg):
+def Summative_assessment_only(dataframe, bg, file_label, view):
   setData(dataframe)
   G = nx.DiGraph()
   for d in data_ER:
@@ -385,7 +385,7 @@ def Summative_assessment_only(dataframe, bg):
       i = i +1
   
   file_name = "Summative_assessment_only.html"
-  convert_to_pyvis(G,file_name, bg)
+  convert_to_pyvis(G,file_name, bg, file_label, view)
 
 ########################################################################    
 # the legend is created manually but corresponds to the colors of entities

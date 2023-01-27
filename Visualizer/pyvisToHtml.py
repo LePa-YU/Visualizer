@@ -1,6 +1,6 @@
 import json
 
-def convertToHtml(data, file_name, bg):
+def convertToHtml(data, file_name, bg, file_label, view):
     file_html = open(file_name , "w")
     # Adding the input data to the HTML file
     file_html.write('''
@@ -14,17 +14,41 @@ def convertToHtml(data, file_name, bg):
                 height: 800px;
                 border: 1px solid lightgray;
             }
+            #canvas {
+                width: 100%;
+                height: 700px;
+            }
+            #labelContainer {
+                width: 100%; 
+                height: 20px; 
+                text-align: right; 
+            }
+            #label {
+                padding-right: 1%; 
+            }
         </style>
         <!-- <script src="network.js"></script> -->
         <script type="text/javascript" src="network.js"></script>
     </head>
     <body>
-    <div id="mynetwork"></div>
-    <div id="demo"></div>
+    <div id="mynetwork">
+      <div id="labelContainer"><p id="label"></p></div> 
+      <div id="canvas"></div>
+    </div>
     <!-- <script type="text/javascript" src="network.js"></script> -->
     <script type="text/javascript"> 
      var nodeList = new vis.DataSet();
      var edgeList = new vis.DataSet();\n''')
+
+    # file label 
+    jsonOb_file_label = json.dumps(file_label)
+    jsonOb_file_label_format = format(jsonOb_file_label)
+    file_html.write("\t\t var fileLabel = "+str(jsonOb_file_label_format) +";"+"\n")
+
+    #view name
+    jsonOb_view = json.dumps(view)
+    jsonOb_view_format = format(jsonOb_view)
+    file_html.write("\t\t var view = "+str(jsonOb_view_format) +";"+"\n")
 
     # heading from the network
     heading_data = data[2]
@@ -76,8 +100,11 @@ def convertToHtml(data, file_name, bg):
     
     # add rest of the html
     file_html.write('''
-   
-    var container = document.getElementById('mynetwork');
+    document.getElementById("label").innerHTML = fileLabel +" (" + view + ")";
+    if(bg == "black"){
+      document.getElementById("label").style.color = 'white';
+    }
+    var container = document.getElementById('canvas');
     // creating the data to be used for visuaization
     var data = {
         nodes: nodeList,
@@ -90,7 +117,6 @@ def convertToHtml(data, file_name, bg):
     //creating the vis network
     var network = new vis.Network(container, data, opt);
     network.setSize(width, height);
-
     // node collapse. if only one node is selected if the node is clustred (collapsed) then the cluster is open
     // else the node is collapsed if if they have the isPartOf relation corresponding to this node's id (var v)
     network.on("selectNode", function (params) {

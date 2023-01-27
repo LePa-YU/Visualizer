@@ -49,7 +49,7 @@ else:
 container = st.container()
 
 # if a file a selected (demo or user browsed file) then we go through visualization
-if uploaded_file is not None: 
+if uploaded_file is not None:
     # store file in a dataframe 
     dataframe = pd.read_csv(uploaded_file)
 
@@ -57,7 +57,10 @@ if uploaded_file is not None:
        #Select view menu
         with st.expander("Select View"):
             #  different views to be selected
-            option=st.selectbox('',('View 1: Summative assessment only','View 2: Course Overview','View 3: All ERs'))
+            view1 = 'View 1: Summative assessment only'
+            view2 = 'View 2: Course Overview'
+            view3 = 'View 3: All ERs'
+            option=st.selectbox('',(view1, view2, view3))
         
         # # customization menu --> temporary. comment before releases
         with st.expander("Customization"):
@@ -105,22 +108,28 @@ if uploaded_file is not None:
 
         # another container for the html components of the actual visualization
         container_html = st.container()
+
+        #get file labe:
+        if(type(uploaded_file) == str):
+            label = uploaded_file
+        else:
+            label = uploaded_file.name
         # create the temp html files for each views
-        views.All_ERs(dataframe, bg)
-        views.Course_Overview(dataframe, bg)
-        views.Summative_assessment_only(dataframe, bg)
+        views.All_ERs(dataframe, bg, label, view3)
+        views.Course_Overview(dataframe, bg, label, view2)
+        views.Summative_assessment_only(dataframe, bg, label, view1)
         
         # adding html file to the container based on the selction made by user
         with container_html:
-            if option == 'View 3: All ERs':
+            if option == view3:
                 HtmlFile = open("All_ERs.html", 'r', encoding='utf-8')
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)
-            elif option == 'View 2: Course Overview':
+            elif option == view2:
                 HtmlFile = open("Course_Overview.html", 'r', encoding='utf-8')
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)
-            elif option == 'View 1: Summative assessment only':
+            elif option == view1:
                 HtmlFile = open("Summative_assessment_only.html", 'r', encoding='utf-8')
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)
