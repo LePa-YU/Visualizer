@@ -402,7 +402,7 @@ def create_Legend():
   G.add_node(5, label = "Instructional ER ", shape="text", title="legend", color= iER_node_color, x = 0, y = 100)
   G.add_node(6, label = "    ", shape="circle", title="legend", color= iER_node_color, x = 100, y = 100)
 
-  G.add_node(7, label = "Non-composite iER", title="legend", shape = "text", color= general_node_color, x = 0, y = 150)
+  G.add_node(7, label = "Atomic iER", title="legend", shape = "text", color= general_node_color, x = 0, y = 150)
   G.add_node(0, label = "", title="legend", color= general_node_color, x = 100, y = 150)
 
   G.add_node(8, label = "Assesses", title="legend", shape = "text", color= general_node_color, x = 200, y = 0)
@@ -410,7 +410,7 @@ def create_Legend():
   G.add_node(10, label = " ",title="legend", shape="text", x = 400, y = 0)
   G.add_edge(9, 10,color= assess_edge_color)
   
-  G.add_node(11, label = "Requires", title="legend", shape = "text", color= general_node_color, x = 200, y = 50)
+  G.add_node(11, label = "ComesAfter", title="legend", shape = "text", color= general_node_color, x = 200, y = 50)
   G.add_node(12, label = " ",title="legend", shape="text", x = 250, y = 50)
   G.add_node(13, label = " ",title="legend", shape="text", x = 400, y = 50)
   G.add_edge(12, 13,weight = 5, color= requires_edge_color)
