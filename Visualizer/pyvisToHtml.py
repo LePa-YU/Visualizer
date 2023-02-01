@@ -136,10 +136,9 @@ def convertToHtml(data, file_name, bg, file_label, view):
       var node = nodeList.get(nodeId)[0];
       var nodeUrl = node.url;
       if(nodeUrl != "nil"){
-        var openUrl = Boolean(confirm("This node contains a link would like to open it?"));
-        if(openUrl){
+        
           window.open(nodeUrl); 
-        }
+        
       }
     });
 
