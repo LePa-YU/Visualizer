@@ -195,6 +195,42 @@ def setFontColor(bg):
   else:
     font_color = "white"
   return font_color
+#######################################################################
+# this method create the content for the tooltip
+def getToolTip(d_id, d_title, d_isPartOf, d_url):
+  text = ""
+  data_zip = zip(df_id, df_type)
+  data_list = list(data_zip)
+
+  # finding the type of the container
+  er_container = data_list[d_isPartOf] ## contains id and type
+  er_type = er_container[1]
+  if(er_type == "iER"):
+    text = text + "Instructional ER \n\n"
+     # type of the atomic ER e.g. ebook, video,...
+    type = "Type, "
+    text += type
+    # name of the atomic ER
+    text += d_title + "\n"
+    # adding link:
+    text += "Avaiable link: "
+    if(d_url != "nil"):
+      text += d_url +"\n"
+    else:
+      text += "NA \n"
+    # adding unique id 
+    unique_id = er_type + str(d_id)
+    text += "ID: "+ unique_id
+
+  elif(er_type == "aER"):
+    text = text + "Activity ER \n\n"
+  elif(er_type == "rER"):
+    text = text + "Rubic ER\n\n"
+  
+  
+  return text
+
+
  
 #########################################################################
 # All ERs View
@@ -212,20 +248,24 @@ def All_ERs(dataframe, bg, file_label, view):
     except:
       d_isPartOf = ""
     if(d_type=="aER"):
-      G.add_node(d_id, label = d_title, shape="box", title=d_alt, color= aER_node_color, url = d_url)
+      G.add_node(d_id, label = d_title, shape="box", color= aER_node_color, url = d_url)
     elif(d_type == "rER"):
-      G.add_node(d_id, label = d_title, shape="triangle", title=d_alt, color = rER_node_color, url = d_url) 
+      G.add_node(d_id, label = d_title, shape="triangle", color = rER_node_color, url = d_url) 
     elif(d_type == "iER"):
-      G.add_node(d_id, label = d_title, shape="circle", title=d_alt, color= iER_node_color, url = d_url)
+      G.add_node(d_id, label = d_title, shape="circle", color= iER_node_color, url = d_url)
     #start and end nodes that are fixed position to represent the start and end of a course
     elif(d_type == "start"):
-      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = -1000, y=0, fixed = True, url = d_url)
+      G.add_node(d_id, label = d_title, shape="diamond", color= iER_node_color, size=20, x = -1000, y=0, fixed = True, url = d_url)
     elif(d_type == "end"):
-      G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = 1000, y = 0, fixed = True, url = d_url)
+      G.add_node(d_id, label = d_title, shape="diamond", color= iER_node_color, size=20, x = 1000, y = 0, fixed = True, url = d_url)
     # any entitiy that is not part of above. these can be part of isPartOf relationship. therefore isPartOf attribute is added
     # to their attributes to be used for the collapsibility of the nodes that have the same relationship with a particualr node
     else:
-      G.add_node(d_id, label = d_title, title=d_alt, color= general_node_color, isPartOf=d_isPartOf, url = d_url)
+      data_zip = zip(df_id, df_type)
+      # print(d_isPartOf)
+      #print(data_list[d_isPartOf])
+      toolTip = getToolTip(d_id, d_title, d_isPartOf, d_url)
+      G.add_node(d_id, label = d_title, title=toolTip, color= general_node_color, isPartOf=d_isPartOf, url = d_url)
         
     ## relationship assesses if it exists:
     try:
