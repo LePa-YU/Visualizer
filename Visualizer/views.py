@@ -61,6 +61,7 @@ def setData(df):
     df['ispartof'] = ""
     df_isPartOf = df['ispartof']
 
+  global df_assesses
   try:
     df_assesses = df['assesses']
   except:
@@ -199,7 +200,7 @@ def setFontColor(bg):
 # this method create the content for the tooltip
 def getToolTip(d_id, d_title, d_isPartOf, d_url):
   text = ""
-  data_zip = zip(df_id, df_type)
+  data_zip = zip(df_id, df_type, df_assesses)
   data_list = list(data_zip)
 
   # finding the type of the container
@@ -208,25 +209,30 @@ def getToolTip(d_id, d_title, d_isPartOf, d_url):
   if(er_type == "iER"):
     text = text + "Instructional ER \n\n"
      # type of the atomic ER e.g. ebook, video,...
-    type = "Type, "
-    text += type
+    type = " NA \n"
+    text += "Type:"+type
     # name of the atomic ER
-    text += d_title + "\n"
-    # adding link:
-    text += "Avaiable link: "
-    if(d_url != "nil"):
-      text += d_url +"\n"
-    else:
-      text += "NA \n"
-    # adding unique id 
-    unique_id = er_type + str(d_id)
-    text += "ID: "+ unique_id
-
+    text += "Name: " + d_title + "\n"
   elif(er_type == "aER"):
     text = text + "Activity ER \n\n"
+    text += "Name: " + d_title + "\n"
+    assumes = "NA\n"
+    text+="Assumes: " + assumes
   elif(er_type == "rER"):
     text = text + "Rubic ER\n\n"
-  
+    er_assesses = er_container[2]
+    text += "Assessment of aER" + str(int(er_assesses))+"\n"
+    grade = "NA \n"
+    text += "Grades: " + grade
+
+  text += "Avaiable link: "
+  if(d_url != "nil"):
+    text += d_url +"\n"
+  else:
+    text += "NA \n"  
+  # adding unique id 
+  unique_id = er_type + str(d_id)
+  text += "ID: "+ unique_id
   
   return text
 
@@ -247,46 +253,35 @@ def All_ERs(dataframe, bg, file_label, view):
       d_isPartOf = int(d[5])
     except:
       d_isPartOf = ""
-    if(d_type=="aER"):
-      G.add_node(d_id, label = d_title, shape="box", color= aER_node_color, url = d_url)
-    elif(d_type == "rER"):
-      G.add_node(d_id, label = d_title, shape="triangle", color = rER_node_color, url = d_url) 
-    elif(d_type == "iER"):
-      G.add_node(d_id, label = d_title, shape="circle", color= iER_node_color, url = d_url)
-    #start and end nodes that are fixed position to represent the start and end of a course
-    elif(d_type == "start"):
-      G.add_node(d_id, label = d_title, shape="diamond", color= iER_node_color, size=20, x = -1000, y=0, fixed = True, url = d_url)
-    elif(d_type == "end"):
-      G.add_node(d_id, label = d_title, shape="diamond", color= iER_node_color, size=20, x = 1000, y = 0, fixed = True, url = d_url)
-    # any entitiy that is not part of above. these can be part of isPartOf relationship. therefore isPartOf attribute is added
-    # to their attributes to be used for the collapsibility of the nodes that have the same relationship with a particualr node
-    else:
-      data_zip = zip(df_id, df_type)
-      # print(d_isPartOf)
-      #print(data_list[d_isPartOf])
-      toolTip = getToolTip(d_id, d_title, d_isPartOf, d_url)
-      G.add_node(d_id, label = d_title, title=toolTip, color= general_node_color, isPartOf=d_isPartOf, url = d_url)
-        
-    ## relationship assesses if it exists:
     try:
       d_assesses = int(d[6])
     except:
       d_assesses = ""
+    
+    if(d_type=="aER"):
+      G.add_node(d_id, label = d_title, title=d_alt, shape="box", color= aER_node_color, url = d_url)
+    elif(d_type == "rER"):
+      G.add_node(d_id, label = d_title, title=d_alt, shape="triangle", color = rER_node_color, url = d_url) 
+    elif(d_type == "iER"):
+      G.add_node(d_id, label = d_title, title=d_alt, shape="circle", color= iER_node_color, url = d_url)
+    #start and end nodes that are fixed position to represent the start and end of a course
+    elif(d_type == "start"):
+      G.add_node(d_id, label = d_title, title=d_alt, shape="diamond", color= iER_node_color, size=20, x = -1000, y=0, fixed = True, url = d_url)
+    elif(d_type == "end"):
+      G.add_node(d_id, label = d_title, title=d_alt, shape="diamond", color= iER_node_color, size=20, x = 1000, y = 0, fixed = True, url = d_url)
+    # any entitiy that is not part of above. these can be part of isPartOf relationship. therefore isPartOf attribute is added
+    # to their attributes to be used for the collapsibility of the nodes that have the same relationship with a particualr node
+    else:
+      toolTip = getToolTip(d_id, d_title, d_isPartOf, d_url)
+      G.add_node(d_id, label = d_title, title=toolTip, color= general_node_color, isPartOf=d_isPartOf, url = d_url)
+        
+    ## relationship assesses if it exists:
     # finds the node that this node assesses
     data_assess = zip(df_id)
     for d1 in data_assess:
       d1_id = d1[0]
       if(d_assesses == d1_id):
         G.add_edge(d_id, d1_id, color= assess_edge_color)
-        
-    ## relationship requires:
-    # d_requires = d[7]
-    # data_req = zip(df_id)
-    # for d2 in data_req:
-    #   d2_id = d2[0]
-    #   if(d_requires == d2_id):
-    #     #use label to label the edges
-    #     G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
 
     ## relationship comesAfter:
     try:
