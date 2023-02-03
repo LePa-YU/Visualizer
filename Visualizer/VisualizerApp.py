@@ -63,38 +63,39 @@ if uploaded_file is not None:
             option=st.selectbox('',(view1, view2, view3))
         
         # # customization menu --> temporary. comment before releases
-        with st.expander("Customization"):
-            # Theme options
+        # with st.expander("Customization"):
+        #     # Theme options
             
-            # background
-            bg = ""
-            # dark --> boolean -- true then background is set to black and text to white/ fasle then background is set to white and text is set to black
-            dark = st.checkbox("dark theme")
-            if(dark):
-                bg = "black"
-            else:
-                bg = "white"
+        #     # background
+        #     bg = ""
+        #     # dark --> boolean -- true then background is set to black and text to white/ fasle then background is set to white and text is set to black
+        #     dark = st.checkbox("dark theme")
+        #     if(dark):
+        #         bg = "black"
+        #     else:
+        #         bg = "white"
 
-            # 7 element color options for different entities, the sencond arg is the initial color based on pumpkin color palete
-            col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
-            with col1:
-                aER_node_color = st.color_picker('Pick aER node color', "#FF7273")
-            with col2:
-                rER_node_color = st.color_picker('Pick rER node color', "#FF7273")
-            with col3:
-                iER_node_color = st.color_picker('Pick iER node color', "#F69159")
-            with col4:
-                general_node_color = st.color_picker('Pick general node color', "#ECD19A")
-            with col5:
-                assess_edge_color = st.color_picker('Pick assess edge color', "#FF7273")
-            with col6:
-                requires_edge_color = st.color_picker('Pick comes_after edge color', "#C0CB6B")
-            with col7:
-                isPartOf_edge_color = st.color_picker('Pick isPartOf edge color', "#ECD19A")
+        #     # 7 element color options for different entities, the sencond arg is the initial color based on pumpkin color palete
+        #     col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
+        #     with col1:
+        #         aER_node_color = st.color_picker('Pick aER node color', "#FF7273")
+        #     with col2:
+        #         rER_node_color = st.color_picker('Pick rER node color', "#FF7273")
+        #     with col3:
+        #         iER_node_color = st.color_picker('Pick iER node color', "#F69159")
+        #     with col4:
+        #         general_node_color = st.color_picker('Pick general node color', "#ECD19A")
+        #     with col5:
+        #         assess_edge_color = st.color_picker('Pick assess edge color', "#FF7273")
+        #     with col6:
+        #         requires_edge_color = st.color_picker('Pick comes_after edge color', "#C0CB6B")
+        #     with col7:
+        #         isPartOf_edge_color = st.color_picker('Pick isPartOf edge color', "#ECD19A")
             
         # set colors based on the selection
-        views.setColors(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color  )
-        # views.setColors("#FF7273", "#FF7273", "#F69159", "#ECD19A", "#FF7273", "#C0CB6B", "#ECD19A")
+        # views.setColors(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color  )
+        bg = "white"
+        views.setColors("#FF7273", "#FF7273", "#F69159", "#ECD19A", "#FF7273", "#C0CB6B", "#ECD19A")
 
        # the legend of the menu
         with st.expander("Legend"):
