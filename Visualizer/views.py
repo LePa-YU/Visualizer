@@ -219,13 +219,13 @@ def getToolTip(d_id, d_title, d_isPartOf, d_url):
     assumes = "NA\n"
     text+="Assumes: " + assumes
   elif(er_type == "rER"):
-    text = text + "Rubic ER\n\n"
+    text = text + "Rubric ER\n\n"
     er_assesses = er_container[2]
     text += "Assessment of aER" + str(int(er_assesses))+"\n"
     grade = "NA \n"
     text += "Grades: " + grade
 
-  text += "Avaiable link: "
+  text += "Available link: "
   if(d_url != "nil"):
     text += d_url +"\n"
   else:
