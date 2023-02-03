@@ -437,7 +437,7 @@ def create_Legend():
   G.add_node(5, label = "Instructional ER ", shape="text", title="legend", color= iER_node_color, x = 0, y = 100)
   G.add_node(6, label = "    ", shape="circle", title="legend", color= iER_node_color, x = 100, y = 100)
 
-  G.add_node(7, label = "Atomic iER", title="legend", shape = "text", color= general_node_color, x = 0, y = 150)
+  G.add_node(7, label = "Atomic iER       ", title="legend", shape = "text", color= general_node_color, x = 0, y = 150)
   G.add_node(0, label = "", title="legend", color= general_node_color, x = 100, y = 150)
 
   G.add_node(8, label = "Assesses", title="legend", shape = "text", color= general_node_color, x = 200, y = 0)
