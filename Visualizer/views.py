@@ -2,11 +2,10 @@
 import networkx as nx
 import pyvisToHtml
 import nxToPyvis
+import toolTip
 from pyvis.network import Network
 import pandas as pd
-import streamlit as st
 import textwrap
-import sys
 
 ## this file contains code for different visualzation/ views of the LePa visualizer --> aka model
 
@@ -137,45 +136,12 @@ def setFontColor(bg):
 #######################################################################
 # this method create the content for the tooltip
 def getToolTip(d_id, d_title, d_isPartOf, d_url):
-  text = ""
   data_zip = zip(df_id, df_type, df_assesses)
   data_list = list(data_zip)
-
-  # finding the type of the container
-  er_container = data_list[d_isPartOf] ## contains id and type
-  er_type = er_container[1]
-  if(er_type == "iER"):
-    text = text + "Instructional ER \n\n"
-     # type of the atomic ER e.g. ebook, video,...
-    type = " NA \n"
-    text += "Type:"+type
-    # name of the atomic ER
-    text += "Name: " + d_title + "\n"
-  elif(er_type == "aER"):
-    text = text + "Activity ER \n\n"
-    text += "Name: " + d_title + "\n"
-    assumes = "NA\n"
-    text+="Assumes: " + assumes
-  elif(er_type == "rER"):
-    text = text + "Rubric ER\n\n"
-    er_assesses = er_container[2]
-    text += "Assessment of aER" + str(int(er_assesses))+"\n"
-    grade = "NA \n"
-    text += "Grades: " + grade
-
-  text += "Available link: "
-  if(d_url != "nil"):
-    text += d_url +"\n"
-  else:
-    text += "NA \n"  
-  # adding unique id 
-  unique_id = er_type + str(d_id)
-  text += "ID: "+ unique_id
-  
+  toolTip.setData(data_list)
+  text = toolTip.getToolTip(d_id, d_title, d_isPartOf, d_url)
   return text
 
-
- 
 #########################################################################
 # All ERs View
 def All_ERs(dataframe, bg, file_label, view):
