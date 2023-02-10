@@ -190,6 +190,22 @@ def create_comesAfter_relationship_SA(G, d_id, d_type, comeaAFter_id):
 
       i = i +1
 #########################################################################
+#Assesses relationship:
+def create_assesses_relationship(G, d_id, d_assesses):
+  # finds the node that this node assesses
+  data_assess = zip(df_id)
+  for d1 in data_assess:
+    d1_id = d1[0]
+    if(d_assesses == d1_id):
+      G.add_edge(d_id, d1_id, color= assess_edge_color)
+#########################################################################
+def create_ispartof_relationship(G, current_id, current_isPartOf):
+  data_isPartOf = zip(df_id)
+  for d in data_isPartOf:
+    d_id = d[0]
+    if(current_isPartOf == d_id):     
+      G.add_edge( d_id,current_id, color = isPartOf_edge_color)
+#########################################################################
 # All ERs View
 def All_ERs(dataframe, bg, file_label, view):
   setData(dataframe)
@@ -227,22 +243,13 @@ def All_ERs(dataframe, bg, file_label, view):
       G.add_node(d_id, label = d_title, title=toolTip, color= general_node_color, isPartOf=d_isPartOf, url = d_url)
         
     ## relationship assesses if it exists:
-    # finds the node that this node assesses
-    data_assess = zip(df_id)
-    for d1 in data_assess:
-      d1_id = d1[0]
-      if(d_assesses == d1_id):
-        G.add_edge(d_id, d1_id, color= assess_edge_color)
+    create_assesses_relationship(G, d_id, d_assesses)
 
     ## relationship comesAfter:
     create_comesAfter_relationship(G, d_id, d[8])
 
     ## relationship isPartOf:
-    data_isPartOf = zip(df_id)
-    for d3 in data_isPartOf:
-      d3_id = d3[0]
-      if(d_isPartOf == d3_id):     
-        G.add_edge( d3_id,d_id, color = isPartOf_edge_color)
+    create_ispartof_relationship(G, d_id, d_isPartOf)
   
   # assign a file name
   file_name = "All_ERs.html"
@@ -261,6 +268,10 @@ def Course_Overview(dataframe, bg, file_label, view):
     d_type = d[4]
     d_alt = d[2]
     d_url = d[3]
+    try:
+      d_assesses = int(d[6])
+    except:
+      d_assesses = ""
     if(d_type=="aER"):
       G.add_node(d_id, label = d_title, shape="box", title=d_alt, color = aER_node_color, url = d_url)
     elif(d_type == "rER"):
@@ -273,15 +284,7 @@ def Course_Overview(dataframe, bg, file_label, view):
       G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = 1000, y = 0, fixed = True, url = d_url)
         
     ## relationship assesses:
-    try:
-      d_assesses = int(d[6])
-    except:
-      d_assesses = ""
-    data_assess = zip(df_id)
-    for d1 in data_assess:
-      d1_id = d1[0]
-      if(d_assesses == d1_id):
-        G.add_edge(d_id, d1_id, color= assess_edge_color)
+    create_assesses_relationship(G, d_id, d_assesses)
     
     ## relationship comesAfter:
     create_comesAfter_relationship(G, d_id, d[8])
@@ -318,11 +321,7 @@ def Summative_assessment_only(dataframe, bg, file_label, view):
       d_assesses = int(d[6])
     except:
       d_assesses = ""
-    data_assess = zip(df_id)
-    for d1 in data_assess:
-      d1_id = d1[0]
-      if(d_assesses == d1_id):
-        G.add_edge(d_id, d1_id, color= assess_edge_color)
+    create_assesses_relationship(G, d_id, d_assesses)
 
     ## relationship comesAfter:
     create_comesAfter_relationship_SA(G, d_id, d_type, d[8])
