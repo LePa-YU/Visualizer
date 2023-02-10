@@ -141,7 +141,54 @@ def getToolTip(d_id, d_title, d_isPartOf, d_url):
   toolTip.setData(data_list)
   text = toolTip.getToolTip(d_id, d_title, d_isPartOf, d_url)
   return text
+#########################################################################
+# comesAfter relationships
+#1. regular comesAfter
+def create_comesAfter_relationship(G, d_id, comeaAFter_id):
+  try:
+      d_comesAfter = int(comeaAFter_id)
+  except:
+      d_comesAfter = ""
 
+  data_ca = zip(df_id)
+  for d2 in data_ca:
+    d2_id = d2[0]
+    if(d_comesAfter == d2_id):
+        #use label to label the edges
+      G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
+
+#2. Summative Assessment only view
+def create_comesAfter_relationship_SA(G, d_id, d_type, comeaAFter_id):
+    try:
+      d_comesAfter = int(comeaAFter_id)
+    except:
+      d_comesAfter = ""
+
+    data_ca = zip(df_id, df_type, df_comesAfter)
+    data_list = list(data_ca)
+    i = 0; 
+    while i< len(data_list):
+      d1_id = data_list[i][0]
+      if(d_comesAfter == d1_id):
+        d1_type = data_list[i][1]
+        d1_comesAfter = data_list[i][2]
+        if((d1_type == "aER" and d_type == "aER") or d_type == "end"):
+          G.add_edge( d1_id, d_id, weight = 5, color= requires_edge_color)
+        elif(d1_type == "iER"):
+          j = i
+          while j > -1:
+            d2_id = data_list[j][0]
+            d2_type = data_list[j][1]
+            if(d1_comesAfter == d2_id):
+              if(d2_type == "iER"):
+                d1_comesAfter = data_list[j][2]
+                j = i
+              elif((d2_type == "aER" or d2_type =="start") and d_type =="aER"):
+                G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
+              
+            j = j -1
+
+      i = i +1
 #########################################################################
 # All ERs View
 def All_ERs(dataframe, bg, file_label, view):
@@ -173,7 +220,7 @@ def All_ERs(dataframe, bg, file_label, view):
       G.add_node(d_id, label = d_title, title=d_alt, shape="diamond", color= iER_node_color, size=20, x = -1000, y=0, fixed = True, url = d_url)
     elif(d_type == "end"):
       G.add_node(d_id, label = d_title, title=d_alt, shape="diamond", color= iER_node_color, size=20, x = 1000, y = 0, fixed = True, url = d_url)
-    # any entitiy that is not part of above. these can be part of isPartOf relationship. therefore isPartOf attribute is added
+    # any entitiy that is not part of above aka atomic ERs. these can be part of isPartOf relationship. therefore isPartOf attribute is added
     # to their attributes to be used for the collapsibility of the nodes that have the same relationship with a particualr node
     else:
       toolTip = getToolTip(d_id, d_title, d_isPartOf, d_url)
@@ -188,17 +235,7 @@ def All_ERs(dataframe, bg, file_label, view):
         G.add_edge(d_id, d1_id, color= assess_edge_color)
 
     ## relationship comesAfter:
-    try:
-      d_comesAfter = int(d[8])
-    except:
-      d_comesAfter = ""
-
-    data_ca = zip(df_id)
-    for d2 in data_ca:
-      d2_id = d2[0]
-      if(d_comesAfter == d2_id):
-        #use label to label the edges
-        G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
+    create_comesAfter_relationship(G, d_id, d[8])
 
     ## relationship isPartOf:
     data_isPartOf = zip(df_id)
@@ -247,16 +284,7 @@ def Course_Overview(dataframe, bg, file_label, view):
         G.add_edge(d_id, d1_id, color= assess_edge_color)
     
     ## relationship comesAfter:
-    try:
-      d_comesAfter = d[8]
-    except:
-      d_comesAfter = ""
-    data_ca = zip(df_id)
-    for d2 in data_ca:
-      d2_id = d2[0]
-      if(d_comesAfter == d2_id):
-        #use label to label the edges
-        G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
+    create_comesAfter_relationship(G, d_id, d[8])
   
   file_name = "Course_Overview.html"
   font_color = setFontColor(bg)
@@ -297,35 +325,7 @@ def Summative_assessment_only(dataframe, bg, file_label, view):
         G.add_edge(d_id, d1_id, color= assess_edge_color)
 
     ## relationship comesAfter:
-    try:
-      d_comesAfter = d[8]
-    except:
-      d_comesAfter = ""
-    data_ca = zip(df_id, df_type, df_comesAfter)
-    data_list = list(data_ca)
-    i = 0; 
-    while i< len(data_list):
-      d1_id = data_list[i][0]
-      if(d_comesAfter == d1_id):
-        d1_type = data_list[i][1]
-        d1_comesAfter = data_list[i][2]
-        if((d1_type == "aER" and d_type == "aER") or d_type == "end"):
-          G.add_edge( d1_id, d_id, weight = 5, color= requires_edge_color)
-        elif(d1_type == "iER"):
-          j = i
-          while j > -1:
-            d2_id = data_list[j][0]
-            d2_type = data_list[j][1]
-            if(d1_comesAfter == d2_id):
-              if(d2_type == "iER"):
-                d1_comesAfter = data_list[j][2]
-                j = i
-              elif((d2_type == "aER" or d2_type =="start") and d_type =="aER"):
-                G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
-              
-            j = j -1
-
-      i = i +1
+    create_comesAfter_relationship_SA(G, d_id, d_type, d[8])
   
   file_name = "Summative_assessment_only.html"
   font_color = setFontColor(bg)
