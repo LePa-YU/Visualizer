@@ -1,6 +1,7 @@
 # required imports
 import networkx as nx
 import pyvisToHtml
+import nxToPyvis
 from pyvis.network import Network
 import pandas as pd
 import streamlit as st
@@ -16,7 +17,9 @@ def setData(df):
   
   # all columns have try except clause. in case of missing column the attribute is assigned an empty value
   # note that rows accessed cannot be empty. if there is a possibility of them being empty then they should be set
-  # to nil
+  # to nil (check the data for alternative). 
+  
+  # precondition: node ID is an integer and this column cannot be empty in the dataset. 
   global df_id
   try:
     df_id = df['id']
@@ -24,6 +27,8 @@ def setData(df):
     df['id'] =""
     df_id = df['id']
 
+  #title is the name of the node that is displayed on the screen. this entry cannot be empty
+  # value type: String
   global df_title
   try:
     df_title = df['title']
@@ -31,6 +36,8 @@ def setData(df):
     df['title'] = ""
     df_title = df['title']
 
+  # an alternative name/ title for the er
+  #value type: String
   global df_alt
   try:
     df["alternative"].fillna("nil", inplace = True)
@@ -39,6 +46,9 @@ def setData(df):
     df['alternative']=""
     df_alt = df['alternative']
 
+  # the target url of the ER if it exist. note that if there is none the field must be filled with nil to not cause problem 
+  #in the computation later on.
+  # value type: String 
   global df_tURL
   try:
     df['targeturl'].fillna("nil", inplace = True)
@@ -47,6 +57,8 @@ def setData(df):
     df['targeturl'] =""
     df_tURL = df['targeturl']
 
+  # this field contains the type of ER. e.g. aER, iER, rER. if the ER is atomic then it include the file type for the atomic ER
+  #value type: String
   global df_type
   try:
     df_type = df['type']
@@ -54,6 +66,8 @@ def setData(df):
     df['type'] = ""
     df_type = df['type']
 
+  # this field contains isPartOf relation of the current node with any other node in the dataset. 
+  # value type: Integer
   global df_isPartOf
   try:
     df_isPartOf = df['ispartof']
@@ -61,6 +75,8 @@ def setData(df):
     df['ispartof'] = ""
     df_isPartOf = df['ispartof']
 
+  # this field contains assesses relation of the current node with any other node in the dataset. 
+  # Value type: Integer
   global df_assesses
   try:
     df_assesses = df['assesses']
@@ -68,6 +84,8 @@ def setData(df):
     df['assesses'] = ""
     df_assesses = df['assesses']
   
+   # this field contains requires relation of the current node with any other node in the dataset. 
+  # Value type: Integer
   try:
     df_requires = df['requires']
   except:
@@ -82,91 +100,11 @@ def setData(df):
     df['comesafter']=""
     df_comesAfter = df['comesafter']
 
- # this is  used for summative assessment only relationship
-  try:
-    df_comesAfter_aER = df["comesafter_aer"]
-  except:
-    df["comesafter_aer"]=""
-    df_comesAfter_aER = df["comesafter_aer"]
-  
-  # combine columns so each row represent one node 
+  # combine columns so each row represent one node
+  # the tuple order(id, title, alteranteive name, url, type, isPArtyof, assesses, requires, comesAfter)
   global data_ER
-  data_ER = zip(df_id, df_title, df_alt, df_tURL, df_type, df_isPartOf, df_assesses, df_requires, df_comesAfter, df_comesAfter_aER) # making tuples 
-
-# initial options
-layout = {
-    "randomSeed":10
-  }
-manipulation = {
-     "enabled": True
-}
-interaction = {
-     "hideEdgesOnZoom": True,
-     "hover": True,
-     "keyboard": {
-       "enabled": True
-     },
-     "multiselect": True,
-     "navigationButtons": True
-   
-}
-edges = {
-    "color": {
-      "inherit": True
-    },
-    "dashes": True,
-    "font": {
-      "strokeWidth": 5
-    },
-    "hoverWidth": 3.2,
-    "scaling": {
-      "label": {
-        "min": 24
-      }
-    }
- }
-nodes = {
-   "borderWidth": 3,
-     "borderWidthSelected": 6,
-     "shadow": {
-       "enabled": True,
-       "color": "white",
-       "size": 9,
-       "x": -1,
-       "y": -2
-     },
-     "shapeProperties": {
-       "borderRadius": 4
-     },
-     "size": 29,
-}
-
-# method  that converst networkx to pyvis
-def convert_to_pyvis(G, file_name, bg, file_label, view):
-  G2 = Network(height="750px", width="100%", bgcolor=bg, font_color=setFontColor(bg), notebook=True,heading='', directed=True)
-  G2.from_nx(G)
-  G2.options.edges = edges
-  G2.options.nodes = nodes
-  G2.options.interaction = interaction
-  G2.options.manipulation = manipulation
-  G2.options.layout = layout
-  
-  for node in G2.nodes:
-    id_string = node["label"]
-    width = 15
-    try:
-      wrapped_strings = textwrap.wrap(id_string, width)
-      wrapped_id =""; 
-      for line in wrapped_strings:
-        wrapped_id = textwrap.fill(id_string, width)
-      node["label"] = wrapped_id
-    except:
-      node["label"] = id_string
-
-  data = G2.get_network_data()
-
-  # the data is used to create an html file, args: data(network infor)/ file_name(name of the html file)/ bg(background selected by user-initially white)
-  pyvisToHtml.convertToHtml(data, file_name, bg, file_label, view)
+  data_ER_zip = zip(df_id, df_title, df_alt, df_tURL, df_type, df_isPartOf, df_assesses, df_requires, df_comesAfter) # making tuples 
+  data_ER = list(data_ER_zip)
 
 #########################################################################
 
@@ -306,7 +244,8 @@ def All_ERs(dataframe, bg, file_label, view):
   # assign a file name
   file_name = "All_ERs.html"
   #convert the network to pyvis
-  convert_to_pyvis(G, file_name, bg, file_label, view)
+  font_color = setFontColor(bg)
+  nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view)
 
 ########################################################################    
 # this method visualizes the course overview view which contains aER, rER, iER
@@ -354,13 +293,16 @@ def Course_Overview(dataframe, bg, file_label, view):
         G.add_edge( d2_id, d_id, weight = 5, color= requires_edge_color)
   
   file_name = "Course_Overview.html"
-  convert_to_pyvis(G,file_name, bg, file_label, view)
+  font_color = setFontColor(bg)
+  nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view)
 
 ##########################################################
 ########################################################################    
 # this method visualizes the summative assessment only view which contains aER and their rER
 def Summative_assessment_only(dataframe, bg, file_label, view):
+  # set data from the input csv file
   setData(dataframe)
+  # create networkx graph
   G = nx.DiGraph()
   for d in data_ER:
     d_id = d[0]
@@ -376,7 +318,7 @@ def Summative_assessment_only(dataframe, bg, file_label, view):
       G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = -1000, y=0, fixed = True, url = d_url)
     elif(d_type == "end"):
       G.add_node(d_id, label = d_title, shape="diamond", title=d_alt, color= iER_node_color, size=20, x = 1000, y = 0, fixed = True, url = d_url)
-   
+
     ## relationship assesses:
     try:
       d_assesses = int(d[6])
@@ -420,7 +362,8 @@ def Summative_assessment_only(dataframe, bg, file_label, view):
       i = i +1
   
   file_name = "Summative_assessment_only.html"
-  convert_to_pyvis(G,file_name, bg, file_label, view)
+  font_color = setFontColor(bg)
+  nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view)
 
 ########################################################################    
 # the legend is created manually but corresponds to the colors of entities
@@ -507,7 +450,6 @@ def create_Legend():
 }
   G2.options.edges = edges
   G2.options.nodes = nodes
-  G2.options.layout = layout
   G2.options.interaction = interaction
   data = G2.get_network_data()
   pyvisToHtml.convertToHtml_Legend(data)
