@@ -137,6 +137,7 @@ def convertToHtml(data, file_name, bg, file_label, view):
       var nodeUrl = node.url;
       if(nodeUrl != "nil"){
 			  //window.open(nodeUrl);
+        //using eventlistener and event.key we can specify keys to open a link when a node is selected
         document.addEventListener("keypress", (event)=>
         {
 				  if(event.key == "Enter")
