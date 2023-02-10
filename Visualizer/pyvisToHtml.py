@@ -136,8 +136,14 @@ def convertToHtml(data, file_name, bg, file_label, view):
       var node = nodeList.get(nodeId)[0];
       var nodeUrl = node.url;
       if(nodeUrl != "nil"){
-        
-          window.open(nodeUrl); 
+			  //window.open(nodeUrl);
+        document.addEventListener("keypress", (event)=>
+        {
+				  if(event.key == "Enter")
+          {
+					  window.open(nodeUrl); 
+				  }
+			  }); 
         
       }
     });
