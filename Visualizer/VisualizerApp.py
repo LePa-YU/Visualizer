@@ -11,7 +11,7 @@ import Legend
 #### this file contains code for streamlit deployment
 
 # function for customization menu
-def customization_menu(create_customization_menu):
+def __customization_menu(create_customization_menu):
     bg = "white"
     if(create_customization_menu):
         # customization menu --> temporary. comment before releases
@@ -105,7 +105,7 @@ if uploaded_file is not None:
             option=st.selectbox('',(view1, view2, view3))
         
         # get the backgrounf color of the canvas. if true creates customization menu and if false set the colors to the pumpkin color palette
-        bg = customization_menu(False)
+        bg = __customization_menu(False)
 
        # the legend of the menu
         with st.expander("Legend"):
