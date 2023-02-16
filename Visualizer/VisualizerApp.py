@@ -10,6 +10,46 @@ import Legend
 
 #### this file contains code for streamlit deployment
 
+# function for customization menu
+def customization_menu(create_customization_menu):
+    bg = "white"
+    if(create_customization_menu):
+        # customization menu --> temporary. comment before releases
+        with st.expander("Customization"):
+            # Theme options
+            
+            # background
+            bg = ""
+            # dark --> boolean -- true then background is set to black and text to white/ fasle then background is set to white and text is set to black
+            dark = st.checkbox("dark theme")
+            if(dark):
+                bg = "black"
+            else:
+                bg = "white"
+
+            # 7 element color options for different entities, the sencond arg is the initial color based on pumpkin color palete
+            col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
+            with col1:
+                aER_node_color = st.color_picker('Pick aER node color', "#FF7273")
+            with col2:
+                rER_node_color = st.color_picker('Pick rER node color', "#FF7273")
+            with col3:
+                iER_node_color = st.color_picker('Pick iER node color', "#F69159")
+            with col4:
+                general_node_color = st.color_picker('Pick general node color', "#ECD19A")
+            with col5:
+                assess_edge_color = st.color_picker('Pick assess edge color', "#FF7273")
+            with col6:
+                requires_edge_color = st.color_picker('Pick comes_after edge color', "#C0CB6B")
+            with col7:
+                isPartOf_edge_color = st.color_picker('Pick isPartOf edge color', "#ECD19A")
+            
+        # set colors based on the selection
+        views.setColors(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color  ) 
+    else:
+        views.setColors("#FF7273", "#FF7273", "#F69159", "#ECD19A", "#FF7273", "#C0CB6B", "#ECD19A")
+    return bg
+
 #global variables:
 global uploaded_file
 
@@ -34,6 +74,7 @@ if demo:
     uploaded_file = "FAKE1001.csv"
 # otherwise get the file from browser
 else:
+    # to write on the file browser itself
     st.markdown(
     """
     <style>
@@ -63,40 +104,8 @@ if uploaded_file is not None:
             view3 = 'View 3: All ERs'
             option=st.selectbox('',(view1, view2, view3))
         
-        # # customization menu --> temporary. comment before releases
-        # with st.expander("Customization"):
-        #     # Theme options
-            
-        #     # background
-        #     bg = ""
-        #     # dark --> boolean -- true then background is set to black and text to white/ fasle then background is set to white and text is set to black
-        #     dark = st.checkbox("dark theme")
-        #     if(dark):
-        #         bg = "black"
-        #     else:
-        #         bg = "white"
-
-        #     # 7 element color options for different entities, the sencond arg is the initial color based on pumpkin color palete
-        #     col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
-        #     with col1:
-        #         aER_node_color = st.color_picker('Pick aER node color', "#FF7273")
-        #     with col2:
-        #         rER_node_color = st.color_picker('Pick rER node color', "#FF7273")
-        #     with col3:
-        #         iER_node_color = st.color_picker('Pick iER node color', "#F69159")
-        #     with col4:
-        #         general_node_color = st.color_picker('Pick general node color', "#ECD19A")
-        #     with col5:
-        #         assess_edge_color = st.color_picker('Pick assess edge color', "#FF7273")
-        #     with col6:
-        #         requires_edge_color = st.color_picker('Pick comes_after edge color', "#C0CB6B")
-        #     with col7:
-        #         isPartOf_edge_color = st.color_picker('Pick isPartOf edge color', "#ECD19A")
-            
-        # set colors based on the selection
-        # views.setColors(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color  )
-        bg = "white"
-        views.setColors("#FF7273", "#FF7273", "#F69159", "#ECD19A", "#FF7273", "#C0CB6B", "#ECD19A")
+        # get the backgrounf color of the canvas. if true creates customization menu and if false set the colors to the pumpkin color palette
+        bg = customization_menu(False)
 
        # the legend of the menu
         with st.expander("Legend"):
@@ -117,6 +126,7 @@ if uploaded_file is not None:
             label = uploaded_file
         else:
             label = uploaded_file.name
+        
         # create the temp html files for each views
         views.All_ERs(dataframe, bg, label, view3)
         views.Course_Overview(dataframe, bg, label, view2)
@@ -137,4 +147,3 @@ if uploaded_file is not None:
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)
         
- ###   
