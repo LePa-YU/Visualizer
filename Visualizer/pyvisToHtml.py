@@ -131,21 +131,20 @@ def convertToHtml(data, file_name, bg, file_label, view):
         }
 
         //url opening
-      var nodeId = params.nodes;
-      var node = nodeList.get(nodeId)[0];
-      var nodeUrl = node.url;
-      if(!(nodeUrl === "nan" )){
+      nodeId = params.nodes;
+      node = nodeList.get(nodeId)[0];
+      nodeUrl = node.url;
         //using eventlistener and event.key we can specify keys to open a link when a node is selected
-        document.addEventListener("keypress", (event)=>
-        {
-				  if(event.key == "Enter")
+      document.addEventListener("keypress", (event)=>
+      {
+				  if(!(nodeUrl === "nan" ) && event.key == "Enter")
           {
 					  window.open(nodeUrl);
-            nodeUrl = ""; 
+            delete nodeUrl;  
 				  }
-			  }); 
+			}); 
         
-      }
+      
       }
 
         
