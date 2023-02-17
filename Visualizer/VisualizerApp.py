@@ -6,7 +6,7 @@ import networkx as nx
 from pyvis.network import Network
 import views
 import requests
-import legend
+import Legend
 
 #### this file contains code for streamlit deployment
 class _Customization_menu:
@@ -117,7 +117,7 @@ if uploaded_file is not None:
         with st.expander("Legend"):
             # the legend is created using `create_legend` method of views.py which creates a temp html file called 
             # index.legend.html
-            legend = legend.Legend()
+            legend = Legend.Legend()
             colors = view.getColors()
             legend.setColors(colors)
             legend.create_legend(bg, font_color)
