@@ -129,24 +129,26 @@ def convertToHtml(data, file_name, bg, file_label, view):
             // document.getElementById("demo").innerHTML = v;
             network.cluster(getC(v));
         }
-      }
 
         //url opening
       var nodeId = params.nodes;
       var node = nodeList.get(nodeId)[0];
       var nodeUrl = node.url;
-      if(nodeUrl != "nil"){
-			  //window.open(nodeUrl);
+      if(!(nodeUrl === "nan" )){
         //using eventlistener and event.key we can specify keys to open a link when a node is selected
         document.addEventListener("keypress", (event)=>
         {
 				  if(event.key == "Enter")
           {
-					  window.open(nodeUrl); 
+					  window.open(nodeUrl);
+            nodeUrl = ""; 
 				  }
 			  }); 
         
       }
+      }
+
+        
     });
 
     // cluster/ collapse options based on isPartOf. this method returns the cluster options to be used for the clustering
@@ -197,7 +199,7 @@ def convertToHtml(data, file_name, bg, file_label, view):
 
 
 #######################################
-def convertToHtml_Legend(data):
+def convertToHtml_Legend(data, bg):
     file_html = open("index_Legend.html", "w")
     # Adding the input data to the HTML file
     file_html.write('''
@@ -209,6 +211,7 @@ def convertToHtml_Legend(data):
             #mynetwork {
                 width: 100%;
                 border: 1px solid lightgray;
+                height: 300px; 
             }
         </style>
         <!-- <script src="network.js"></script> -->
@@ -250,6 +253,13 @@ def convertToHtml_Legend(data):
     jsonOb_options_format = format(jsonOb_options)  
     file_html.write("\t var options = "+str(jsonOb_options_format) +";"+"\n")
 
+     # background data
+    jsonOb_bg = json.dumps(bg)
+    jsonOb_bg_format = format(jsonOb_bg)  
+    file_html.write("\t\t var bg = "+str(jsonOb_bg_format) +";"+"\n")
+    file_html.write('''
+        document.getElementById('mynetwork').style.background = bg; 
+     ''')
 
     # add rest of the html
     file_html.write('''
@@ -269,7 +279,7 @@ def convertToHtml_Legend(data):
             color: n.color,
                 size: n.size, 
                 shape: n.shape,
-                font: { face: "Monospace", align: "left" }
+                font: {face: "Monospace", align: "left", color: n.font.color }
             };
             
             nodeList.add(n_info); 
@@ -298,7 +308,7 @@ def convertToHtml_Legend(data):
     
     var network = new vis.Network(container, data, opt);
     network.autoResize = false; 
-    network.setSize(width, '200px');
+    network.setSize(width, '300px');
     
        
 
