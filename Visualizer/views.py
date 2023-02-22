@@ -10,7 +10,7 @@ import csv
 class Views:
     def __init__(self, dataCSV):
         # self.data = dataCSV.to_records(index=False).tolist()
-
+        dataCSV.columns = dataCSV.columns.str.lower()
         self.data = dataCSV.to_dict('records')
 
         self.nodeList=[]
