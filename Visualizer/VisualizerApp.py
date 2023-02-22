@@ -97,6 +97,11 @@ container = st.container()
 if uploaded_file is not None:
     # store file in a dataframe 
     dataframe = pd.read_csv(uploaded_file)
+    #get file labe:
+    if(type(uploaded_file) == str):
+        label = uploaded_file
+    else:
+        label = uploaded_file.name
     view = views.Views(dataframe)
 
     with container: # add items to container
@@ -128,13 +133,6 @@ if uploaded_file is not None:
 
         # another container for the html components of the actual visualization
         container_html = st.container()
-        
-        
-        #get file labe:
-        if(type(uploaded_file) == str):
-            label = uploaded_file
-        else:
-            label = uploaded_file.name
         
         # create the temp html files for each views
         view.Summative_assessment_only( bg, font_color, label, view1)

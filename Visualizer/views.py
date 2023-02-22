@@ -4,12 +4,15 @@ import pyvisToHtml
 import nxToPyvis
 import node
 import colors
-import math
+import csv
 
 
 class Views:
     def __init__(self, dataCSV):
-        self.data = dataCSV.to_records(index=False).tolist()
+        # self.data = dataCSV.to_records(index=False).tolist()
+
+        self.data = dataCSV.to_dict('records')
+
         self.nodeList=[]
         for er in self.data:
             er_node = node.Node(er)
