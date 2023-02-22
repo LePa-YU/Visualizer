@@ -1,21 +1,14 @@
 
 
 class Node:
-    ##input er is a tuple containing data from single row of input CSV file
-    # er[0]: ID
-    # er[1]: title
-    # er[2]: alternative
-    # er[3]: targetUrl
-    # er[4]: Type
-    # er[5]: isPartOf
-    # er[6]: assesses
-    # er[7]: comesAfter
+    ##input er is a dict object. the spelling of the columns are important but the their order is not important
     def __init__(self,er):
-       self.er_id = er[0]
-       self.er_title = er[1]
-       self.er_alternative = er[2]
-       self.er_url = er[3]
-       self.er_type = er[4]
-       self.er_isPartOf = er[5]
-       self.er_assesses = er[6]
-       self.er_comesAfter = er[7]
+       print(er)
+       self.er_id = er["ID"]
+       self.er_title = er["Title"]
+       self.er_alternative = er["Alternative"]
+       self.er_url = er["targetUrl"]
+       self.er_type = er["Type"]
+       self.er_isPartOf = er["isPartOf"]
+       self.er_assesses = er["assesses"]
+       self.er_comesAfter = er["comesAfter"]
