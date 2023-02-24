@@ -144,7 +144,7 @@ class Views:
                     nodeB = required_node.er_id
                     if(r == comesAfter_id):
                         G.remove_edge(comesAfter_id, node.er_id )
-                        G.add_edge(nodeA, nodeB, weight = 5, color= "blue")
+                        G.add_edge(nodeB, nodeA, weight = 5, color= "blue")
                     if (type(isPartOf_id) != str and is_composite_relationship):
                         container_node = Views.__Find_node(self,isPartOf_id)
                         required_node_isPartOf =   Views.__get_node_int_id(required_node.er_isPartOf) 
@@ -152,9 +152,9 @@ class Views:
                         if(container_node.er_id != required_node_container.er_id):
                             nodeA =  container_node.er_id
                             nodeB = required_node_container.er_id
-                            G.add_edge(nodeA, nodeB, weight = 5, color= "blue")
+                            G.add_edge(nodeB, nodeA, weight = 5, color= "blue")
                     else:
-                        G.add_edge(nodeA, nodeB, weight = 5, color= "blue")
+                        G.add_edge(nodeB, nodeA, weight = 5, color= "blue")
 
     def __create_isPartOf_relationship(self, G):
         for node in self.nodeList: 
