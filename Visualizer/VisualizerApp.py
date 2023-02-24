@@ -111,7 +111,8 @@ if uploaded_file is not None:
             view1 = 'View 1: Summative assessment only'
             view2 = 'View 2: Course Overview'
             view3 = 'View 3: All ERs'
-            option=st.selectbox('',(view1, view2, view3))
+            view4 = "View 4: Requirements"
+            option=st.selectbox('',(view1, view2, view3, view4))
         
         # get the backgrounf color of the canvas. if true creates customization menu and if false set the colors to the pumpkin color palette
         custom_menu = _Customization_menu(False, view)
@@ -138,6 +139,7 @@ if uploaded_file is not None:
         view.Summative_assessment_only( bg, font_color, label, view1)
         view.Course_Overview( bg, font_color, label, view3)
         view.All_ERs( bg, font_color, label, view3)
+        view.Requirements(bg, font_color, label, view4)
         
          # adding html file to the container based on the selction made by user
         with container_html:
@@ -153,4 +155,9 @@ if uploaded_file is not None:
                 HtmlFile = open("All_ERs.html", 'r', encoding='utf-8')
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)
+            elif option == view4:
+                HtmlFile = open("requirements.html", 'r', encoding='utf-8')
+                source_code = HtmlFile.read() 
+                st.components.v1.html(source_code, height=820, scrolling=True)
+            
 

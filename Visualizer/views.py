@@ -56,6 +56,20 @@ class Views:
         file_name = "All_ERs.html"
         #convert the network to pyvis
         nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view)
+    
+    def Requirements(self, bg,font_color, file_label, view):
+         # create networkx graph
+        G = nx.DiGraph()
+        #aER = true, rER = true, iER = true, atomicER=true
+        Views.__addNodes(self, G, True, True, True, True)
+        Views.__create_assesses_relationship(self, G)
+        Views. __create_comesAfter_relationship(self, G)
+        Views. __create_isPartOf_relationship(self, G)
+        Views.__create_requires_relationshipAll(self, G, True)
+        # assign a file name
+        file_name = "requirements.html"
+        #convert the network to pyvis
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view)
 
     def setColors(self, aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node):
         self.all_colors = colors.Color(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node)
@@ -82,10 +96,7 @@ class Views:
     
     def __create_assesses_relationship(self, G):
         for node in self.nodeList:
-            try: 
-                assess_id = int(node.er_assesses)
-            except:
-                assess_id = ""
+            assess_id = Views.__get_node_int_id(node.er_assesses)
             if(type(assess_id) == int):
                 node_being_assessed = Views.__Find_node(self,assess_id)
                 G.add_edge(node.er_id, node_being_assessed.er_id, color= self.all_colors.assess_relationship_color)
@@ -96,19 +107,13 @@ class Views:
     
     def __create_comesAfter_relationship_SA(self, G):
         for node in self.nodeList:
-            try:
-                comesAfter_id = int(node.er_comesAfter)
-            except:
-                comesAfter_id = ""
+            comesAfter_id = Views.__get_node_int_id(node.er_comesAfter)
             if(type(comesAfter_id) == int):
                 last_node = Views.__Find_node(self,comesAfter_id)
                 current_type = node.er_type
                 if( current_type=="aER" or current_type=="end"):
                     while(last_node.er_type == "iER"):
-                        try:
-                            last_node_comesAfter = int(last_node.er_comesAfter)
-                        except:
-                            last_node_comesAfter = ""
+                        last_node_comesAfter = Views.__get_node_int_id(last_node.er_comesAfter)
                         if(type(last_node_comesAfter)==int):
                             last_node = Views.__Find_node(self,last_node_comesAfter)
                     G.add_edge(last_node.er_id,node.er_id, weight = 5, color= self.all_colors.comesAfter_relationship_color)
@@ -116,24 +121,55 @@ class Views:
 
     def __create_comesAfter_relationship(self, G):
         for node in self.nodeList:
-            try: 
-                comesAfter_id = int(node.er_comesAfter)
-            except:
-                comesAfter_id = ""
+            comesAfter_id = Views.__get_node_int_id(node.er_comesAfter)
             if(type(comesAfter_id) == int):
                 last_node = Views.__Find_node(self,comesAfter_id)
                 G.add_edge(last_node.er_id, node.er_id, weight = 5, color= self.all_colors.comesAfter_relationship_color)
+    
+    def __create_requires_relationshipAll(self, G, is_composite_relationship):
+        for node in self.nodeList:
+            require_id_list = []
+            comesAfter_id = Views.__get_node_int_id(node.er_comesAfter)
+            isPartOf_id = Views.__get_node_int_id(node.er_isPartOf)
+            nodeA = node.er_id
+            require_ids = node.er_requires
+
+            if(type(require_ids) == str and require_ids !=""):
+                require_id_list = require_ids.split(",")
+            
+            if(len(require_id_list) != 0 ):
+                for i in range(len(require_id_list)):
+                    r = Views.__get_node_int_id(require_id_list[i])
+                    required_node =  Views.__Find_node(self,r)
+                    nodeB = required_node.er_id
+                    if(r == comesAfter_id):
+                        G.remove_edge(comesAfter_id, node.er_id )
+                        G.add_edge(nodeA, nodeB, weight = 5, color= "blue")
+                    if (type(isPartOf_id) != str and is_composite_relationship):
+                        container_node = Views.__Find_node(self,isPartOf_id)
+                        required_node_isPartOf =   Views.__get_node_int_id(required_node.er_isPartOf) 
+                        required_node_container = Views.__Find_node(self, required_node_isPartOf )
+                        if(container_node.er_id != required_node_container.er_id):
+                            nodeA =  container_node.er_id
+                            nodeB = required_node_container.er_id
+                            G.add_edge(nodeA, nodeB, weight = 5, color= "blue")
+                    else:
+                        G.add_edge(nodeA, nodeB, weight = 5, color= "blue")
 
     def __create_isPartOf_relationship(self, G):
-        for node in self.nodeList:
-            try: 
-                isPartOf_id = int(node.er_isPartOf)
-            except:
-                isPartOf_id = ""
+        for node in self.nodeList: 
+            isPartOf_id = Views.__get_node_int_id(node.er_isPartOf)
             if(type(isPartOf_id) == int):
                 container_node = Views.__Find_node(self,isPartOf_id)
                 G.add_edge(container_node.er_id, node.er_id, color= self.all_colors.isPartOf_relationship_color)
     
+    def __get_node_int_id(node):
+        try: 
+            node_id_int = int(node)
+        except:
+             node_id_int = ""
+        return  node_id_int
+        
     def __get_tool_tip(self, node):
         text = ""
         try: 
@@ -160,7 +196,9 @@ class Views:
             except:
                 assess_id = ""
             text = text + "Rubric ER\n\n"  
-            er_assesses = Views.__Find_node(self,assess_id).er_id
+            er_assesses = ""
+            if(type(assess_id)!=str):
+                er_assesses = Views.__Find_node(self,assess_id).er_id
             text += "Assessment of aER" + str(er_assesses) + "\n"
             grade = "NA \n"
             text += "Grades: " + grade
