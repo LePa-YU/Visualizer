@@ -1,6 +1,6 @@
 
 class Color:
-    def __init__(self, aER, rER, iER, general, assesses, comesAfter, isPartOf, start, end):
+    def __init__(self, aER, rER, iER, general, assesses, comesAfter, isPartOf, start, end, requires):
         self.aER_node_color = aER
         self.rER_node_color = rER
         self.iER_node_color = iER
@@ -10,4 +10,5 @@ class Color:
         self.isPartOf_relationship_color = isPartOf
         self.start_node_color = start
         self.end_node_color = end
+        self.requires_node_color = requires
         

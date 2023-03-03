@@ -27,7 +27,7 @@ class _Customization_menu:
                     bg = "white"
 
                 # 7 element color options for different entities, the sencond arg is the initial color based on pumpkin color palete
-                col1, col2, col3, col4, col5, col6, col7, col8, col9 = st.columns(9)
+                col1, col2, col3, col4, col5, col6, col7, col8, col9. col10 = st.columns(10)
                 with col1:
                     aER_node_color = st.color_picker('aER node color', "#FF7273")
                 with col2:
@@ -45,12 +45,14 @@ class _Customization_menu:
                 with col8:
                     start_node_color = st.color_picker('start node color', "#36454F")
                 with col9:
-                    end_node_color = st.color_picker('end node color', "#36454F")
+                    end_node_color = st.color_picker('end node color', "#C0CB6B")
+                with col10:
+                    requires_node_color = st.color_picker('requires color', "#C0CB6B")
                 
             # set colors based on the selection
-            self.view.setColors(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, comesAfter_edge_color, isPartOf_edge_color, start_node_color, end_node_color ) 
+            self.view.setColors(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, comesAfter_edge_color, isPartOf_edge_color, start_node_color, end_node_color, requires_node_color  ) 
         else:
-            self.view.setColors("#FF7273", "#FF7273", "#F69159", "#ECD19A", "#FF7273", "#C0CB6B", "#ECD19A", "#36454F", "#36454F")
+            self.view.setColors("#FF7273", "#FF7273", "#F69159", "#ECD19A", "#FF7273", "#C0CB6B", "#ECD19A", "#C0CB6B", "#C0CB6B", "#BF87F2")
         return bg
 
 #global variables:

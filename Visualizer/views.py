@@ -71,8 +71,8 @@ class Views:
         #convert the network to pyvis
         nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view)
 
-    def setColors(self, aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node):
-        self.all_colors = colors.Color(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node)
+    def setColors(self, aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node):
+        self.all_colors = colors.Color(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node)
 
     def getColors(self):
         return self.all_colors
@@ -144,7 +144,7 @@ class Views:
                     nodeB = required_node.er_id
                     if(r == comesAfter_id):
                         G.remove_edge(comesAfter_id, node.er_id )
-                        G.add_edge(nodeB, nodeA, weight = 5, color= "blue")
+                        G.add_edge(nodeB, nodeA, weight = 5, color= self.all_colors.requires_node_color)
                     if (type(isPartOf_id) != str and is_composite_relationship):
                         container_node = Views.__Find_node(self,isPartOf_id)
                         required_node_isPartOf =   Views.__get_node_int_id(required_node.er_isPartOf) 
@@ -152,9 +152,9 @@ class Views:
                         if(container_node.er_id != required_node_container.er_id):
                             nodeA =  container_node.er_id
                             nodeB = required_node_container.er_id
-                            G.add_edge(nodeB, nodeA, weight = 5, color= "blue")
+                            G.add_edge(nodeB, nodeA, weight = 5, color= self.all_colors.requires_node_color)
                     else:
-                        G.add_edge(nodeB, nodeA, weight = 5, color= "blue")
+                        G.add_edge(nodeB, nodeA, weight = 5, color= self.all_colors.requires_node_color)
 
     def __create_isPartOf_relationship(self, G):
         for node in self.nodeList: 
