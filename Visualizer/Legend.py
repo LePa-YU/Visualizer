@@ -63,19 +63,22 @@ class Legend:
     G.add_node(7, label = "Atomic iER       ", title="legend", shape = "text", color= self.colors.atomic_node_color, x = 0, y = 150)
     G.add_node(0, label = "", title="legend", color= self.colors.atomic_node_color, x = 100, y = 150)
 
-    G.add_node(8, label = "Assesses", title="legend", shape = "text", color= self.colors.assess_relationship_color, x = 200, y = 0)
-    G.add_node(9, label = " ",title="legend", shape="text", x = 260, y = 0)
-    G.add_node(10, label = " ",title="legend", shape="text", x = 400, y = 0)
+    G.add_node(8, label = "Assesses relation", title="legend", shape = "text", color= self.colors.assess_relationship_color, x = 250, y = 0)
+    G.add_node(9, label = " ",title="legend", shape="text", x = 400, y = 0)
+    G.add_node(10, label = " ",title="legend", shape="text", x = 550, y = 0)
     G.add_edge(9, 10,color= self.colors.assess_relationship_color)
     
-    G.add_node(11, label = "  ComesBefore", title="legend", shape = "text", color= self.colors.comesAfter_relationship_color, x = 200, y = 50)
-    G.add_node(12, label = " ",title="legend", shape="text", x = 260, y = 50)
-    G.add_node(13, label = " ",title="legend", shape="text", x = 400, y = 50)
+    G.add_node(11, label = "    Comes Before relation", title="legend", shape = "text", color= self.colors.comesAfter_relationship_color, x = 250, y = 50)
+    G.add_node(12, label = " ",title="legend", shape="text", x = 400, y = 50)
+    G.add_node(13, label = " ",title="legend", shape="text", x = 550, y = 50)
     G.add_edge(12, 13,weight = 5, color= self.colors.comesAfter_relationship_color)
   
-    G.add_node(14, label = "isPartOf", title="legend", shape = "text", color= self.colors.isPartOf_relationship_color, x = 200, y = 100)
-    G.add_node(15, label = " ",title="legend", shape="text", x = 260, y = 100)
-    G.add_node(16, label = " ",title="legend", shape="text", x = 400, y = 100)
+    G.add_node(14, label = "  is Part Of relation", title="legend", shape = "text", color= self.colors.isPartOf_relationship_color, x = 250, y = 100)
+    G.add_node(15, label = " ",title="legend", shape="text", x = 400, y = 100)
+    G.add_node(16, label = " ",title="legend", shape="text", x = 550, y = 100)
     G.add_edge(15, 16, color = self.colors.isPartOf_relationship_color)
     
-    
+    G.add_node(17, label = "      is Required By relation", title="legend", shape = "text", color= self.colors.requires_node_color, x = 250, y = 150)
+    G.add_node(18, label = " ",title="legend", shape="text", x = 400, y = 150)
+    G.add_node(19, label = " ",title="legend", shape="text", x = 550, y = 150)
+    G.add_edge(18, 19, weight = 5, color = self.colors.requires_node_color)
