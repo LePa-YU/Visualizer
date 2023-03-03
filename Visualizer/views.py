@@ -78,18 +78,27 @@ class Views:
         return self.all_colors
 
     def __addNodes(self, G, has_aER, has_rER, has_iER, has_atomicER):
+        start_position= Views.__get_position(self)
+        end_position = - start_position
+        position = start_position + 450
+        rER_position = 50
+
         for node in self.nodeList:
             node_type = node.er_type
             if(node_type == "start"):
-                G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="diamond", color= self.all_colors.start_node_color,size=20, x = -1000, y=0, fixed = True, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="diamond", color= self.all_colors.start_node_color,size=20, x = start_position, y=0, fixed = True, url = str(node.er_url))
             elif(node_type == "end"):
-                G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="diamond", color= self.all_colors.end_node_color,size=20, x = 1000, y=0, fixed = True, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="diamond", color= self.all_colors.end_node_color,size=20, x = end_position, y=0, fixed = True, url = str(node.er_url))
             elif(node_type =="aER" and has_aER):
-                G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="box", color= self.all_colors.aER_node_color, url = str(node.er_url))
+                # G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="box", color= self.all_colors.aER_node_color, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="box", color= self.all_colors.aER_node_color,x = position, y=0, url = str(node.er_url))
+                position = position+450
             elif(node_type =="rER" and has_rER):
                 G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="triangle" , color= self.all_colors.rER_node_color, url = str(node.er_url))
             elif(node_type =="iER" and has_iER):
-                G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="circle" , color= self.all_colors.iER_node_color, url = str(node.er_url))
+                # G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="circle" , color= self.all_colors.iER_node_color, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="circle" , color= self.all_colors.iER_node_color,x = position, y=0, fixed = True, url = str(node.er_url))
+                position = position + 450
             elif(has_atomicER):
                 toolTip = Views.__get_tool_tip(self, node)
                 G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color, isPartOf=node.er_isPartOf, url = str(node.er_url))
@@ -145,7 +154,7 @@ class Views:
                     if(r == comesAfter_id):
                         G.remove_edge(comesAfter_id, node.er_id )
                         G.add_edge(nodeB, nodeA, weight = 5, color= self.all_colors.requires_node_color)
-                    if (type(isPartOf_id) != str and is_composite_relationship):
+                    elif (r != comesAfter_id and(type(isPartOf_id) != str and is_composite_relationship)):
                         container_node = Views.__Find_node(self,isPartOf_id)
                         required_node_isPartOf =   Views.__get_node_int_id(required_node.er_isPartOf) 
                         required_node_container = Views.__Find_node(self, required_node_isPartOf )
@@ -153,8 +162,7 @@ class Views:
                             nodeA =  container_node.er_id
                             nodeB = required_node_container.er_id
                             G.add_edge(nodeB, nodeA, weight = 5, color= self.all_colors.requires_node_color)
-                    else:
-                        G.add_edge(nodeB, nodeA, weight = 5, color= self.all_colors.requires_node_color)
+                    
 
     def __create_isPartOf_relationship(self, G):
         for node in self.nodeList: 
@@ -212,3 +220,14 @@ class Views:
         text += "ID: "+ unique_id
 
         return text
+    
+    def __get_position(self):
+        count = 0
+        for node in self.nodeList:
+            if(node.er_type == "aER" or node.er_type == "iER"):
+                count = count + 1
+        num_edges = count + 1
+        # each edge has a lenght of 450
+        required_space = num_edges * 540
+        init_position = -(required_space/2)
+        return init_position
