@@ -7,7 +7,9 @@ import textwrap
 
 # initial options
 layout = {
-    "randomSeed":10
+    "randomSeed":10, 
+    "improvedLayout": True, 
+    "clusterThreshold":10,
   }
 manipulation = {
      "enabled": True
