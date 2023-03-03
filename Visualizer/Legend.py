@@ -68,7 +68,7 @@ class Legend:
     G.add_node(10, label = " ",title="legend", shape="text", x = 400, y = 0)
     G.add_edge(9, 10,color= self.colors.assess_relationship_color)
     
-    G.add_node(11, label = "  ComesAfter", title="legend", shape = "text", color= self.colors.comesAfter_relationship_color, x = 200, y = 50)
+    G.add_node(11, label = "  ComesBefore", title="legend", shape = "text", color= self.colors.comesAfter_relationship_color, x = 200, y = 50)
     G.add_node(12, label = " ",title="legend", shape="text", x = 260, y = 50)
     G.add_node(13, label = " ",title="legend", shape="text", x = 400, y = 50)
     G.add_edge(12, 13,weight = 5, color= self.colors.comesAfter_relationship_color)
@@ -77,3 +77,5 @@ class Legend:
     G.add_node(15, label = " ",title="legend", shape="text", x = 260, y = 100)
     G.add_node(16, label = " ",title="legend", shape="text", x = 400, y = 100)
     G.add_edge(15, 16, color = self.colors.isPartOf_relationship_color)
+    
+    
