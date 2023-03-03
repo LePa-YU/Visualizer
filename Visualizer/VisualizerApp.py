@@ -68,8 +68,8 @@ st.write("[Other datasets](https://github.com/LePa-YU/Datasets)")
 
 # if demo is selected
 if demo: 
-    # get demo file from github in the development branch --> change to one from main branch if necessary
-    url = "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Data/FAKE1001.csv"
+    # get demo file from github in the Dataset repo (main) 
+    url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/FAKE1001/FAKE1001.csv"
     res = requests.get(url, allow_redirects=True)
     # create a temp csv file (added to .gitignore) and copy the material from the link to this file
     with open('FAKE1001.csv','wb') as file:
