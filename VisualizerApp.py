@@ -90,6 +90,7 @@ else:
     """, unsafe_allow_html=True)
     # user enters csv file in the file_uplader with the following properties
     uploaded_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
+    # uploaded_files = st.file_uploader("Choose a CSV file", accept_multiple_files=True)
 
     
 # container that contains menus + visualizer --> helps with responsive attribute
