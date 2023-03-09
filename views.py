@@ -124,7 +124,6 @@ class Views:
                 if( current_type=="aER" or current_type=="end"):
                     limit = len(self.nodeList)
                     while(last_node.er_type == "iER" and limit <= 0):
-                        print("y")
                         last_node_comesAfter = Views.__get_node_int_id(last_node.er_comesAfter)
                         if(type(last_node_comesAfter)==int):
                             last_node = Views.__Find_node(self,last_node_comesAfter)
