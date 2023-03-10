@@ -18,6 +18,7 @@ streamlit==1.13.0
 the python used for this project is `Python 3.10.7`
 ### Using Visualizer
 
+
 #### 1. Web based (recommended)
 1. The visualizer tool is hosted on the streamlit cloud which can be accessed through the link 
 <a href="https://lepa-visualizer-development.streamlit.app/" target="_blank">here</a>.  
