@@ -127,9 +127,8 @@ class Views:
                         last_node_comesAfter = Views.__get_node_int_id(last_node.er_comesAfter)
                         if(type(last_node_comesAfter)==int):
                             last_node = Views.__Find_node(self,last_node_comesAfter)
-                        limit = limit -1
-                        if(limit ==0):
-                            break
+                        else:
+                            break  
                     G.add_edge(last_node.er_id,node.er_id, weight = 5, color= self.all_colors.comesAfter_relationship_color)
 
 
