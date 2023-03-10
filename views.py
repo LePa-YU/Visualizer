@@ -8,6 +8,7 @@ import csv
 
 
 class Views:
+    spacing = 400
     def __init__(self, dataCSV):
         # self.data = dataCSV.to_records(index=False).tolist()
         dataCSV.columns = dataCSV.columns.str.lower()
@@ -22,8 +23,8 @@ class Views:
     def Summative_assessment_only(self, bg, font_color, file_label, view):
         # create networkx graph
         G = nx.DiGraph()
-        # aER = true, rER = true, iER = false, atomicER=false
-        Views.__addNodes(self, G, True, True, False, False)
+        # aER = true, rER = true, iER = false, atomicER=false, isFixed
+        Views.__addNodes(self, G, True, True, False, False, False)
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship_SA(self, G)
        
@@ -36,8 +37,8 @@ class Views:
     def Course_Overview(self, bg,font_color, file_label, view):
         # create networkx graph
         G = nx.DiGraph()
-        #aER = true, rER = true, iER = false, atomicER=false
-        Views.__addNodes(self, G, True, True, True, False)
+        #aER = true, rER = true, iER = false, atomicER=false, isFixed
+        Views.__addNodes(self, G, True, True, True, False, False)
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship(self, G)
         # assign a file name
@@ -48,8 +49,8 @@ class Views:
     def  All_ERs(self, bg,font_color, file_label, view):
         # create networkx graph
         G = nx.DiGraph()
-        #aER = true, rER = true, iER = true, atomicER=true
-        Views.__addNodes(self, G, True, True, True, True)
+        #aER = true, rER = true, iER = true, atomicER=true, isFixed
+        Views.__addNodes(self, G, True, True, True, True, False)
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship(self, G)
         Views. __create_isPartOf_relationship(self, G)
@@ -61,12 +62,12 @@ class Views:
     def Requirements(self, bg,font_color, file_label, view):
          # create networkx graph
         G = nx.DiGraph()
-        #aER = true, rER = true, iER = true, atomicER=true
-        Views.__addNodes(self, G, True, True, True, True)
+        #aER = true, rER = true, iER = true, atomicER=true, isFixed
+        Views.__addNodes(self, G, True, True, True, True, True)
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship(self, G)
         Views. __create_isPartOf_relationship(self, G)
-        Views.__create_requires_relationshipAll(self, G, True)
+        Views.__create_requires_relationshipAll(self, G)
         # assign a file name
         file_name = "requirements.html"
         #convert the network to pyvis
@@ -78,10 +79,10 @@ class Views:
     def getColors(self):
         return self.all_colors
 
-    def __addNodes(self, G, has_aER, has_rER, has_iER, has_atomicER):
-        start_position= Views.__get_position(self)
+    def __addNodes(self, G, has_aER, has_rER, has_iER, has_atomicER, isFixed):
+        start_position= Views.__get_position(self, has_aER, has_iER, has_atomicER)
         end_position = - start_position
-        position = start_position + 450
+        position = start_position + self.spacing
         rER_position = 50
 
         for node in self.nodeList:
@@ -91,15 +92,19 @@ class Views:
             elif(node_type == "end"):
                 G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="diamond", color= self.all_colors.end_node_color,size=20, x = end_position, y=0, fixed = True, url = str(node.er_url))
             elif(node_type =="aER" and has_aER):
-                # G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="box", color= self.all_colors.aER_node_color, url = str(node.er_url))
-                G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="box", color= self.all_colors.aER_node_color,x = position, y=0, url = str(node.er_url))
-                position = position+450
+                if(isFixed):
+                    G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="box", color= self.all_colors.aER_node_color,x = position, y=0, url = str(node.er_url))
+                    position = position+self.spacing
+                else:
+                    G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="box", color= self.all_colors.aER_node_color, url = str(node.er_url))
             elif(node_type =="rER" and has_rER):
                 G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="triangle" , color= self.all_colors.rER_node_color, url = str(node.er_url))
             elif(node_type =="iER" and has_iER):
-                # G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="circle" , color= self.all_colors.iER_node_color, url = str(node.er_url))
-                G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="circle" , color= self.all_colors.iER_node_color,x = position, y=0, fixed = True, url = str(node.er_url))
-                position = position + 450
+                if(isFixed):
+                    G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="circle" , color= self.all_colors.iER_node_color,x = position, y=0, fixed = True, url = str(node.er_url))
+                    position = position + self.spacing
+                else:
+                    G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="circle" , color= self.all_colors.iER_node_color, url = str(node.er_url))
             elif(has_atomicER):
                 toolTip = Views.__get_tool_tip(self, node)
                 G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color, isPartOf=node.er_isPartOf, url = str(node.er_url))
@@ -139,34 +144,47 @@ class Views:
                 last_node = Views.__Find_node(self,comesAfter_id)
                 G.add_edge(last_node.er_id, node.er_id, weight = 5, color= self.all_colors.comesAfter_relationship_color)
     
-    def __create_requires_relationshipAll(self, G, is_composite_relationship):
+    def __create_requires_relationshipAll(self, G):
         for node in self.nodeList:
             require_id_list = []
             comesAfter_id = Views.__get_node_int_id(node.er_comesAfter)
             isPartOf_id = Views.__get_node_int_id(node.er_isPartOf)
-            nodeA = node.er_id
+            current_node_id = node.er_id
+            current_node_type = node.er_type
+            current_is_Atomic = Views.__isAtomic(current_node_type)
             require_ids = node.er_requires
-
-            if(type(require_ids) == str and require_ids !=""):
+            if(type(require_ids) == str and require_ids!=""):
                 require_id_list = require_ids.split(",")
+            else:
+                try:
+                    require_ids = int(require_ids)
+                except:
+                    require_ids = ""
+                
+                if(type(require_ids)==int):
+                    require_id_list.append(require_ids)
             
-            if(len(require_id_list) != 0 ):
-                for i in range(len(require_id_list)):
-                    r = Views.__get_node_int_id(require_id_list[i])
-                    required_node =  Views.__Find_node(self,r)
-                    nodeB = required_node.er_id
-                    if(r == comesAfter_id):
-                        G.remove_edge(comesAfter_id, node.er_id )
-                        G.add_edge(nodeB, nodeA, weight = 5, color= self.all_colors.requires_node_color)
-                    elif (r != comesAfter_id and(type(isPartOf_id) != str and is_composite_relationship)):
-                        container_node = Views.__Find_node(self,isPartOf_id)
-                        required_node_isPartOf =   Views.__get_node_int_id(required_node.er_isPartOf) 
-                        required_node_container = Views.__Find_node(self, required_node_isPartOf )
-                        if(container_node.er_id != required_node_container.er_id):
-                            nodeA =  container_node.er_id
-                            nodeB = required_node_container.er_id
-                            G.add_edge(nodeB, nodeA, weight = 5, color= self.all_colors.requires_node_color)
-                    
+            # if(len(require_id_list) != 0 ):
+            for i in range(len(require_id_list)):
+                r = Views.__get_node_int_id(require_id_list[i])
+                required_node =  Views.__Find_node(self,r)
+                required_node_id = required_node.er_id
+                required_node_type = required_node.er_type
+                required_is_Atomic = Views.__isAtomic(required_node_type)
+                    # G.add_edge(required_node_id, current_node_id , weight = 5, color= self.all_colors.requires_node_color)
+                if(required_node_id == comesAfter_id): # if the there is both comesAfter and requires between two nodes
+                        # G.remove_edge(comesAfter_id, node.er_id )
+                    G.add_edge(required_node_id, current_node_id, weight = 5, color= self.all_colors.requires_node_color)
+                elif(required_is_Atomic and current_is_Atomic):
+                    current_container = Views.__get_container_Node(self, node)
+                    current_container_id = current_container.er_id
+                    current_container_comesAfter = current_container.er_comesAfter
+                    required_container = Views.__get_container_Node(self, required_node)
+                    required_container_id = required_container.er_id
+                    # print(current_container_type + " " +required_container_type)
+                    if(current_container_id != required_container_id and required_container_id != current_container_comesAfter):
+                        num_nodes_in_between = Views.__get_num_of_Node_in_between(self, current_container, required_container)
+                        G.add_edge(required_container_id, current_container_id, weight = 5, color= self.all_colors.requires_node_color, length=self.spacing*num_nodes_in_between*2)
 
     def __create_isPartOf_relationship(self, G):
         for node in self.nodeList: 
@@ -175,6 +193,26 @@ class Views:
                 container_node = Views.__Find_node(self,isPartOf_id)
                 G.add_edge(container_node.er_id, node.er_id, color= self.all_colors.isPartOf_relationship_color)
     
+    def __get_num_of_Node_in_between(self, nodeA, nodeB):
+        res = -1
+        current_node = nodeA
+        final_node= nodeB
+        while(current_node.er_id != final_node.er_id):
+            res = res + 1
+            current_node_comesAfter = Views.__get_node_int_id( current_node.er_comesAfter)
+            current_node = Views.__Find_node(self, current_node_comesAfter)
+
+            
+        return res
+
+
+    def __get_container_Node(self, node):
+        current_isPartOf = Views.__get_node_int_id(node.er_isPartOf)
+        container_node = self.nodeList[current_isPartOf]
+        return container_node
+    def __isAtomic(node_type):
+        return node_type!="aER" and node_type!="iER" and node_type!="rER" and node_type!="start" and node_type!="end"
+
     def __get_node_int_id(node):
         try: 
             node_id_int = int(node)
@@ -226,13 +264,21 @@ class Views:
 
         return text
     
-    def __get_position(self):
+    def __get_position(self, has_aER, has_iER, has_atomic):
         count = 0
-        for node in self.nodeList:
-            if(node.er_type == "aER" or node.er_type == "iER"):
-                count = count + 1
+        if(has_aER==True and has_iER==False):
+            for node in self.nodeList:
+                if(node.er_type == "aER"):
+                    count = count + 1
+
+        elif(has_aER==True and has_iER==True):
+            for node in self.nodeList:
+                if(node.er_type == "aER" or node.er_type == "iER"):
+                    count = count + 1
         num_edges = count + 1
         # each edge has a lenght of 450
-        required_space = num_edges * 540
+        required_space = num_edges * self.spacing
+        if(has_atomic):
+            required_space = required_space * 1.5
         init_position = -(required_space/2)
         return init_position
