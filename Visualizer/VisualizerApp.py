@@ -63,61 +63,214 @@ global uploaded_file
 st.set_page_config(page_title = "LePa Visualizer", layout="wide", initial_sidebar_state="collapsed")
 st.title('LePa: Learning Path Project')
 
-# demo check box --> boolean if true the demo is displayed 
-demo = st.checkbox("Load FAKE1001 dataset or  Load other dataset (default) ")
-# link to other dataset
-st.write("[Other datasets](https://github.com/LePa-YU/Datasets)")
+# # demo check box --> boolean if true the demo is displayed 
+# demo = st.checkbox("Load FAKE1001 dataset or  Load other dataset (default) ")
+# # link to other dataset
+# st.write("[Other datasets](https://github.com/LePa-YU/Datasets)")
 
-# if demo is selected
-if demo: 
-    # get demo file from github in the Dataset repo (main) 
-    url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/FAKE1001/FAKE1001.csv"
-    res = requests.get(url, allow_redirects=True)
-    # create a temp csv file (added to .gitignore) and copy the material from the link to this file
-    with open('FAKE1001.csv','wb') as file:
-        file.write(res.content)
-    uploaded_file = "FAKE1001.csv"
-# otherwise get the file from browser
-else:
-    # to write on the file browser itself
-    st.markdown(
-    """
-    <style>
-        .css-9ycgxx::before {
-            content: "Load dataset, ";
-        }
-    <style>
-    """, unsafe_allow_html=True)
-    # user enters csv file in the file_uplader with the following properties
-    uploaded_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
-    # uploaded_files = st.file_uploader("Choose a CSV file", accept_multiple_files=True)
+# # if demo is selected
+# if demo: 
+#     # get demo file from github in the Dataset repo (main) 
+#     url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/FAKE1001/FAKE1001.csv"
+#     res = requests.get(url, allow_redirects=True)
+#     # create a temp csv file (added to .gitignore) and copy the material from the link to this file
+#     with open('FAKE1001.csv','wb') as file:
+#         file.write(res.content)
+#     uploaded_file = "FAKE1001.csv"
+# # otherwise get the file from browser
+# else:
+#     # to write on the file browser itself
+#     st.markdown(
+#     """
+#     <style>
+#         .css-9ycgxx::before {
+#             content: "Load dataset, ";
+#         }
+#     <style>
+#     """, unsafe_allow_html=True)
+#     # user enters csv file in the file_uplader with the following properties
+#     uploaded_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
+#     # uploaded_files = st.file_uploader("Choose a CSV file", accept_multiple_files=True)
 
     
+# # container that contains menus + visualizer --> helps with responsive attribute
+# container = st.container()
+
+# # if a file a selected (demo or user browsed file) then we go through visualization
+# if uploaded_file is not None:
+#     # store file in a dataframe 
+#     dataframe = pd.read_csv(uploaded_file)
+#     #get file labe:
+#     if(type(uploaded_file) == str):
+#         label = uploaded_file
+#     else:
+#         label = uploaded_file.name
+#     view = views.Views(dataframe)
+
+#     with container: # add items to container
+    
+#         col1, col2= st.columns(2)
+#         with col1:
+#             fake_ds = "FAKE1001"
+#             ds_2311 = "EECS 2311"
+#             ds_3461 = "EECS 3461"
+#             ds_1530 = "EECS 1530"
+#             ds_4462 = "EECS 4462"
+#             dataset_options=st.selectbox('',(fake_ds, ds_2311, ds_3461, ds_1530, ds_4462))
+#             if dataset_options == fake_ds:
+#                 # get demo file from github in the Dataset repo (main) 
+#                 url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/FAKE1001/FAKE1001.csv"
+#                 res = requests.get(url, allow_redirects=True)
+#                 # create a temp csv file (added to .gitignore) and copy the material from the link to this file
+#                 with open('FAKE1001.csv','wb') as file:
+#                     file.write(res.content)
+#                 uploaded_file = "FAKE1001.csv"
+#         with col2:
+#             view1 = 'View 1: Summative assessment only'
+#             view2 = 'View 2: Course Overview'
+#             view3 = 'View 3: All ERs'
+#             view4 = "View 4: Requirements"
+#             option=st.selectbox('',(view1, view2, view3, view4))
+        
+#         # get the backgrounf color of the canvas. if true creates customization menu and if false set the colors to the pumpkin color palette
+#         custom_menu = _Customization_menu(False, view)
+#         bg = custom_menu.create_menu()
+#         font_color = "black" if bg == "white" else "white"
+    
+#        # the legend of the menu
+#         with st.expander("Legend"):
+#             # the legend is created using `create_legend` method of views.py which creates a temp html file called 
+#             # index.legend.html
+#             legend = Legend.Legend()
+#             colors = view.getColors()
+#             legend.setColors(colors)
+#             legend.create_legend(bg, font_color)
+#             HtmlFile = open("index_Legend.html", 'r', encoding='utf-8')
+#             source_code = HtmlFile.read() 
+#             # the Static html file is added to the streamlit using the components
+#             st.components.v1.html(source_code, height = 300)
+
+#         # another container for the html components of the actual visualization
+#         container_html = st.container()
+        
+#         # create the temp html files for each views
+#         view.Summative_assessment_only( bg, font_color, label, view1)
+#         view.Course_Overview( bg, font_color, label, view3)
+#         view.All_ERs( bg, font_color, label, view3)
+#         view.Requirements(bg, font_color, label, view4)
+        
+#          # adding html file to the container based on the selction made by user
+#         with container_html:
+#             if option == view1:
+#                 HtmlFile = open("Summative_assessment_only.html", 'r', encoding='utf-8')
+#                 source_code = HtmlFile.read() 
+#                 st.components.v1.html(source_code, height=820, scrolling=True)
+#             elif option == view2:
+#                 HtmlFile = open("Course_Overview.html", 'r', encoding='utf-8')
+#                 source_code = HtmlFile.read() 
+#                 st.components.v1.html(source_code, height=820, scrolling=True)
+#             elif option == view3:
+#                 HtmlFile = open("All_ERs.html", 'r', encoding='utf-8')
+#                 source_code = HtmlFile.read() 
+#                 st.components.v1.html(source_code, height=820, scrolling=True)
+#             elif option == view4:
+#                 HtmlFile = open("requirements.html", 'r', encoding='utf-8')
+#                 source_code = HtmlFile.read() 
+#                 st.components.v1.html(source_code, height=820, scrolling=True)
+            
+
+
 # container that contains menus + visualizer --> helps with responsive attribute
 container = st.container()
 
-# if a file a selected (demo or user browsed file) then we go through visualization
-if uploaded_file is not None:
-    # store file in a dataframe 
-    dataframe = pd.read_csv(uploaded_file)
-    #get file labe:
-    if(type(uploaded_file) == str):
-        label = uploaded_file
-    else:
-        label = uploaded_file.name
-    view = views.Views(dataframe)
+with container:
+    # link to other dataset
+    st.write("[Other datasets](https://github.com/LePa-YU/Datasets)")
+    
+    col1, col2= st.columns(2)
+    with col1:
+        fake_ds = "FAKE1001"
+        ds_2311 = "EECS 2311"
+        ds_3461 = "EECS 3461"
+        ds_1530 = "EECS 1530"
+        ds_4462 = "EECS 4462"
+        enter_own = "Enter your own data"
+        dataset_options=st.selectbox('',(fake_ds, ds_2311, ds_3461, ds_1530, ds_4462, enter_own))
+    with col2:
+        view1 = 'View 1: Summative assessment only'
+        view2 = 'View 2: Course Overview'
+        view3 = 'View 3: All ERs'
+        view4 = "View 4: Requirements"
+        option=st.selectbox('',(view1, view2, view3, view4))
+    
+    if dataset_options == fake_ds:
+        # get demo file from github in the Dataset repo (main) 
+        url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/FAKE1001/FAKE1001.csv"
+        res = requests.get(url, allow_redirects=True)
+        # create a temp csv file (added to .gitignore) and copy the material from the link to this file
+        with open('FAKE1001.csv','wb') as file:
+            file.write(res.content)
+            uploaded_file = "FAKE1001.csv"
+    elif dataset_options == ds_2311:
+        # get demo file from github in the Dataset repo (main) 
+        url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS2311/2311_dataset_overview.csv"
+        res = requests.get(url, allow_redirects=True)
+        # create a temp csv file (added to .gitignore) and copy the material from the link to this file
+        with open('2311_dataset_overview.csv','wb') as file:
+            file.write(res.content)
+            uploaded_file = "2311_dataset_overview.csv"
+    elif dataset_options == ds_3461:
+        # get demo file from github in the Dataset repo (main) 
+        url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS3461/3461_dataset_overview.csv"
+        res = requests.get(url, allow_redirects=True)
+        # create a temp csv file (added to .gitignore) and copy the material from the link to this file
+        with open('3461_dataset_overview.csv','wb') as file:
+            file.write(res.content)
+            uploaded_file = "3461_dataset_overview.csv"
+    elif dataset_options == ds_1530:
+        # get demo file from github in the Dataset repo (main) 
+        url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS1530/1530_dataset_overview.csv"
+        res = requests.get(url, allow_redirects=True)
+        # create a temp csv file (added to .gitignore) and copy the material from the link to this file
+        with open('3461_dataset_overview.csv','wb') as file:
+            file.write(res.content)
+            uploaded_file = "3461_dataset_overview.csv"
+    elif dataset_options == ds_4462:
+        # get demo file from github in the Dataset repo (main) 
+        url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS4462/4462_dataset_overview.csv"
+        res = requests.get(url, allow_redirects=True)
+        # create a temp csv file (added to .gitignore) and copy the material from the link to this file
+        with open('4462_dataset_overview.csv','wb') as file:
+            file.write(res.content)
+            uploaded_file = "4462_dataset_overview.csv"
+    elif dataset_options == enter_own:
+        # to write on the file browser itself
+        st.markdown(
+                """
+                <style>
+                    .css-9ycgxx::before {
+                        content: "Load dataset, ";
+                    }
+                <style>
+                """
+        , unsafe_allow_html=True)
+        # user enters csv file in the file_uplader with the following properties
+        uploaded_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
 
-    with container: # add items to container
-       #Select view menu
-        with st.expander("Select View"):
-            #  different views to be selected
-            view1 = 'View 1: Summative assessment only'
-            view2 = 'View 2: Course Overview'
-            view3 = 'View 3: All ERs'
-            view4 = "View 4: Requirements"
-            option=st.selectbox('',(view1, view2, view3, view4))
+    
+    
+    if uploaded_file is not None:
+        # store file in a dataframe 
+        dataframe = pd.read_csv(uploaded_file)
+        #get file labe:
+        if(type(uploaded_file) == str):
+            label = uploaded_file
+        else:
+            label = uploaded_file.name
         
-        # get the backgrounf color of the canvas. if true creates customization menu and if false set the colors to the pumpkin color palette
+        view = views.Views(dataframe)
+
+                # get the backgrounf color of the canvas. if true creates customization menu and if false set the colors to the pumpkin color palette
         custom_menu = _Customization_menu(False, view)
         bg = custom_menu.create_menu()
         font_color = "black" if bg == "white" else "white"
@@ -162,5 +315,4 @@ if uploaded_file is not None:
                 HtmlFile = open("requirements.html", 'r', encoding='utf-8')
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)
-            
-
+        
