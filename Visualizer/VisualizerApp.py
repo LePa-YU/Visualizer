@@ -95,7 +95,7 @@ with container:
             file.write(res.content)
             uploaded_file = "FAKE1001.csv"
     elif dataset_options == ds_2311:
-        # get demo file from github in the Dataset repo (main) 
+        # get EECS 2311 file from github in the Dataset repo (main) 
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS2311/2311_dataset_overview.csv"
         res = requests.get(url, allow_redirects=True)
         # create a temp csv file (added to .gitignore) and copy the material from the link to this file
@@ -103,7 +103,7 @@ with container:
             file.write(res.content)
             uploaded_file = "2311_dataset_overview.csv"
     elif dataset_options == ds_3461:
-        # get demo file from github in the Dataset repo (main) 
+        # get EECS 3461 file from github in the Dataset repo (main) 
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS3461/3461_dataset_overview.csv"
         res = requests.get(url, allow_redirects=True)
         # create a temp csv file (added to .gitignore) and copy the material from the link to this file
@@ -111,15 +111,15 @@ with container:
             file.write(res.content)
             uploaded_file = "3461_dataset_overview.csv"
     elif dataset_options == ds_1530:
-        # get demo file from github in the Dataset repo (main) 
+        # get EECS 1530 file from github in the Dataset repo (main) 
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS1530/1530_dataset_overview.csv"
         res = requests.get(url, allow_redirects=True)
         # create a temp csv file (added to .gitignore) and copy the material from the link to this file
-        with open('3461_dataset_overview.csv','wb') as file:
+        with open('1530_dataset_overview.csv','wb') as file:
             file.write(res.content)
-            uploaded_file = "3461_dataset_overview.csv"
+            uploaded_file = "1530_dataset_overview.csv"
     elif dataset_options == ds_4462:
-        # get demo file from github in the Dataset repo (main) 
+        # get EECS 4462 file from github in the Dataset repo (main) 
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS4462/4462_dataset_overview.csv"
         res = requests.get(url, allow_redirects=True)
         # create a temp csv file (added to .gitignore) and copy the material from the link to this file
