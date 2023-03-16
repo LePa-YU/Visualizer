@@ -186,7 +186,7 @@ with container:
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)
     # the legend of the menu
-    with st.expander("Legend"):
+        with st.expander("Legend"):
             # the legend is created using `create_legend` method of views.py which creates a temp html file called 
             # index.legend.html
             legend = Legend.Legend()
