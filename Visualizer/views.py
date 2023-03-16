@@ -10,7 +10,7 @@ import csv
 class Views:
     spacing = 400
     def __init__(self, dataCSV):
-        # self.data = dataCSV.to_records(index=False).tolist()
+        # all the data headers are in lower case to ensure consistent connection in Node class
         dataCSV.columns = dataCSV.columns.str.lower()
         self.data = dataCSV.to_dict('records')
 
@@ -27,8 +27,6 @@ class Views:
         Views.__addNodes(self, G, True, True, False, False, False)
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship_SA(self, G)
-       
-
         # assign a file name
         file_name = "Summative_assessment_only.html"
         #convert the network to pyvis
@@ -72,7 +70,7 @@ class Views:
         file_name = "requirements.html"
         #convert the network to pyvis
         nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view)
-
+    
     def setColors(self, aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node):
         self.all_colors = colors.Color(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node)
 
@@ -88,23 +86,23 @@ class Views:
         for node in self.nodeList:
             node_type = node.er_type
             if(node_type == "start"):
-                G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="diamond", color= self.all_colors.start_node_color,size=20, x = start_position, y=0, fixed = True, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.start_node_color,size=20, x = start_position, y=0, fixed = True, url = str(node.er_url))
             elif(node_type == "end"):
-                G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="diamond", color= self.all_colors.end_node_color,size=20, x = end_position, y=0, fixed = True, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.end_node_color,size=20, x = end_position, y=0, fixed = True, url = str(node.er_url))
             elif(node_type =="aER" and has_aER):
                 if(isFixed):
-                    G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="box", color= self.all_colors.aER_node_color,x = position, y=0, url = str(node.er_url))
+                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="box", color= self.all_colors.aER_node_color,x = position, y=0, url = str(node.er_url))
                     position = position+self.spacing
                 else:
-                    G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="box", color= self.all_colors.aER_node_color, url = str(node.er_url))
+                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="box", color= self.all_colors.aER_node_color, url = str(node.er_url))
             elif(node_type =="rER" and has_rER):
-                G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="triangle" , color= self.all_colors.rER_node_color, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="triangle" , color= self.all_colors.rER_node_color, url = str(node.er_url))
             elif(node_type =="iER" and has_iER):
                 if(isFixed):
-                    G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="circle" , color= self.all_colors.iER_node_color,x = position, y=0, fixed = True, url = str(node.er_url))
+                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="circle" , color= self.all_colors.iER_node_color,x = position, y=0, fixed = True, url = str(node.er_url))
                     position = position + self.spacing
                 else:
-                    G.add_node(node.er_id, label = node.er_title, title=node.er_alternative, shape="circle" , color= self.all_colors.iER_node_color, url = str(node.er_url))
+                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="circle" , color= self.all_colors.iER_node_color, url = str(node.er_url))
             elif(has_atomicER):
                 toolTip = Views.__get_tool_tip(self, node)
                 G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color, isPartOf=node.er_isPartOf, url = str(node.er_url))
