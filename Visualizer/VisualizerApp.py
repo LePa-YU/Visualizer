@@ -163,7 +163,7 @@ with container:
         
         # create the temp html files for each views
         view.Summative_assessment_only( bg, font_color, label, view1)
-        view.Course_Overview( bg, font_color, label, view3)
+        view.Course_Overview( bg, font_color, label, view2)
         view.All_ERs( bg, font_color, label, view3)
         view.Requirements(bg, font_color, label, view4)
         
