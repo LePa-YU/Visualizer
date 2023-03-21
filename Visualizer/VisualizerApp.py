@@ -167,13 +167,13 @@ with container:
         
         view = views.Views(dataframe)
 
-        # get the backgrounf color of the canvas. if true creates customization menu and if false set the colors to the pumpkin color palette
-        custom_menu = _Customization_menu(False, view)
-        bg = custom_menu.create_menu()
-        font_color = "black" if bg == "white" else "white"
-
         # another container for the html components of the actual visualization
         container_html = st.container()
+
+        # get the backgrounf color of the canvas. if true creates customization menu and if false set the colors to the pumpkin color palette
+        custom_menu = _Customization_menu(True, view)
+        bg = custom_menu.create_menu()
+        font_color = "black" if bg == "white" else "white"
         
         # create the temp html files for each views
         view.Summative_assessment_only( bg, font_color, label, view1)
