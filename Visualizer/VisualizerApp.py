@@ -20,12 +20,18 @@ class _Customization_menu:
             with st.expander("Customization"):
                 # Theme options
                 # dark --> boolean -- true then background is set to black and text to white/ fasle then background is set to white and text is set to black
-                dark = st.checkbox("dark theme")
-                if(dark):
-                    bg = "black"
-                else:
-                    bg = "white"
+                st.subheader("Options:")
+                colbg, colphys = st.columns([1, 8])
+                with colbg:
+                    dark = st.checkbox("dark theme")
+                    if(dark):
+                        bg = "black"
+                    else:
+                        bg = "white"
+                with colphys:
+                    self.physics = st.checkbox("physics")
 
+                st.subheader("Select Colors:")
                 # 7 element color options for different entities, the sencond arg is the initial color based on pumpkin color palete
                 col1, col2, col3, col4, col5, col6, col7, col8 = st.columns(8)
                 with col1:
@@ -173,13 +179,14 @@ with container:
         # get the backgrounf color of the canvas. if true creates customization menu and if false set the colors to the pumpkin color palette
         custom_menu = _Customization_menu(True, view)
         bg = custom_menu.create_menu()
+        physics = custom_menu.physics
         font_color = "black" if bg == "white" else "white"
         
         # create the temp html files for each views
-        view.Summative_assessment_only( bg, font_color, label, view1)
-        view.Course_Overview( bg, font_color, label, view2)
-        view.All_ERs( bg, font_color, label, view3)
-        view.Requirements(bg, font_color, label, view4)
+        view.Summative_assessment_only( bg, font_color, label, view1, physics)
+        view.Course_Overview( bg, font_color, label, view2, physics)
+        view.All_ERs( bg, font_color, label, view3, physics)
+        view.Requirements(bg, font_color, label, view4, physics)
         
          # adding html file to the container based on the selction made by user
         with container_html:

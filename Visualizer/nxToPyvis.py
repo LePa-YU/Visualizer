@@ -56,11 +56,12 @@ nodes = {
 }
 
 # method  that convert networkx to pyvis
-def convert_to_pyvis(G, file_name, bg, font_color,file_label, view):
+def convert_to_pyvis(G, file_name, bg, font_color,file_label, view, physics):
 
     # create pyvis network
     G2 = Network(height="750px", width="100%", bgcolor=bg, font_color=font_color, notebook=True, directed=True)
     # add networkx to pyvis network
+    if (physics):  G2.show_buttons(filter_=['physics'])
     G2.from_nx(G)
 
     # add individual options
