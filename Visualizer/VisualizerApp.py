@@ -27,7 +27,7 @@ class _Customization_menu:
                     bg = "white"
 
                 # 7 element color options for different entities, the sencond arg is the initial color based on pumpkin color palete
-                col1, col2, col3, col4, col5, col6, col7, col8, col9, col10 = st.columns(10)
+                col1, col2, col3, col4, col5, col6, col7, col8 = st.columns(8)
                 with col1:
                     aER_node_color = st.color_picker('aER node color', "#FF7273")
                 with col2:
@@ -44,15 +44,29 @@ class _Customization_menu:
                     isPartOf_edge_color = st.color_picker('isPartOf edge color', "#ECD19A")
                 with col8:
                     start_node_color = st.color_picker('start node color', "#C0CB6B")
+                
+                col9, col10, col11, col12, col13, col14, col15, col16 = st.columns(8)
                 with col9:
                     end_node_color = st.color_picker('end node color', "#C0CB6B")
                 with col10:
-                    requires_node_color = st.color_picker('requires color', "#C0CB6B")
+                    requires_node_color = st.color_picker('requires color', "#BF87F2")
+                with col11:
+                    atomic_img = st.color_picker('atomic: images', "#A24052")
+                with col12:
+                    atomic_mov = st.color_picker('atomic: videos', "#FBF495")   
+                with col13:
+                    atomic_software = st.color_picker('atomic: software', "#93C539")
+                with col14:
+                    atomic_audio = st.color_picker('atomic: Audio', "#437C6C") 
+                with col15:
+                    atomic_text = st.color_picker('atomic: text', "#20C18B")
+                with col16:
+                    atomic_dataset = st.color_picker('atomic: dataset', "#5FC7D3")   
                 
             # set colors based on the selection
-            self.view.setColors(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, comesAfter_edge_color, isPartOf_edge_color, start_node_color, end_node_color, requires_node_color  ) 
+            self.view.setColors(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, comesAfter_edge_color, isPartOf_edge_color, start_node_color, end_node_color, requires_node_color, atomic_img, atomic_mov, atomic_software, atomic_audio, atomic_text, atomic_dataset) 
         else:
-            self.view.setColors("#FF7273", "#FF7273", "#F69159", "#ECD19A", "#FF7273", "#C0CB6B", "#ECD19A", "#C0CB6B", "#C0CB6B", "#BF87F2")
+            self.view.setColors("#FF7273", "#FF7273", "#F69159", "#ECD19A", "#FF7273", "#C0CB6B", "#ECD19A", "#C0CB6B", "#C0CB6B", "#BF87F2", "#A24052", "#FBF495", "#93C539", "#437C6C", "#20C18B", "#5FC7D3")
         return bg
 
 #global variables:

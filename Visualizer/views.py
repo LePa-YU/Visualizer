@@ -24,7 +24,7 @@ class Views:
         # create networkx graph
         G = nx.DiGraph()
         # aER = true, rER = true, iER = false, atomicER=false, isFixed
-        Views.__addNodes(self, G, True, True, False, False, False)
+        Views.__addNodes(self, G, True, True, False, False, False, False)
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship_SA(self, G)
         # assign a file name
@@ -36,7 +36,7 @@ class Views:
         # create networkx graph
         G = nx.DiGraph()
         #aER = true, rER = true, iER = false, atomicER=false, isFixed
-        Views.__addNodes(self, G, True, True, True, False, False)
+        Views.__addNodes(self, G, True, True, True, False, False, False)
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship(self, G)
         # assign a file name
@@ -48,7 +48,7 @@ class Views:
         # create networkx graph
         G = nx.DiGraph()
         #aER = true, rER = true, iER = true, atomicER=true, isFixed
-        Views.__addNodes(self, G, True, True, True, True, False)
+        Views.__addNodes(self, G, True, True, True, True, False, True)
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship(self, G)
         Views. __create_isPartOf_relationship(self, G)
@@ -61,7 +61,7 @@ class Views:
          # create networkx graph
         G = nx.DiGraph()
         #aER = true, rER = true, iER = true, atomicER=true, isFixed
-        Views.__addNodes(self, G, True, True, True, True, True)
+        Views.__addNodes(self, G, True, True, True, True, True, True)
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship(self, G)
         Views. __create_isPartOf_relationship(self, G)
@@ -71,13 +71,13 @@ class Views:
         #convert the network to pyvis
         nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view)
     
-    def setColors(self, aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node):
-        self.all_colors = colors.Color(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node)
+    def setColors(self, aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node, aImg, aMov, aSW, aAudio, aText, aDataset):
+        self.all_colors = colors.Color(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node, aImg, aMov, aSW, aAudio, aText, aDataset)
 
     def getColors(self):
         return self.all_colors
 
-    def __addNodes(self, G, has_aER, has_rER, has_iER, has_atomicER, isFixed):
+    def __addNodes(self, G, has_aER, has_rER, has_iER, has_atomicER, isFixed, colorOnly):
         start_position= Views.__get_position(self, has_aER, has_iER, has_atomicER)
         end_position = - start_position
         position = start_position + self.spacing
@@ -105,8 +105,31 @@ class Views:
                     G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="circle" , color= self.all_colors.iER_node_color, url = str(node.er_url))
             elif(has_atomicER and type(node_type)==str):
                 toolTip = Views.__get_tool_tip(self, node)
-                G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color, isPartOf=node.er_isPartOf, url = str(node.er_url))
+                Views.__add_atomic_nodes(self, G, node, toolTip, colorOnly)
     
+    def __add_atomic_nodes(self, G, node, toolTip, colorOnly):
+        node_type = node.er_type
+        if(colorOnly):
+            if(node_type == ".png" or node_type ==".jpeg"):
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color_img, isPartOf=node.er_isPartOf, url = str(node.er_url))
+            elif(node_type == ".mov" or node_type ==".mp4"):
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color_mov, isPartOf=node.er_isPartOf, url = str(node.er_url))
+            elif(node_type == ".exe" or node_type ==".ipynd" or node_type ==".app"):
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color_software, isPartOf=node.er_isPartOf, url = str(node.er_url))
+            elif(node_type == ".mp3" or node_type ==".wav"):
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color_audio, isPartOf=node.er_isPartOf, url = str(node.er_url))
+            elif(node_type == ".txt" or node_type ==".pdf" or node_type==".html" or node_type==".md" or node_type==".pptx" or node_type==".dvi"):
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color_text, isPartOf=node.er_isPartOf, url = str(node.er_url))
+            elif(node_type == ".csv" or node_type ==".xlsx"):
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color_dataset, isPartOf=node.er_isPartOf, url = str(node.er_url))
+            elif(node_type==".zip"):
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color_coll, isPartOf=node.er_isPartOf, url = str(node.er_url))
+            else:
+                G.add_node(node.er_id, label = node.er_title, title=toolTip, isPartOf=node.er_isPartOf, url = str(node.er_url))
+        else:
+            G.add_node(node.er_id, label = node.er_title, title=toolTip, shape="box",color= self.all_colors.atomic_node_color_coll, isPartOf=node.er_isPartOf, url = str(node.er_url))
+    
+
     def __create_assesses_relationship(self, G):
         for node in self.nodeList:
             assess_id = Views.__get_node_int_id(node.er_assesses)
