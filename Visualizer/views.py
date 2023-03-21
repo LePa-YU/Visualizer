@@ -103,7 +103,7 @@ class Views:
                     position = position + self.spacing
                 else:
                     G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="circle" , color= self.all_colors.iER_node_color, url = str(node.er_url))
-            elif(has_atomicER):
+            elif(has_atomicER and type(node_type)==str):
                 toolTip = Views.__get_tool_tip(self, node)
                 G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color, isPartOf=node.er_isPartOf, url = str(node.er_url))
     
