@@ -56,7 +56,6 @@ nodes = {
 }
 physics = {
   "barnesHut": {
-    "centralGravity": 0,
     "springLength": 140,
     "springConstant": 0.395
     },
@@ -78,8 +77,8 @@ def convert_to_pyvis(G, file_name, bg, font_color,file_label, view, physics):
     G2.options.nodes = nodes
     G2.options.interaction = interaction
     G2.options.manipulation = manipulation
-    # G2.options.layout = layout
-    G2.options.physics = physics
+    G2.options.layout = layout
+    # G2.options.physics = physics
   
     # wrap the long title aka node labels to fit in 15
     for node in G2.nodes:
