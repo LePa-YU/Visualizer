@@ -54,6 +54,15 @@ nodes = {
      },
      "size": 29,
 }
+physics = {
+  "barnesHut": {
+    "centralGravity": 0,
+    "springLength": 140,
+    "springConstant": 0.395
+    },
+    "minVelocity": 0.75
+    }
+
 
 # method  that convert networkx to pyvis
 def convert_to_pyvis(G, file_name, bg, font_color,file_label, view, physics):
@@ -61,7 +70,7 @@ def convert_to_pyvis(G, file_name, bg, font_color,file_label, view, physics):
     # create pyvis network
     G2 = Network(height="750px", width="100%", bgcolor=bg, font_color=font_color, notebook=True, directed=True)
     # add networkx to pyvis network
-    if (physics):  G2.show_buttons(filter_=['physics'])
+    if (physics):  G2.show_buttons()
     G2.from_nx(G)
 
     # add individual options
@@ -69,7 +78,8 @@ def convert_to_pyvis(G, file_name, bg, font_color,file_label, view, physics):
     G2.options.nodes = nodes
     G2.options.interaction = interaction
     G2.options.manipulation = manipulation
-    G2.options.layout = layout
+    # G2.options.layout = layout
+    G2.options.physics = physics
   
     # wrap the long title aka node labels to fit in 15
     for node in G2.nodes:
