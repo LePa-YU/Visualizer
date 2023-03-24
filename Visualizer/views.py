@@ -136,7 +136,7 @@ class Views:
             elif(node_type == ".mp3" or node_type ==".wav"):
                 G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color_audio, isPartOf=node.er_isPartOf, url = str(node.er_url))
             elif(node_type == ".txt" or node_type ==".pdf" or node_type==".html" or node_type==".md" or node_type==".pptx" or node_type==".dvi"):
-                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="image", image = "Visualizer/images/text.svg",color= self.all_colors.atomic_node_color_text, isPartOf=node.er_isPartOf, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="image", image = "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", isPartOf=node.er_isPartOf, url = str(node.er_url))
             elif(node_type == ".csv" or node_type ==".xlsx"):
                 G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color_dataset, isPartOf=node.er_isPartOf, url = str(node.er_url))
             elif(node_type==".zip"):
