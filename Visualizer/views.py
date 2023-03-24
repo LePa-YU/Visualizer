@@ -61,7 +61,7 @@ class Views:
          # create networkx graph
         G = nx.DiGraph()
         #aER = true, rER = true, iER = true, atomicER=true, isFixed
-        Views.__addNodes(self, G, True, True, True, True, True, True)
+        Views.__addNodes(self, G, True, True, True, True, True, False)
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship(self, G)
         Views. __create_isPartOf_relationship(self, G)
@@ -127,7 +127,22 @@ class Views:
             else:
                 G.add_node(node.er_id, label = node.er_title, title=toolTip, isPartOf=node.er_isPartOf, url = str(node.er_url))
         else:
-            G.add_node(node.er_id, label = node.er_title, title=toolTip, shape="box",color= self.all_colors.atomic_node_color_coll, isPartOf=node.er_isPartOf, url = str(node.er_url))
+            if(node_type == ".png" or node_type ==".jpeg"):
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color_img, isPartOf=node.er_isPartOf, url = str(node.er_url))
+            elif(node_type == ".mov" or node_type ==".mp4"):
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color_mov, isPartOf=node.er_isPartOf, url = str(node.er_url))
+            elif(node_type == ".exe" or node_type ==".ipynd" or node_type ==".app"):
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color_software, isPartOf=node.er_isPartOf, url = str(node.er_url))
+            elif(node_type == ".mp3" or node_type ==".wav"):
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color_audio, isPartOf=node.er_isPartOf, url = str(node.er_url))
+            elif(node_type == ".txt" or node_type ==".pdf" or node_type==".html" or node_type==".md" or node_type==".pptx" or node_type==".dvi"):
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="image", image = "Visualizer/images/text.svg",color= self.all_colors.atomic_node_color_text, isPartOf=node.er_isPartOf, url = str(node.er_url))
+            elif(node_type == ".csv" or node_type ==".xlsx"):
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color_dataset, isPartOf=node.er_isPartOf, url = str(node.er_url))
+            elif(node_type==".zip"):
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color_coll, isPartOf=node.er_isPartOf, url = str(node.er_url))
+            else:
+                G.add_node(node.er_id, label = node.er_title, title=toolTip, isPartOf=node.er_isPartOf, url = str(node.er_url))
     
 
     def __create_assesses_relationship(self, G):
