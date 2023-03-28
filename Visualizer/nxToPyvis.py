@@ -50,7 +50,7 @@ nodes = {
        "y": -2
      },
      "shapeProperties": {
-       "borderRadius": 4
+      "useBorderWithImage": True
      },
      "size": 29,
 }

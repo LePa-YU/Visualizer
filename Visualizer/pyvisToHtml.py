@@ -129,7 +129,7 @@ def convertToHtml(data, file_name, bg, file_label, view):
             // document.getElementById("demo").innerHTML = v;
             network.cluster(getC(v));
         }
-
+      
         //url opening
       nodeId = params.nodes;
       node = nodeList.get(nodeId)[0];

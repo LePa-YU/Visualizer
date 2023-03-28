@@ -128,23 +128,36 @@ class Views:
                 G.add_node(node.er_id, label = node.er_title, title=toolTip, isPartOf=node.er_isPartOf, url = str(node.er_url))
         else:
             if(node_type == ".png" or node_type ==".jpeg"):
-                G.add_node(node.er_id, label = node.er_title, title=toolTip ,shape="image", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/image.svg", isPartOf=node.er_isPartOf, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=toolTip ,shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/image.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_img),isPartOf=node.er_isPartOf, url = str(node.er_url))
             elif(node_type == ".mov" or node_type ==".mp4"):
-                G.add_node(node.er_id, label = node.er_title, title=toolTip ,shape="image", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", isPartOf=node.er_isPartOf, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=toolTip ,shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_mov),isPartOf=node.er_isPartOf, url = str(node.er_url))
             elif(node_type == ".exe" or node_type ==".ipynd" or node_type ==".app"):
-                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="image", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/software.svg", isPartOf=node.er_isPartOf, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/software.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_software),isPartOf=node.er_isPartOf, url = str(node.er_url))
             elif(node_type == ".mp3" or node_type ==".wav"):
-                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="image", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", isPartOf=node.er_isPartOf, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_audio),isPartOf=node.er_isPartOf, url = str(node.er_url))
             elif(node_type == ".txt" or node_type ==".pdf" or node_type==".html" or node_type==".md" or node_type==".pptx" or node_type==".dvi"):
-                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="image", image = "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", isPartOf=node.er_isPartOf, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="circularImage", image = "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_text), isPartOf=node.er_isPartOf, url = str(node.er_url))
             elif(node_type == ".csv" or node_type ==".xlsx"):
-                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="image", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/data.svg", isPartOf=node.er_isPartOf, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/data.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_dataset),isPartOf=node.er_isPartOf, url = str(node.er_url))
             elif(node_type==".zip"):
-                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="image", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/zip.svg", isPartOf=node.er_isPartOf, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/zip.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_coll),isPartOf=node.er_isPartOf, url = str(node.er_url))
             else:
                 G.add_node(node.er_id, label = node.er_title, title=toolTip, isPartOf=node.er_isPartOf, url = str(node.er_url))
-    
-
+    # highlight":{"border":"black"}
+    def __get_atomic_node_color_property(color):
+        res={
+            "border":"white", 
+            "background":"white",
+            "highlight":{
+                "border":color,
+                "background": color
+            },
+            "hover":{
+                "border": color ,
+                "background": color
+            },
+        }
+        return res
     def __create_assesses_relationship(self, G):
         for node in self.nodeList:
             assess_id = Views.__get_node_int_id(node.er_assesses)
