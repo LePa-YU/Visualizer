@@ -7,6 +7,8 @@ from pyvis.network import Network
 import views
 import requests
 import Legend
+import os.path
+import atexit 
 
 #### this file contains code for streamlit deployment
 class _Customization_menu:
@@ -75,6 +77,29 @@ class _Customization_menu:
             self.view.setColors("#FF7273", "#FF7273", "#F69159", "#ECD19A", "#FF7273", "#C0CB6B", "#ECD19A", "#C0CB6B", "#C0CB6B", "#BF87F2", "#A24052", "#FBF495", "#93C539", "#437C6C", "#20C18B", "#5FC7D3")
         return bg
 
+def __create_html_pages(label, view, bg, font_color, view1, physics):
+     # create the temp html files for each views
+        # add if-else statemet --> create html if it does not exsits
+        path = "./html_temp/"+label+"_Summative_assessment_only.html"
+        check_file = os.path.isfile(path)
+        if(check_file == False):
+            view.Summative_assessment_only( bg, font_color, label, view1, physics)
+        
+        path = label+"_Course_Overview.html"
+        check_file = os.path.isfile(path)
+        if(check_file == False):
+            view.Course_Overview( bg, font_color, label, view2, physics)
+        
+        path = label+"_All_ERs.html"
+        check_file = os.path.isfile(path)
+        if(check_file == False):
+            view.All_ERs( bg, font_color, label, view3, physics)
+        
+        path = label+"_requirements.html"
+        check_file = os.path.isfile(path)
+        if(check_file == False):
+            view.Requirements(bg, font_color, label, view4, physics)
+
 #global variables:
 global uploaded_file
 
@@ -111,41 +136,41 @@ with container:
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/FAKE1001/FAKE1001.csv"
         res = requests.get(url, allow_redirects=True)
         # create a temp csv file (added to .gitignore) and copy the material from the link to this file
-        with open('FAKE1001.csv','wb') as file:
+        with open('./csv_temp/FAKE1001.csv','wb') as file:
             file.write(res.content)
-            uploaded_file = "FAKE1001.csv"
+            uploaded_file = "./csv_temp/FAKE1001.csv"
     elif dataset_options == ds_2311:
         # get EECS 2311 file from github in the Dataset repo (main) 
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS2311/2311_dataset_overview.csv"
         res = requests.get(url, allow_redirects=True)
         # create a temp csv file (added to .gitignore) and copy the material from the link to this file
-        with open('2311_dataset_overview.csv','wb') as file:
+        with open('./csv_temp/2311_dataset_overview.csv','wb') as file:
             file.write(res.content)
-            uploaded_file = "2311_dataset_overview.csv"
+            uploaded_file = "./csv_temp/2311_dataset_overview.csv"
     elif dataset_options == ds_3461:
         # get EECS 3461 file from github in the Dataset repo (main) 
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS3461/3461_dataset_overview.csv"
         res = requests.get(url, allow_redirects=True)
         # create a temp csv file (added to .gitignore) and copy the material from the link to this file
-        with open('3461_dataset_overview.csv','wb') as file:
+        with open('./csv_temp/3461_dataset_overview.csv','wb') as file:
             file.write(res.content)
-            uploaded_file = "3461_dataset_overview.csv"
+            uploaded_file = "./csv_temp/3461_dataset_overview.csv"
     elif dataset_options == ds_1530:
         # get EECS 1530 file from github in the Dataset repo (main) 
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS1530/1530_dataset_overview.csv"
         res = requests.get(url, allow_redirects=True)
         # create a temp csv file (added to .gitignore) and copy the material from the link to this file
-        with open('1530_dataset_overview.csv','wb') as file:
+        with open('./csv_temp/1530_dataset_overview.csv','wb') as file:
             file.write(res.content)
-            uploaded_file = "1530_dataset_overview.csv"
+            uploaded_file = "./csv_temp/1530_dataset_overview.csv"
     elif dataset_options == ds_4462:
         # get EECS 4462 file from github in the Dataset repo (main) 
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS4462/4462_dataset_overview.csv"
         res = requests.get(url, allow_redirects=True)
         # create a temp csv file (added to .gitignore) and copy the material from the link to this file
-        with open('4462_dataset_overview.csv','wb') as file:
+        with open('./csv_temp/4462_dataset_overview.csv','wb') as file:
             file.write(res.content)
-            uploaded_file = "4462_dataset_overview.csv"
+            uploaded_file = "./csv_temp/4462_dataset_overview.csv"
     elif dataset_options == enter_own:
         # to write on the file browser itself
         st.markdown(
@@ -167,7 +192,7 @@ with container:
         dataframe = pd.read_csv(uploaded_file)
         #get file labe:
         if(type(uploaded_file) == str):
-            label = uploaded_file
+            label = uploaded_file.split("csv_temp/",1)[1]
         else:
             label = uploaded_file.name
         
@@ -182,28 +207,24 @@ with container:
         physics = custom_menu.physics
         font_color = "black" if bg == "white" else "white"
         
-        # create the temp html files for each views
-        view.Summative_assessment_only( bg, font_color, label, view1, physics)
-        view.Course_Overview( bg, font_color, label, view2, physics)
-        view.All_ERs( bg, font_color, label, view3, physics)
-        view.Requirements(bg, font_color, label, view4, physics)
-        
+        __create_html_pages(label, view, bg, font_color, view1, physics); 
+
          # adding html file to the container based on the selction made by user
         with container_html:
             if option == view1:
-                HtmlFile = open("Summative_assessment_only.html", 'r', encoding='utf-8')
+                HtmlFile = open("./html_temp/"+label+"_Summative_assessment_only.html", 'r', encoding='utf-8')
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)
             elif option == view2:
-                HtmlFile = open("Course_Overview.html", 'r', encoding='utf-8')
+                HtmlFile = open("./html_temp/"+label+"_Course_Overview.html", 'r', encoding='utf-8')
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)
             elif option == view3:
-                HtmlFile = open("All_ERs.html", 'r', encoding='utf-8')
+                HtmlFile = open("./html_temp/"+label+"_All_ERs.html", 'r', encoding='utf-8')
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)
             elif option == view4:
-                HtmlFile = open("requirements.html", 'r', encoding='utf-8')
+                HtmlFile = open("./html_temp/"+label+"_requirements.html", 'r', encoding='utf-8')
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)
     # the legend of the menu
@@ -217,4 +238,4 @@ with container:
             HtmlFile = open("index_Legend.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             # the Static html file is added to the streamlit using the components
-            st.components.v1.html(source_code, height = 300)   
+            st.components.v1.html(source_code, height = 300)  

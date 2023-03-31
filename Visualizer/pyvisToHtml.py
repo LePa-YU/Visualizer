@@ -1,7 +1,7 @@
 import json
 
 def convertToHtml(data, file_name, bg, file_label, view):
-    file_html = open(file_name , "w")
+    file_html = open("./html_temp/"+file_name , "w")
     # Adding the input data to the HTML file
     file_html.write('''
     <!DOCTYPE html>

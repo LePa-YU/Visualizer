@@ -28,7 +28,7 @@ class Views:
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship_SA(self, G)
         # assign a file name
-        file_name = "Summative_assessment_only.html"
+        file_name = file_label+"_Summative_assessment_only.html"
         #convert the network to pyvis
         nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics)
     
@@ -40,7 +40,7 @@ class Views:
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship(self, G)
         # assign a file name
-        file_name = "Course_Overview.html"
+        file_name = file_label+"_Course_Overview.html"
         #convert the network to pyvis
         nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics)
 
@@ -53,7 +53,7 @@ class Views:
         Views. __create_comesAfter_relationship(self, G)
         Views. __create_isPartOf_relationship(self, G)
         # assign a file name
-        file_name = "All_ERs.html"
+        file_name = file_label+"_All_ERs.html"
         #convert the network to pyvis
         nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics)
     
@@ -67,7 +67,7 @@ class Views:
         Views. __create_isPartOf_relationship(self, G)
         Views.__create_requires_relationshipAll(self, G)
         # assign a file name
-        file_name = "requirements.html"
+        file_name = file_label+"_requirements.html"
         #convert the network to pyvis
         nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics)
     
