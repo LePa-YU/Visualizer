@@ -110,12 +110,61 @@ def convertToHtml(data, file_name, bg, file_label, view):
         nodes: nodeList,
         edges: edgeList
     };
-    // getting the options using Json
-    var opt = JSON.parse(options);
+   //options:
+      var options = {
+		nodes: {
+			borderWidth: 3,
+			borderWidthSelected: 6,
+			shadow: {
+				enabled: true,
+				color: "white",
+				size: 9,
+				x: -1,
+				y: -2
+			},
+			shapeProperties: {
+				useBorderWithImage: true
+			}
+		},
+		edges: {
+    		color: {
+      			inherit: true
+    		},
+    		dashes: true,
+    		font: {
+      			strokeWidth: 5
+    		},
+    		hoverWidth: 3.2,
+    	},
+		interaction: {
+     		hideEdgesOnZoom: true,
+     		hover: true,
+     		keyboard: {
+       			enabled: true
+     		},
+     		multiselect: true,
+     		navigationButtons: true
+		},
+		manipulation: {
+			enabled: true
+		},
+		layout: {
+    		randomSeed:10, 
+    		improvedLayout: true, 
+    		clusterThreshold:150,
+  		},
+		physics: {
+			barnesHut: {
+				centralGravity: 0,
+				springLength: 140,
+				springConstant: 0.395
+			},
+			minVelocity: 0.75
+		}
 
-  // document.getElementById("demo").innerHTML = typeof(opt);
+	}
     //creating the vis network
-    var network = new vis.Network(container, data, opt);
+    var network = new vis.Network(container, data, options);
     network.setSize(width, height);
     // node collapse. if only one node is selected if the node is clustred (collapsed) then the cluster is open
     // else the node is collapsed if if they have the isPartOf relation corresponding to this node's id (var v)

@@ -4,65 +4,6 @@ import pyvisToHtml
 from pyvis.network import Network
 import textwrap
 
-
-# initial options
-layout = {
-    "randomSeed":10, 
-    "improvedLayout": True, 
-    "clusterThreshold":10,
-  }
-manipulation = {
-     "enabled": True
-}
-interaction = {
-     "hideEdgesOnZoom": True,
-     "hover": True,
-     "keyboard": {
-       "enabled": True
-     },
-     "multiselect": True,
-     "navigationButtons": True
-   
-}
-edges = {
-    "color": {
-      "inherit": True
-    },
-    "dashes": True,
-    "font": {
-      "strokeWidth": 5
-    },
-    "hoverWidth": 3.2,
-    "scaling": {
-      "label": {
-        "min": 24
-      }
-    }
- }
-nodes = {
-   "borderWidth": 3,
-     "borderWidthSelected": 6,
-     "shadow": {
-       "enabled": True,
-       "color": "white",
-       "size": 9,
-       "x": -1,
-       "y": -2
-     },
-     "shapeProperties": {
-      "useBorderWithImage": True
-     },
-     "size": 29,
-}
-physics = {
-  "barnesHut": {
-    "springLength": 140,
-    "springConstant": 0.395
-    },
-    "minVelocity": 0.75
-    }
-
-
 # method  that convert networkx to pyvis
 def convert_to_pyvis(G, file_name, bg, font_color,file_label, view, physics):
 
@@ -71,14 +12,6 @@ def convert_to_pyvis(G, file_name, bg, font_color,file_label, view, physics):
     # add networkx to pyvis network
     if (physics):  G2.show_buttons()
     G2.from_nx(G)
-
-    # add individual options
-    G2.options.edges = edges
-    G2.options.nodes = nodes
-    G2.options.interaction = interaction
-    G2.options.manipulation = manipulation
-    G2.options.layout = layout
-    # G2.options.physics = physics
   
     # wrap the long title aka node labels to fit in 15
     for node in G2.nodes:

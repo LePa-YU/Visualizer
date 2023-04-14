@@ -82,7 +82,11 @@ class Views:
         end_position = - start_position
         position = start_position + self.spacing
         rER_position = 50
+
         start_end_node_size = 20
+        iER_size = 25
+        aER_size = 25
+        rER_size = 25
 
         for node in self.nodeList:
             node_type = node.er_type
@@ -95,23 +99,29 @@ class Views:
                     G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="box", color= self.all_colors.aER_node_color,x = position, y=0, url = str(node.er_url))
                     position = position+self.spacing
                 else:
-                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="box", color= self.all_colors.aER_node_color, url = str(node.er_url))
+                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="box",value = 1, scaling = Views.__get_atomic_node_scaling_property(aER_size) , color= self.all_colors.aER_node_color, url = str(node.er_url))
             elif(node_type =="rER" and has_rER):
-                G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="triangle" , color= self.all_colors.rER_node_color, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="triangle" , value = 1, scaling = Views.__get_atomic_node_scaling_property(rER_size) ,color= self.all_colors.rER_node_color, url = str(node.er_url))
             elif(node_type =="iER" and has_iER):
                 if(isFixed):
                     G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="circle" , color= self.all_colors.iER_node_color,x = position, y=0, fixed = True, url = str(node.er_url))
                     position = position + self.spacing
                 else:
-                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="circle" , color= self.all_colors.iER_node_color, url = str(node.er_url))
+                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="circle" , value = 1, scaling = Views.__get_atomic_node_scaling_property(iER_size) ,color= self.all_colors.iER_node_color, url = str(node.er_url))
             elif(has_atomicER and type(node_type)==str):
                 toolTip = Views.__get_tool_tip(self, node)
                 Views.__add_atomic_nodes(self, G, node, toolTip, colorOnly)
-    
+    def __get_atomic_node_scaling_property(size):
+        res={
+            "label":{
+                "enabled": True,
+                "min": size,
+                "max": size
+            },
+        }
+        return res
     def __add_atomic_nodes(self, G, node, toolTip, colorOnly):
         node_type = node.er_type
-        # atomic_initial_size=10 # max is 
-        
         atomic_size = Views.__get_atomic_size_size(self,node)
         
         if(colorOnly):
@@ -152,8 +162,7 @@ class Views:
     def __get_atomic_size_size(self,node):
         size = 0
         atomic_min_allowed = 10
-        atomic_max_allowed = 20
-        increment_per_10min = 10
+        atomic_max_allowed = 30
         #ration for increment
         atomic_increments = Views.__get_atomic_size_increment(self, atomic_min_allowed, atomic_max_allowed)
 
@@ -173,7 +182,10 @@ class Views:
         max_dur = max(self.nodeList, key=lambda d: d.er_duration).er_duration
         min_dur = Views.__get_second_Min_duration(self) # min is always 0
         dur_diff = max_dur - min_dur
-        increment = allowed_diff/dur_diff
+        if(dur_diff == 0):
+            increment = 0
+        else:
+            increment = allowed_diff/dur_diff
 
         return increment
 
