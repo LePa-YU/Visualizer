@@ -88,6 +88,14 @@ class Node:
             self.er_is_assessed_by = er["isassessedby"]
         except:
             self.er_is_assessed_by = ""
+
+        #time
+        try:
+            self.er_duration = int(er["duration"])
+        except:
+            self.er_duration = 0
+            
+
         
     
         

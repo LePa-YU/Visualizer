@@ -82,13 +82,14 @@ class Views:
         end_position = - start_position
         position = start_position + self.spacing
         rER_position = 50
+        start_end_node_size = 20
 
         for node in self.nodeList:
             node_type = node.er_type
             if(node_type == "start"):
-                G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.start_node_color,size=20, x = start_position, y=0, fixed = True, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.start_node_color,size=start_end_node_size, x = start_position, y=0, fixed = True, url = str(node.er_url))
             elif(node_type == "end"):
-                G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.end_node_color,size=20, x = end_position, y=0, fixed = True, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.end_node_color,size=start_end_node_size, x = end_position, y=0, fixed = True, url = str(node.er_url))
             elif(node_type =="aER" and has_aER):
                 if(isFixed):
                     G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="box", color= self.all_colors.aER_node_color,x = position, y=0, url = str(node.er_url))
@@ -109,6 +110,11 @@ class Views:
     
     def __add_atomic_nodes(self, G, node, toolTip, colorOnly):
         node_type = node.er_type
+        # atomic_initial_size=10 # max is 
+        
+        atomic_size = Views.__get_atomic_size_size(self,node)
+        print(atomic_size)
+
         if(colorOnly):
             if(node_type == ".png" or node_type ==".jpeg"):
                 G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color_img, isPartOf=node.er_isPartOf, url = str(node.er_url))
@@ -128,22 +134,59 @@ class Views:
                 G.add_node(node.er_id, label = node.er_title, title=toolTip, isPartOf=node.er_isPartOf, url = str(node.er_url))
         else:
             if(node_type == ".png" or node_type ==".jpeg"):
-                G.add_node(node.er_id, label = node.er_title, title=toolTip ,shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/image.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_img),isPartOf=node.er_isPartOf, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=toolTip ,shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/image.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_img),size = atomic_size, isPartOf=node.er_isPartOf, url = str(node.er_url))
             elif(node_type == ".mov" or node_type ==".mp4"):
-                G.add_node(node.er_id, label = node.er_title, title=toolTip ,shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_mov),isPartOf=node.er_isPartOf, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=toolTip ,shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_mov),size = atomic_size,isPartOf=node.er_isPartOf, url = str(node.er_url))
             elif(node_type == ".exe" or node_type ==".ipynd" or node_type ==".app"):
-                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/software.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_software),isPartOf=node.er_isPartOf, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/software.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_software),size = atomic_size,isPartOf=node.er_isPartOf, url = str(node.er_url))
             elif(node_type == ".mp3" or node_type ==".wav"):
-                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_audio),isPartOf=node.er_isPartOf, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_audio),size = atomic_size,isPartOf=node.er_isPartOf, url = str(node.er_url))
             elif(node_type == ".txt" or node_type ==".pdf" or node_type==".html" or node_type==".md" or node_type==".pptx" or node_type==".dvi"):
-                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="circularImage", image = "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_text), isPartOf=node.er_isPartOf, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="circularImage", image = "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_text),size = atomic_size, isPartOf=node.er_isPartOf, url = str(node.er_url))
             elif(node_type == ".csv" or node_type ==".xlsx"):
-                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/data.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_dataset),isPartOf=node.er_isPartOf, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/data.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_dataset),size = atomic_size,isPartOf=node.er_isPartOf, url = str(node.er_url))
             elif(node_type==".zip"):
-                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/zip.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_coll),isPartOf=node.er_isPartOf, url = str(node.er_url))
+                G.add_node(node.er_id, label = node.er_title, title=toolTip , shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/zip.svg", color=Views.__get_atomic_node_color_property(self.all_colors.atomic_node_color_coll),size = atomic_size,isPartOf=node.er_isPartOf, url = str(node.er_url))
             else:
                 G.add_node(node.er_id, label = node.er_title, title=toolTip, isPartOf=node.er_isPartOf, url = str(node.er_url))
-    # highlight":{"border":"black"}
+    
+    def __get_atomic_size_size(self,node):
+        size = 0
+        atomic_min_allowed = 10
+        atomic_max_allowed = 20
+        #ration for increment
+        atomic_increments = Views.__get_atomic_size_increment(self, atomic_min_allowed, atomic_max_allowed)
+
+        atomic_dur = Views.__get_node_int_id(node.er_duration)
+        if(type(atomic_dur)!= int):
+            atomic_dur = 0
+        #update size
+        size = atomic_min_allowed + atomic_increments * atomic_dur
+        return size
+
+    def __get_atomic_size_increment(self, min_size, max_size):
+        increment = 0
+
+        allowed_diff = max_size - min_size
+
+        max_dur = max(self.nodeList, key=lambda d: d.er_duration).er_duration
+        min_dur = Views.__get_second_Min_duration(self) # min is always 0
+        dur_diff = max_dur - min_dur
+
+        increment = allowed_diff/dur_diff
+
+        return increment
+
+    def __get_second_Min_duration(self):
+        min = 0
+        copy_list = self.nodeList.copy()
+        copy_list.sort(key=lambda x: x.er_duration)
+        for n in copy_list:
+            if (n.er_duration != 0):
+                min = n.er_duration
+                break; 
+        return min
+        
     def __get_atomic_node_color_property(color):
         res={
             "border":"white", 
