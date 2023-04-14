@@ -113,8 +113,7 @@ class Views:
         # atomic_initial_size=10 # max is 
         
         atomic_size = Views.__get_atomic_size_size(self,node)
-        print(atomic_size)
-
+        
         if(colorOnly):
             if(node_type == ".png" or node_type ==".jpeg"):
                 G.add_node(node.er_id, label = node.er_title, title=toolTip , color= self.all_colors.atomic_node_color_img, isPartOf=node.er_isPartOf, url = str(node.er_url))
@@ -154,6 +153,7 @@ class Views:
         size = 0
         atomic_min_allowed = 10
         atomic_max_allowed = 20
+        increment_per_10min = 10
         #ration for increment
         atomic_increments = Views.__get_atomic_size_increment(self, atomic_min_allowed, atomic_max_allowed)
 
@@ -161,18 +161,18 @@ class Views:
         if(type(atomic_dur)!= int):
             atomic_dur = 0
         #update size
-        size = atomic_min_allowed + atomic_increments * atomic_dur
+        # print(atomic_increments)
+        size = atomic_min_allowed + (atomic_increments * (atomic_dur))
         return size
 
     def __get_atomic_size_increment(self, min_size, max_size):
         increment = 0
 
-        allowed_diff = max_size - min_size
+        allowed_diff = (max_size - min_size)
 
         max_dur = max(self.nodeList, key=lambda d: d.er_duration).er_duration
         min_dur = Views.__get_second_Min_duration(self) # min is always 0
         dur_diff = max_dur - min_dur
-
         increment = allowed_diff/dur_diff
 
         return increment
@@ -352,7 +352,9 @@ class Views:
               text += "NA \n"  
           # adding unique id 
           unique_id = container_node_type + str(node.er_id)
-          text += "ID: "+ unique_id
+          text += "ID: "+ unique_id + "\n"
+
+          text += "Duration: " + str(node.er_duration) + " min"
 
         return text
     
