@@ -85,17 +85,17 @@ def __create_html_pages(label, view, bg, font_color, view1, physics):
         if(check_file == False):
             view.Summative_assessment_only( bg, font_color, label, view1, physics)
         
-        path = label+"_Course_Overview.html"
+        path = "./html_temp/"+label+"_Course_Overview.html"
         check_file = os.path.isfile(path)
         if(check_file == False):
             view.Course_Overview( bg, font_color, label, view2, physics)
         
-        path = label+"_All_ERs.html"
+        path = "./html_temp/"+label+"_All_ERs.html"
         check_file = os.path.isfile(path)
         if(check_file == False):
             view.All_ERs( bg, font_color, label, view3, physics)
         
-        path = label+"_requirements.html"
+        path = "./html_temp/"+label+"_requirements.html"
         check_file = os.path.isfile(path)
         if(check_file == False):
             view.Requirements(bg, font_color, label, view4, physics)
