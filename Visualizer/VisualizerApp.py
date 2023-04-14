@@ -15,6 +15,7 @@ class _Customization_menu:
     def __init__(self, create_customization_menu, view):
         self.create_customization_menu = create_customization_menu
         self.view = view
+        self.physics = False
     def create_menu(self):
         bg = "white"
         if(self.create_customization_menu):
@@ -202,7 +203,7 @@ with container:
         container_html = st.container()
 
         # get the backgrounf color of the canvas. if true creates customization menu and if false set the colors to the pumpkin color palette
-        custom_menu = _Customization_menu(True, view)
+        custom_menu = _Customization_menu(False, view)
         bg = custom_menu.create_menu()
         physics = custom_menu.physics
         font_color = "black" if bg == "white" else "white"
