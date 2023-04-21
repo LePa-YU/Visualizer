@@ -15,25 +15,66 @@ class _Customization_menu:
     def __init__(self, create_customization_menu, view):
         self.create_customization_menu = create_customization_menu
         self.view = view
-        self.physics = False
+        # self.physics = False
+    def _update_slider(start_end, atomic_min_size, atomic_max_size, ier_size, aer_size, rer_size):
+        st.session_state["start_end_size"] = start_end
+        st.session_state["atomic_min_size"] = atomic_min_size
+        st.session_state["atomic_max_size"] = atomic_max_size
+        st.session_state["ier_size"] = ier_size
+        st.session_state["aer_size"] = aer_size
+        st.session_state["rer_size"] = rer_size
+        # print("ok")
+    def _update_atomic_max_slider():
+        if st.session_state.atomic_max_size  <  st.session_state.atomic_min_size:
+            # print(0)
+            st.session_state.atomic_max_size  = st.session_state.atomic_min_size + 20
+    def _update_atomic_min_slider():
+        
+        if st.session_state.atomic_max_size  <  st.session_state.atomic_min_size:
+            # print(0)
+            st.session_state.atomic_max_size  = st.session_state.atomic_min_size - 20
     def create_menu(self):
         bg = "white"
+        start_end_size = 20
+        atomic_min_size = 10
+        atomic_max_size = 30
+        ier_size = 25
+        aer_size = 25
+        rer_size = 25
         if(self.create_customization_menu):
             # customization menu --> temporary. comment before releases
             with st.expander("Customization"):
                 # Theme options
                 # dark --> boolean -- true then background is set to black and text to white/ fasle then background is set to white and text is set to black
                 st.subheader("Options:")
-                colbg, colphys = st.columns([1, 8])
+                colbg, colSize = st.columns([2,6])
                 with colbg:
                     dark = st.checkbox("dark theme")
                     if(dark):
                         bg = "black"
                     else:
                         bg = "white"
-                with colphys:
                     self.physics = st.checkbox("physics")
+                    self.resetButton = st.button('Reset Sizes')
+                    if(self.resetButton):
+                        _Customization_menu._update_slider(start_end_size, atomic_min_size, atomic_max_size, ier_size, aer_size, rer_size)
+               
+                with colSize:
+                        col1, col2= st.columns(2)
+                        with col1:
+                            if 'atomic_max_size' not in st.session_state:
+                                st.session_state['atomic_max_size'] = atomic_max_size
+                            if 'atomic_min_size' not in st.session_state:
+                                st.session_state['atomic_min_size'] = atomic_min_size
 
+                            self.start_end_size = st.slider("start & end size", key="start_end_size", min_value = 0, max_value = 300, step=5, value = start_end_size, help="The start and end node size, the default is 20")
+                            self.atomic_min_size = st.slider("atomic ER min size", key="atomic_min_size", min_value = 0, max_value = 300, step=5, on_change=_Customization_menu._update_atomic_max_slider(), help="The minium value of atomic ER, default is 10")
+                            self.atomic_max_size = st.slider("atomic ER max size", key="atomic_max_size", min_value = 0, max_value = 300, step=5, on_change=_Customization_menu._update_atomic_min_slider(),help="The maximum value of atomic ER, default is 10")
+                        with col2:
+                            self.iER_size = st.slider("iER size", key="ier_size", min_value = 0, max_value = 300, step=5, value = ier_size, help="The iER node size. Note that this size is font based. The default is 25")
+                            self.aER_size = st.slider("aER size", key="aer_size", min_value = 0, max_value = 300, step=5, value = aer_size, help="The aER node size. Note that this size is font based. The default is 25")
+                            self.rER_size = st.slider("rER size", key="rer_size", min_value = 0, max_value = 300, step=5, value = rer_size, help="The rER node size, theW default is 25")
+                    
                 st.subheader("Select Colors:")
                 # 7 element color options for different entities, the sencond arg is the initial color based on pumpkin color palete
                 col1, col2, col3, col4, col5, col6, col7, col8 = st.columns(8)
@@ -81,24 +122,24 @@ class _Customization_menu:
 def __create_html_pages(label, view, bg, font_color, view1, physics):
      # create the temp html files for each views
         # add if-else statemet --> create html if it does not exsits
-        path = label+"_Summative_assessment_only.html"
-        check_file = os.path.isfile(path)
-        if(check_file == False):
+        # path = label+"_Summative_assessment_only.html"
+        # check_file = os.path.isfile(path)
+        # if(check_file == False):
             view.Summative_assessment_only( bg, font_color, label, view1, physics)
         
-        path =label+"_Course_Overview.html"
-        check_file = os.path.isfile(path)
-        if(check_file == False):
+        # path =label+"_Course_Overview.html"
+        # check_file = os.path.isfile(path)
+        # if(check_file == False):
             view.Course_Overview( bg, font_color, label, view2, physics)
         
-        path = label+"_All_ERs.html"
-        check_file = os.path.isfile(path)
-        if(check_file == False):
+        # path = label+"_All_ERs.html"
+        # check_file = os.path.isfile(path)
+        # if(check_file == False):
             view.All_ERs( bg, font_color, label, view3, physics)
         
-        path = label+"_requirements.html"
-        check_file = os.path.isfile(path)
-        if(check_file == False):
+        # path = label+"_requirements.html"
+        # check_file = os.path.isfile(path)
+        # if(check_file == False):
             view.Requirements(bg, font_color, label, view4, physics)
 
 #global variables:
@@ -203,10 +244,20 @@ with container:
         container_html = st.container()
 
         # get the backgrounf color of the canvas. if true creates customization menu and if false set the colors to the pumpkin color palette
-        custom_menu = _Customization_menu(False, view)
+        custom_menu = _Customization_menu(True, view)
         bg = custom_menu.create_menu()
         physics = custom_menu.physics
         font_color = "black" if bg == "white" else "white"
+        reset_clicked = custom_menu.resetButton
+       
+        atomic_min_size = custom_menu.atomic_min_size
+        atomic_max_size = custom_menu.atomic_max_size
+        start_end_size = custom_menu.start_end_size
+        ier_size = custom_menu.iER_size
+        aer_size = custom_menu.aER_size
+        rer_size = custom_menu.rER_size
+        view.set_atomic_size_limit(atomic_max_size, atomic_min_size, start_end_size, ier_size, aer_size, rer_size)
+        # print(atomic_max_size)
         
         __create_html_pages(label, view, bg, font_color, view1, physics); 
 

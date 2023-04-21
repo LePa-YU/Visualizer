@@ -71,6 +71,14 @@ class Views:
         #convert the network to pyvis
         nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics)
     
+    def set_atomic_size_limit(self, atomic_max_size, atomic_min_size, start_end_size, ier_size, aer_size, rer_size):
+        self.atomic_max_size = atomic_max_size
+        self.atomic_min_size = atomic_min_size
+        self.start_end_size = start_end_size
+        self.ier_size = ier_size
+        self.aer_size = aer_size
+        self.rer_size = rer_size
+    
     def setColors(self, aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node, aImg, aMov, aSW, aAudio, aText, aDataset):
         self.all_colors = colors.Color(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node, aImg, aMov, aSW, aAudio, aText, aDataset)
 
@@ -83,10 +91,10 @@ class Views:
         position = start_position + self.spacing
         rER_position = 50
 
-        start_end_node_size = 20
-        iER_size = 25
-        aER_size = 25
-        rER_size = 25
+        start_end_node_size = self.start_end_size
+        iER_size = self.ier_size
+        aER_size = self.aer_size
+        rER_size = self.rer_size
 
         for node in self.nodeList:
             node_type = node.er_type
@@ -161,8 +169,8 @@ class Views:
     
     def __get_atomic_size_size(self,node):
         size = 0
-        atomic_min_allowed = 10
-        atomic_max_allowed = 30
+        atomic_min_allowed = self.atomic_min_size
+        atomic_max_allowed = self.atomic_max_size
         #ration for increment
         atomic_increments = Views.__get_atomic_size_increment(self, atomic_min_allowed, atomic_max_allowed)
 

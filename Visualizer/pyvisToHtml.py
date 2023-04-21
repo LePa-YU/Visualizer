@@ -1,6 +1,6 @@
 import json
 
-def convertToHtml(data, file_name, bg, file_label, view):
+def convertToHtml(data, file_name, bg, file_label, view, physics):
     file_html = open(file_name , "w")
     # Adding the input data to the HTML file
     file_html.write('''
@@ -13,6 +13,10 @@ def convertToHtml(data, file_name, bg, file_label, view):
                 width: 100%;
                 height: 800px;
                 border: 1px solid lightgray;
+            }
+            #container{
+               display: flex;
+               height: 800px;
             }
             #canvas {
                 width: 100%;
@@ -31,10 +35,13 @@ def convertToHtml(data, file_name, bg, file_label, view):
         <script type="text/javascript" src="network.js"></script>
     </head>
     <body>
-    <div id="mynetwork">
-      <div id="labelContainer"><p id="label"></p></div> 
-      <div id="canvas"></div>
-    </div>
+   <div id="container">
+        <div id="mynetwork">
+          <div id="labelContainer"><p id="label"></p></div> 
+          <div id="canvas"></div>
+	      </div> 
+     </div>   
+   
     <!-- <script type="text/javascript" src="network.js"></script> -->
     <script type="text/javascript"> 
      var nodeList = new vis.DataSet();
@@ -44,6 +51,11 @@ def convertToHtml(data, file_name, bg, file_label, view):
     jsonOb_file_label = json.dumps(file_label)
     jsonOb_file_label_format = format(jsonOb_file_label)
     file_html.write("\t\t var fileLabel = "+str(jsonOb_file_label_format) +";"+"\n")
+
+    # physics
+    jsonOb_physics = json.dumps(physics)
+    jsonOb_physics_format = format(jsonOb_physics)
+    file_html.write("\t\t var physics = "+str(jsonOb_physics_format) +";"+"\n")
 
     #view name
     jsonOb_view = json.dumps(view)
@@ -100,6 +112,12 @@ def convertToHtml(data, file_name, bg, file_label, view):
     
     # add rest of the html
     file_html.write('''
+    if(physics){
+      var physicsContainer = document.createElement("div");
+      physicsContainer.style.overflow = "scroll";
+      physicsContainer.style.width = "70%";
+      document.getElementById("container").appendChild(physicsContainer);
+    }
     document.getElementById("label").innerHTML = fileLabel +" (" + view + ")";
     if(bg == "black"){
       document.getElementById("label").style.color = 'white';
@@ -112,6 +130,10 @@ def convertToHtml(data, file_name, bg, file_label, view):
     };
    //options:
       var options = {
+        configure:{
+          enabled: physics,
+          container: physicsContainer
+        },
 		nodes: {
 			borderWidth: 3,
 			borderWidthSelected: 6,
@@ -154,12 +176,13 @@ def convertToHtml(data, file_name, bg, file_label, view):
     		clusterThreshold:150,
   		},
 		physics: {
-			barnesHut: {
-				centralGravity: 0,
-				springLength: 140,
-				springConstant: 0.395
-			},
-			minVelocity: 0.75
+			"barnesHut": {
+          "gravitationalConstant": -10000,
+          "centralGravity": 0,
+          "springLength": 140,
+          "springConstant": 0.395
+      },
+      "minVelocity": 0.75
 		}
 
 	}
