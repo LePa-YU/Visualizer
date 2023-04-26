@@ -100,6 +100,11 @@ def __create_html_pages(label, view, bg, font_color, view1, physics):
         check_file = os.path.isfile(path)
         if(check_file == False):
             view.Requirements(bg, font_color, label, view4, physics)
+        
+        path = label+"_vertical_requirements.html"
+        check_file = os.path.isfile(path)
+        if(check_file == False):
+            view.vertical_Requirements(bg, font_color, label, view4, physics)
 
 #global variables:
 global uploaded_file
@@ -227,6 +232,10 @@ with container:
                 st.components.v1.html(source_code, height=820, scrolling=True)
             elif option == view4:
                 HtmlFile = open(label+"_requirements.html", 'r', encoding='utf-8')
+                source_code = HtmlFile.read() 
+                st.components.v1.html(source_code, height=820, scrolling=True)
+            elif option == view5:
+                HtmlFile = open(label+"_vertical_requirements.html", 'r', encoding='utf-8')
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)
     # the legend of the menu

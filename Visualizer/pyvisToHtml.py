@@ -166,6 +166,7 @@ def convertToHtml(data, file_name, bg, file_label, view):
     //creating the vis network
     var network = new vis.Network(container, data, options);
     network.setSize(width, height);
+    network.focus("0");  
     // node collapse. if only one node is selected if the node is clustred (collapsed) then the cluster is open
     // else the node is collapsed if if they have the isPartOf relation corresponding to this node's id (var v)
     network.on("selectNode", function (params) {
