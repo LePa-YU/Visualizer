@@ -37,6 +37,12 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal):
     </div>
     <!-- <script type="text/javascript" src="network.js"></script> -->
     <script type="text/javascript"> 
+       window.onload=function(){
+    var mobile = (/iphone|ipad|ipod|android|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+    if (mobile) {
+        alert("Visit this on a Computer for Better View");              
+    } 
+    }
      var nodeList = new vis.DataSet();
      var edgeList = new vis.DataSet();\n''')
 
