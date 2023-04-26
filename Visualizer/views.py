@@ -24,7 +24,7 @@ class Views:
         # create networkx graph
         G = nx.DiGraph()
         # aER = true, rER = true, iER = false, atomicER=false, isFixed
-        Views.__addNodes(self, G, True, True, False, False, False, False)
+        Views.__addNodes(self, G, True, True, False, False, False, False, True)
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship_SA(self, G)
         # assign a file name
@@ -36,7 +36,7 @@ class Views:
         # create networkx graph
         G = nx.DiGraph()
         #aER = true, rER = true, iER = false, atomicER=false, isFixed
-        Views.__addNodes(self, G, True, True, True, False, False, False)
+        Views.__addNodes(self, G, True, True, True, False, False, False, True)
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship(self, G)
         # assign a file name
@@ -48,7 +48,7 @@ class Views:
         # create networkx graph
         G = nx.DiGraph()
         #aER = true, rER = true, iER = true, atomicER=true, isFixed
-        Views.__addNodes(self, G, True, True, True, True, False, True)
+        Views.__addNodes(self, G, True, True, True, True, False, True, True)
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship(self, G)
         Views. __create_isPartOf_relationship(self, G)
@@ -60,8 +60,8 @@ class Views:
     def Requirements(self, bg,font_color, file_label, view, physics):
          # create networkx graph
         G = nx.DiGraph()
-        #aER = true, rER = true, iER = true, atomicER=true, isFixed
-        Views.__addNodes(self, G, True, True, True, True, False, False)
+        #has_aER, has_rER, has_iER, has_atomicER, isFixed, colorOnly, isHorizontal
+        Views.__addNodes(self, G, True, True, True, True, False, False, True)
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship(self, G)
         Views. __create_isPartOf_relationship(self, G)
@@ -77,8 +77,9 @@ class Views:
     def getColors(self):
         return self.all_colors
 
-    def __addNodes(self, G, has_aER, has_rER, has_iER, has_atomicER, isFixed, colorOnly):
-        start_position= Views.__get_position(self, has_aER, has_iER, has_atomicER)
+    def __addNodes(self, G, has_aER, has_rER, has_iER, has_atomicER, isFixed, colorOnly, isHorizontal):
+        if(isHorizontal):
+            start_position= Views.__get_position_horizontal(self, has_aER, has_iER, has_atomicER)
         end_position = - start_position
         position = start_position + self.spacing
         rER_position = 50
@@ -370,7 +371,7 @@ class Views:
 
         return text
     
-    def __get_position(self, has_aER, has_iER, has_atomic):
+    def __get_position_horizontal(self, has_aER, has_iER, has_atomic):
         count = 0
         if(has_aER==True and has_iER==False):
             for node in self.nodeList:
