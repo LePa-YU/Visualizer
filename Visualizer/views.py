@@ -30,7 +30,7 @@ class Views:
         # assign a file name
         file_name = file_label+"_Summative_assessment_only.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True)
     
     def Course_Overview(self, bg,font_color, file_label, view, physics):
         # create networkx graph
@@ -42,7 +42,7 @@ class Views:
         # assign a file name
         file_name = file_label+"_Course_Overview.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True)
 
     def  All_ERs(self, bg,font_color, file_label, view, physics):
         # create networkx graph
@@ -55,7 +55,7 @@ class Views:
         # assign a file name
         file_name = file_label+"_All_ERs.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True)
     
     def Requirements(self, bg,font_color, file_label, view, physics):
          # create networkx graph
@@ -69,7 +69,7 @@ class Views:
         # assign a file name
         file_name = file_label+"_requirements.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True)
     
     def vertical_Requirements(self, bg,font_color, file_label, view, physics):
          # create networkx graph
@@ -83,7 +83,7 @@ class Views:
         # assign a file name
         file_name = file_label+"_vertical_requirements.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, False)
     
     def setColors(self, aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node, aImg, aMov, aSW, aAudio, aText, aDataset):
         self.all_colors = colors.Color(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node, aImg, aMov, aSW, aAudio, aText, aDataset)
