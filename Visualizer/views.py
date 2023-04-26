@@ -109,6 +109,8 @@ class Views:
                     position = position + self.spacing
                 else:
                     G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="circle" , value = 1, scaling = Views.__get_atomic_node_scaling_property(iER_size) ,color= self.all_colors.iER_node_color, url = str(node.er_url))
+            elif(node_type == "IP"):
+                pass
             elif(has_atomicER and type(node_type)==str):
                 toolTip = Views.__get_tool_tip(self, node)
                 Views.__add_atomic_nodes(self, G, node, toolTip, colorOnly)
