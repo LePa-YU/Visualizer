@@ -24,44 +24,44 @@ class Views:
         # create networkx graph
         G = nx.DiGraph()
         # aER = true, rER = true, iER = false, atomicER=false, isFixed
-        Views.__addNodes(self, G, True, True, False, False, False, False)
+        Views.__addNodes(self, G, True, True, False, False, False, False, True)
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship_SA(self, G)
         # assign a file name
         file_name = file_label+"_Summative_assessment_only.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True)
     
     def Course_Overview(self, bg,font_color, file_label, view, physics):
         # create networkx graph
         G = nx.DiGraph()
         #aER = true, rER = true, iER = false, atomicER=false, isFixed
-        Views.__addNodes(self, G, True, True, True, False, False, False)
+        Views.__addNodes(self, G, True, True, True, False, False, False, True)
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship(self, G)
         # assign a file name
         file_name = file_label+"_Course_Overview.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True)
 
     def  All_ERs(self, bg,font_color, file_label, view, physics):
         # create networkx graph
         G = nx.DiGraph()
         #aER = true, rER = true, iER = true, atomicER=true, isFixed
-        Views.__addNodes(self, G, True, True, True, True, False, True)
+        Views.__addNodes(self, G, True, True, True, True, False, True, True)
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship(self, G)
         Views. __create_isPartOf_relationship(self, G)
         # assign a file name
         file_name = file_label+"_All_ERs.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True)
     
     def Requirements(self, bg,font_color, file_label, view, physics):
          # create networkx graph
         G = nx.DiGraph()
-        #aER = true, rER = true, iER = true, atomicER=true, isFixed
-        Views.__addNodes(self, G, True, True, True, True, False, False)
+        #has_aER, has_rER, has_iER, has_atomicER, isFixed, colorOnly, isHorizontal
+        Views.__addNodes(self, G, True, True, True, True, False, False, True)
         Views.__create_assesses_relationship(self, G)
         Views. __create_comesAfter_relationship(self, G)
         Views. __create_isPartOf_relationship(self, G)
@@ -69,7 +69,21 @@ class Views:
         # assign a file name
         file_name = file_label+"_requirements.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True)
+    
+    def vertical_Requirements(self, bg,font_color, file_label, view, physics):
+         # create networkx graph
+        G = nx.DiGraph()
+        #has_aER, has_rER, has_iER, has_atomicER, isFixed, colorOnly, isHorizontal
+        Views.__addNodes(self, G, True, True, True, True, False, False, False)
+        Views.__create_assesses_relationship(self, G)
+        Views. __create_comesAfter_relationship(self, G)
+        Views. __create_isPartOf_relationship(self, G)
+        Views.__create_requires_relationshipAll(self, G)
+        # assign a file name
+        file_name = file_label+"_vertical_requirements.html"
+        #convert the network to pyvis
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, False)
     
     def setColors(self, aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node, aImg, aMov, aSW, aAudio, aText, aDataset):
         self.all_colors = colors.Color(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node, aImg, aMov, aSW, aAudio, aText, aDataset)
@@ -77,8 +91,8 @@ class Views:
     def getColors(self):
         return self.all_colors
 
-    def __addNodes(self, G, has_aER, has_rER, has_iER, has_atomicER, isFixed, colorOnly):
-        start_position= Views.__get_position(self, has_aER, has_iER, has_atomicER)
+    def __addNodes(self, G, has_aER, has_rER, has_iER, has_atomicER, isFixed, colorOnly, isHorizontal):
+        start_position= Views.__get_position_horizontal(self, has_aER, has_iER, has_atomicER)
         end_position = - start_position
         position = start_position + self.spacing
         rER_position = 50
@@ -91,9 +105,15 @@ class Views:
         for node in self.nodeList:
             node_type = node.er_type
             if(node_type == "start"):
-                G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.start_node_color,size=start_end_node_size, x = start_position, y=0, fixed = True, url = str(node.er_url))
+                if(isHorizontal):
+                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.start_node_color,size=start_end_node_size, x = start_position, y=0, fixed = True, url = str(node.er_url))
+                else:
+                     G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.start_node_color,size=start_end_node_size, x =0, y=start_position, fixed = True, url = str(node.er_url))
             elif(node_type == "end"):
-                G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.end_node_color,size=start_end_node_size, x = end_position, y=0, fixed = True, url = str(node.er_url))
+                if(isHorizontal):
+                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.end_node_color,size=start_end_node_size, x = end_position, y=0, fixed = True, url = str(node.er_url))
+                else:
+                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.end_node_color,size=start_end_node_size, x = 0, y=end_position, fixed = True, url = str(node.er_url))
             elif(node_type =="aER" and has_aER):
                 if(isFixed):
                     G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="box", color= self.all_colors.aER_node_color,x = position, y=0, url = str(node.er_url))
@@ -108,6 +128,8 @@ class Views:
                     position = position + self.spacing
                 else:
                     G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="circle" , value = 1, scaling = Views.__get_atomic_node_scaling_property(iER_size) ,color= self.all_colors.iER_node_color, url = str(node.er_url))
+            elif(node_type == "IP"):
+                pass
             elif(has_atomicER and type(node_type)==str):
                 toolTip = Views.__get_tool_tip(self, node)
                 Views.__add_atomic_nodes(self, G, node, toolTip, colorOnly)
@@ -370,7 +392,7 @@ class Views:
 
         return text
     
-    def __get_position(self, has_aER, has_iER, has_atomic):
+    def __get_position_horizontal(self, has_aER, has_iER, has_atomic):
         count = 0
         if(has_aER==True and has_iER==False):
             for node in self.nodeList:

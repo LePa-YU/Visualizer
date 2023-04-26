@@ -86,7 +86,7 @@ def __create_html_pages(label, view, bg, font_color, view1, physics):
         if(check_file == False):
             view.Summative_assessment_only( bg, font_color, label, view1, physics)
         
-        path =label+"_Course_Overview.html"
+        path = label+"_Course_Overview.html"
         check_file = os.path.isfile(path)
         if(check_file == False):
             view.Course_Overview( bg, font_color, label, view2, physics)
@@ -100,6 +100,11 @@ def __create_html_pages(label, view, bg, font_color, view1, physics):
         check_file = os.path.isfile(path)
         if(check_file == False):
             view.Requirements(bg, font_color, label, view4, physics)
+        
+        path = label+"_vertical_requirements.html"
+        check_file = os.path.isfile(path)
+        if(check_file == False):
+            view.vertical_Requirements(bg, font_color, label, view4, physics)
 
 #global variables:
 global uploaded_file
@@ -130,7 +135,8 @@ with container:
         view2 = 'View 2: Course Overview'
         view3 = 'View 3: All ERs'
         view4 = "View 4: Requirements"
-        option=st.selectbox('',(view1, view2, view3, view4))
+        view5 = "View 5: Requirements - Vertical"
+        option=st.selectbox('',(view1, view2, view3, view4, view5))
     
     if dataset_options == fake_ds:
         # get demo file from github in the Dataset repo (main) 
@@ -193,7 +199,7 @@ with container:
         dataframe = pd.read_csv(uploaded_file)
         #get file labe:
         if(type(uploaded_file) == str):
-            label = uploaded_file#.split("csv_temp/",1)[1]
+            label = uploaded_file #.split("csv_temp/",1)[1]
         else:
             label = uploaded_file.name
         
@@ -226,6 +232,10 @@ with container:
                 st.components.v1.html(source_code, height=820, scrolling=True)
             elif option == view4:
                 HtmlFile = open(label+"_requirements.html", 'r', encoding='utf-8')
+                source_code = HtmlFile.read() 
+                st.components.v1.html(source_code, height=820, scrolling=True)
+            elif option == view5:
+                HtmlFile = open(label+"_vertical_requirements.html", 'r', encoding='utf-8')
                 source_code = HtmlFile.read() 
                 st.components.v1.html(source_code, height=820, scrolling=True)
     # the legend of the menu

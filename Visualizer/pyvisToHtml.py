@@ -1,6 +1,6 @@
 import json
 
-def convertToHtml(data, file_name, bg, file_label, view):
+def convertToHtml(data, file_name, bg, file_label, view, isHorizontal):
     file_html = open(file_name , "w")
     # Adding the input data to the HTML file
     file_html.write('''
@@ -37,6 +37,12 @@ def convertToHtml(data, file_name, bg, file_label, view):
     </div>
     <!-- <script type="text/javascript" src="network.js"></script> -->
     <script type="text/javascript"> 
+       window.onload=function(){
+    var mobile = (/iphone|ipad|ipod|android|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+    if (mobile) {
+        alert("Visit this on a Computer for Better View");              
+    } 
+    }
      var nodeList = new vis.DataSet();
      var edgeList = new vis.DataSet();\n''')
 
@@ -73,6 +79,11 @@ def convertToHtml(data, file_name, bg, file_label, view):
     jsonOb_options = json.dumps(options_data)
     jsonOb_options_format = format(jsonOb_options)  
     file_html.write("\t\t var options = "+str(jsonOb_options_format) +";"+"\n\n")
+ 
+    #horizontal or vertical layout
+    jsonOb_isHorizontal = json.dumps(isHorizontal)
+    jsonOb_isHorizontal_format = format(jsonOb_isHorizontal)  
+    file_html.write("\t\t var isHorizontal = "+str(jsonOb_isHorizontal_format) +";"+"\n\n")
 
     # background data
     jsonOb_bg = json.dumps(bg)
@@ -166,6 +177,20 @@ def convertToHtml(data, file_name, bg, file_label, view):
     //creating the vis network
     var network = new vis.Network(container, data, options);
     network.setSize(width, height);
+    network.once("beforeDrawing", function () {
+      if(isHorizontal){
+        network.focus(0, {
+          scale: 0.5,
+          offset: {x:-300, y:0}
+        });
+      }
+      else{
+        network.focus(0, {
+          scale: 0.5,
+          offset: {x:0, y:-300}
+        });
+      }
+    }); 
     // node collapse. if only one node is selected if the node is clustred (collapsed) then the cluster is open
     // else the node is collapsed if if they have the isPartOf relation corresponding to this node's id (var v)
     network.on("selectNode", function (params) {
