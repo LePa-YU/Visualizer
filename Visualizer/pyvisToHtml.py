@@ -161,16 +161,21 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal):
 		},
 		layout: {
     		randomSeed:10, 
-    		improvedLayout: true, 
+    		improvedLayout: false, 
     		clusterThreshold:150,
   		},
 		physics: {
 			barnesHut: {
 				centralGravity: 0,
 				springLength: 140,
-				springConstant: 0.395
+				springConstant: 1
+        
 			},
-			minVelocity: 0.75
+			minVelocity: 0.75,
+      stabilization:{
+        enabled: true, 
+        iterations: 800
+      }
 		}
 
 	}
@@ -222,6 +227,10 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal):
       }
 
         
+    });
+
+    network.on('stabilized', function(params) {
+      console.log(params); 
     });
 
     // cluster/ collapse options based on isPartOf. this method returns the cluster options to be used for the clustering
