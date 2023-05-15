@@ -21,7 +21,7 @@ the python used for this project is `Python 3.10.7`
 
 #### 1. Web based (recommended)
 1. The visualizer tool is hosted on the streamlit cloud which can be accessed through the link 
-<a href="https://node-layout-experimentation.streamlit.app/" target="_blank">here</a>.  
+<a href="https://lepa-yu-visualizer-visualizervisualizerapp-node-layout-e-0am6we.streamlit.app/" target="_blank">here</a>.  
 
 ![visualizer on streamlit cloud](https://github.com/LePa-YU/Visualizer/blob/a330661f7664f7dd617e8481dd4d012a415f538b/images/appDemo1.JPG)
 
