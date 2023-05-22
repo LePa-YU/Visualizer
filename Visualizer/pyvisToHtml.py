@@ -231,13 +231,13 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal):
 
     network.on('stabilized', function(params) {
       // console.log(params);
-      nodeList.forEach(function(item) {
+     // nodeList.forEach(function(item) {
           //var positions = network.getPositions(item.id);
           //item.x = positions[item.id].x;
           //item.y = positions[item.id].y;
           // console.log(positions[item.id].x);
-          network.storePositions();
-      });
+           network.storePositions(); // causes some visual bugs
+      //});
 
       nodeList.forEach(function(item) {
           console.log("node: " + item.id + " | x = "+ item.x + " | y = "+ item.y);
