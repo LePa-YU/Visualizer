@@ -121,7 +121,7 @@ with container:
     # link to other dataset
     st.write("[Other datasets](https://github.com/LePa-YU/Datasets)")
     
-    col1, col2= st.columns(2)
+    col1, col2, col3= st.columns([3.5, 3.5, 1])
     with col1:
         fake_ds = "FAKE1001"
         ds_2311 = "EECS 2311"
@@ -129,14 +129,14 @@ with container:
         ds_1530 = "EECS 1530"
         ds_4462 = "EECS 4462"
         enter_own = "Enter your own data"
-        dataset_options=st.selectbox('',(fake_ds, ds_2311, ds_3461, ds_1530, ds_4462, enter_own))
+        dataset_options=st.selectbox('',(fake_ds, ds_2311, ds_3461, ds_1530, ds_4462, enter_own), label_visibility="collapsed")
     with col2:
         view1 = 'View 1: Summative assessment only'
         view2 = 'View 2: Course Overview'
         view3 = 'View 3: All ERs'
         view4 = "View 4: Requirements"
         view5 = "View 5: Requirements - Vertical"
-        option=st.selectbox('',(view1, view2, view3, view4, view5))
+        option=st.selectbox('',(view1, view2, view3, view4, view5), label_visibility="collapsed")
     
     if dataset_options == fake_ds:
         # get demo file from github in the Dataset repo (main) 
@@ -191,12 +191,12 @@ with container:
         , unsafe_allow_html=True)
         # user enters csv file in the file_uplader with the following properties
         uploaded_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
-
     
     
     if uploaded_file is not None:
         # store file in a dataframe 
         dataframe = pd.read_csv(uploaded_file)
+
         #get file labe:
         if(type(uploaded_file) == str):
             label = uploaded_file #.split("csv_temp/",1)[1]
@@ -204,6 +204,10 @@ with container:
             label = uploaded_file.name
         
         view = views.Views(dataframe)
+         #download
+        with col3:
+            download_file  = dataframe.to_csv().encode('utf-8')
+            download_btn = st.download_button("Download CSV file", data=download_file, file_name=label, mime='text/csv',)
 
         # another container for the html components of the actual visualization
         container_html = st.container()
