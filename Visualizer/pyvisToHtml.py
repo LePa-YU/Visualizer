@@ -27,7 +27,6 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal):
                 padding-right: 1%; 
             }
         </style>
-        <!-- <script src="network.js"></script> -->
         <script type="text/javascript" src="network.js"></script>
     </head>
     <body>
@@ -35,14 +34,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal):
       <div id="labelContainer"><p id="label"></p></div> 
       <div id="canvas"></div>
     </div>
-    <!-- <script type="text/javascript" src="network.js"></script> -->
     <script type="text/javascript"> 
-       window.onload=function(){
-    var mobile = (/iphone|ipad|ipod|android|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
-    if (mobile) {
-       alert("For the best viewing experience, please use a PC");           
-    } 
-    }
      var nodeList = new vis.DataSet();
      var edgeList = new vis.DataSet();\n''')
 
@@ -111,9 +103,16 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal):
     
     # add rest of the html
     file_html.write('''
+    
     document.getElementById("label").innerHTML = fileLabel +" (" + view + ")";
     if(bg == "black"){
       document.getElementById("label").style.color = 'white';
+    }
+    window.onload=function(){
+    var mobile = (/iphone|ipad|ipod|android|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+      if (mobile && fileLabel == "FAKE1001.csv" && view =="View 1: Summative assessment only") {
+        alert("For the best viewing experience, please use a PC");           
+      } 
     }
     var container = document.getElementById('canvas');
     // creating the data to be used for visuaization
@@ -230,19 +229,12 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal):
     });
 
     network.on('stabilized', function(params) {
-      // console.log(params);
-     // nodeList.forEach(function(item) {
-          //var positions = network.getPositions(item.id);
-          //item.x = positions[item.id].x;
-          //item.y = positions[item.id].y;
-          // console.log(positions[item.id].x);
-           network.storePositions(); // causes some visual bugs
-      //});
-
+      network.storePositions(); // causes some visual bugs
       nodeList.forEach(function(item) {
           console.log("node: " + item.id + " | x = "+ item.x + " | y = "+ item.y);
       });
     });
+    
    
 
     // cluster/ collapse options based on isPartOf. this method returns the cluster options to be used for the clustering
