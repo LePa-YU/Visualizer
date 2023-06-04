@@ -20,7 +20,7 @@ class Views:
             self.nodeList.append(er_node)
 
     
-    def Summative_assessment_only(self, bg, font_color, file_label, view, physics):
+    def Summative_assessment_only(self, bg, font_color, file_label, view, physics, url, d_btn):
         # create networkx graph
         G = nx.DiGraph()
         # aER = true, rER = true, iER = false, atomicER=false, isFixed
@@ -30,9 +30,9 @@ class Views:
         # assign a file name
         file_name = file_label+"_Summative_assessment_only.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, url, d_btn)
     
-    def Course_Overview(self, bg,font_color, file_label, view, physics):
+    def Course_Overview(self, bg,font_color, file_label, view, physics, url, d_btn):
         # create networkx graph
         G = nx.DiGraph()
         #aER = true, rER = true, iER = false, atomicER=false, isFixed
@@ -42,9 +42,9 @@ class Views:
         # assign a file name
         file_name = file_label+"_Course_Overview.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, url, d_btn)
 
-    def  All_ERs(self, bg,font_color, file_label, view, physics):
+    def  All_ERs(self, bg,font_color, file_label, view, physics, url, d_btn):
         # create networkx graph
         G = nx.DiGraph()
         #aER = true, rER = true, iER = true, atomicER=true, isFixed
@@ -55,9 +55,9 @@ class Views:
         # assign a file name
         file_name = file_label+"_All_ERs.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, url, d_btn)
     
-    def Requirements(self, bg,font_color, file_label, view, physics):
+    def Requirements(self, bg,font_color, file_label, view, physics, url, d_btn):
          # create networkx graph
         G = nx.DiGraph()
         #has_aER, has_rER, has_iER, has_atomicER, isFixed, colorOnly, isHorizontal
@@ -69,9 +69,9 @@ class Views:
         # assign a file name
         file_name = file_label+"_requirements.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, url, d_btn)
     
-    def vertical_Requirements(self, bg,font_color, file_label, view, physics):
+    def vertical_Requirements(self, bg,font_color, file_label, view, physics, url, d_btn):
          # create networkx graph
         G = nx.DiGraph()
         #has_aER, has_rER, has_iER, has_atomicER, isFixed, colorOnly, isHorizontal
@@ -83,7 +83,7 @@ class Views:
         # assign a file name
         file_name = file_label+"_vertical_requirements.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, False)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, False, url, d_btn)
     
     def setColors(self, aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node, aImg, aMov, aSW, aAudio, aText, aDataset):
         self.all_colors = colors.Color(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node, aImg, aMov, aSW, aAudio, aText, aDataset)

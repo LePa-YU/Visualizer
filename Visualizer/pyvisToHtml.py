@@ -1,6 +1,6 @@
 import json
 
-def convertToHtml(data, file_name, bg, file_label, view, isHorizontal):
+def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, url, d_btn):
     file_html = open(file_name , "w")
     # Adding the input data to the HTML file
     file_html.write('''
@@ -8,6 +8,9 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal):
     <html>
     <head>
         <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+        <script src = "https://d3js.org/d3.v4.min.js"></script>
+
         <style type="text/css">
             #mynetwork {
                 width: 100%;
@@ -43,6 +46,11 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal):
     jsonOb_file_label_format = format(jsonOb_file_label)
     file_html.write("\t\t var fileLabel = "+str(jsonOb_file_label_format) +";"+"\n")
 
+    # file url
+    jsonOb_file_url = json.dumps(url)
+    jsonOb_file_url_format = format(jsonOb_file_url)
+    file_html.write("\t\t var fileUrl = "+str(jsonOb_file_url_format) +";"+"\n")
+
     #view name
     jsonOb_view = json.dumps(view)
     jsonOb_view_format = format(jsonOb_view)
@@ -76,6 +84,11 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal):
     jsonOb_isHorizontal = json.dumps(isHorizontal)
     jsonOb_isHorizontal_format = format(jsonOb_isHorizontal)  
     file_html.write("\t\t var isHorizontal = "+str(jsonOb_isHorizontal_format) +";"+"\n\n")
+
+    #d_btn
+    jsonOb_d_btn = json.dumps(d_btn)
+    jsonOb_d_btn_format = format(jsonOb_d_btn)  
+    file_html.write("\t\t var download_button_clicked = "+str(jsonOb_d_btn_format) +";"+"\n\n")
 
     # background data
     jsonOb_bg = json.dumps(bg)
@@ -228,14 +241,172 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal):
         
     });
 
-    network.on('stabilized', function(params) {
-      network.storePositions(); // causes some visual bugs
-      nodeList.forEach(function(item) {
-          console.log("node: " + item.id + " | x = "+ item.x + " | y = "+ item.y);
-      });
+    var flag = false; 
+    network.on('stabilized', function(params) 
+    {
+      if(view =="View 4: Requirements")
+      { 
+        network.storePositions(); // causes some visual bugs  
+        var hasPositions = true; 
+        makeCSVFile(hasPositions); 
+      }
     });
-    
-   
+
+    function makeCSVFile(hasPositions){
+      /*nodeList.forEach(function(item) {
+        console.log("node: " + item.id + " | x = "+ item.x + " | y = "+ item.y);
+      });*/
+      //console.log(download_button_clicked);
+      if(flag == false){
+        var nodeIDs = [];
+        var nodeTitles = [];
+        var nodeDes = []; 
+        var nodeUrl = []; 
+        var nodeType = []; 
+        var nodeIsPartOf = []; 
+        var nodeAssesses = []; 
+        var nodeComesAfter = []; 
+        var nodeRequires = []; 
+        var nodeAC = []; 
+        var nodeReference = []; 
+        var nodeIsFormatOf = []; 
+        var nodeDuration = []; 
+
+        var nodeXPosition = []; 
+        var nodeYPosition = [];
+        Papa.parse(fileUrl, 
+          {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) 
+            {
+              //getting columns from the csv file
+              for(var i = 0; i<results.data.length; i++){
+                  //node ids-->column: identifier
+                  nodeIDs.push(results.data[i].identifier); 
+                  //getting node title from the csv file -->column: title
+                  nodeTitles.push(results.data[i].title); 
+                  //getting node description from the csv file -->column: description
+                  nodeDes.push(results.data[i].description); 
+                  //getting node url from the csv file -->column: url
+                  nodeUrl.push(results.data[i].url);
+                  //getting node type from the csv file -->column: type
+                  nodeType.push(results.data[i].type);
+                  //getting node isPartOf from the csv file -->column: isPartOf
+                  nodeIsPartOf.push(results.data[i].isPartOf);
+                  //getting node assesses from the csv file -->column: assesses
+                  nodeAssesses.push(results.data[i].assesses);
+                  //getting node comesAfter from the csv file -->column: comesAfter
+                  nodeComesAfter.push(results.data[i].comesAfter);
+                  //getting node requires from the csv file -->column: requires
+                  nodeRequires.push(results.data[i].requires);
+                  //getting node alternativeContent from the csv file -->column: alternativeContent
+                  nodeAC.push(results.data[i].alternativeContent);
+                  //getting node references from the csv file -->column: references
+                  nodeReference.push(results.data[i].references);
+                  //getting node isFormatOf from the csv file -->column: isFormatOf
+                  nodeIsFormatOf.push(results.data[i].isFormatOf);
+                  //getting node duration from the csv file -->column: duration
+                  nodeDuration.push(results.data[i].duration);
+              }
+              //finding the x and y for nodes in CSV file from nodeList
+              nodeIDs.forEach(function(node)
+              { 
+                    //getting x values from node list
+                    nodeList.forEach(function(item) 
+                    {
+                      if(node == item.id)
+                      {
+                        //console.log("node: " + node + "item: " + item.id); 
+                        nodeXPosition.push(item.x);
+                        nodeYPosition.push(item.y); 
+                      }
+                    }); 
+              });
+              //creating the data arrays for download
+              var data = getData(nodeIDs, nodeTitles, nodeDes, nodeUrl, nodeType, nodeIsPartOf, nodeAssesses, nodeComesAfter, nodeRequires, nodeAC, nodeReference, nodeIsFormatOf, nodeDuration, nodeXPosition, nodeYPosition); 
+              //downloading the data if the button is clicked
+              if (download_button_clicked == true)
+              {
+                   exportToCsv(fileLabel, data) ; 
+              }
+            }
+          });
+
+        flag = true; 
+      }
+    }
+
+    function getData(nodeIDs, nodeTitles, nodeDes, nodeUrl, nodeType, nodeIsPartOf, nodeAssesses, nodeComesAfter, nodeRequires, nodeAC, nodeReference, nodeIsFormatOf, nodeDuration, nodeXPosition, nodeYPosition){
+      var data = [];
+      //add file headers as the first element 
+      data.push(['identifier','title', 'description', 'url', 'type', 'isPartOf', 'assesses', 'comesAfter', 'requires', 'alternativeContent', 'references', 'isFormatOf', 'duration', 'x value', 'y value'])
+      for(var i = 0; i<nodeIDs.length; i++){
+        var row = []; 
+        row.push(nodeIDs[i]);
+        row.push(nodeTitles[i]); 
+        row.push(nodeDes[i]);  
+        row.push(nodeUrl[i])
+        row.push(nodeType[i]); 
+        row.push(nodeIsPartOf[i]); 
+        row.push(nodeAssesses[i]); 
+        row.push(nodeComesAfter[i]); 
+        row.push(nodeRequires[i]); 
+        row.push(nodeAC[i]); 
+        row.push(nodeReference[i]);
+        row.push(nodeIsFormatOf[i]); 
+        row.push(nodeDuration[i]);  
+
+        row.push(nodeXPosition[i]); 
+        row.push(nodeYPosition[i]); 
+
+        data.push(row); 
+      }
+
+      return data; 
+    }
+
+    function exportToCsv(filename, rows) {
+        var processRow = function (row) {
+            var finalVal = '';
+            for (var j = 0; j < row.length; j++) {
+                var innerValue = row[j] === null ? '' : row[j].toString();
+                if (row[j] instanceof Date) {
+                    innerValue = row[j].toLocaleString();
+                };
+                var result = innerValue.replace(/"/g, '""');
+                if (result.search(/("|,|\\n)/g) >= 0)
+                    result = '"' + result + '"';
+                if (j > 0)
+                    finalVal += ',';
+                finalVal += result;
+            }
+            return finalVal + '\\n';
+        };
+
+        var csvFile = '';
+        for (var i = 0; i < rows.length; i++) {
+            csvFile += processRow(rows[i]);
+        }
+
+        var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+        if (navigator.msSaveBlob) { // IE 10+
+            navigator.msSaveBlob(blob, filename);
+        } else {
+            var link = document.createElement("a");
+            if (link.download !== undefined) { // feature detection
+                // Browsers that support HTML5 download attribute
+                var url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+    }
 
     // cluster/ collapse options based on isPartOf. this method returns the cluster options to be used for the clustering
     function getC(v){

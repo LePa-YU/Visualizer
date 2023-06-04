@@ -78,36 +78,38 @@ class _Customization_menu:
             self.view.setColors("#FF7273", "#FF7273", "#F69159", "#ECD19A", "#FF7273", "#C0CB6B", "#ECD19A", "#C0CB6B", "#C0CB6B", "#BF87F2", "#A24052", "#FBF495", "#93C539", "#437C6C", "#20C18B", "#5FC7D3")
         return bg
 
-def __create_html_pages(label, view, bg, font_color, view1, physics):
+def __create_html_pages(label, view, bg, font_color, view1, physics, url, d_btn):
      # create the temp html files for each views
         # add if-else statemet --> create html if it does not exsits
-        path = label+"_Summative_assessment_only.html"
-        check_file = os.path.isfile(path)
-        if(check_file == False):
-            view.Summative_assessment_only( bg, font_color, label, view1, physics)
+        # print(url)
+        # path = label+"_Summative_assessment_only.html"
+        # check_file = os.path.isfile(path)
+        # if(check_file == False):
+            view.Summative_assessment_only( bg, font_color, label, view1, physics, url, d_btn)
         
-        path = label+"_Course_Overview.html"
-        check_file = os.path.isfile(path)
-        if(check_file == False):
-            view.Course_Overview( bg, font_color, label, view2, physics)
+        # path = label+"_Course_Overview.html"
+        # check_file = os.path.isfile(path)
+        # if(check_file == False):
+            view.Course_Overview( bg, font_color, label, view2, physics, url, d_btn)
         
-        path = label+"_All_ERs.html"
-        check_file = os.path.isfile(path)
-        if(check_file == False):
-            view.All_ERs( bg, font_color, label, view3, physics)
+        # path = label+"_All_ERs.html"
+        # check_file = os.path.isfile(path)
+        # if(check_file == False):
+            view.All_ERs( bg, font_color, label, view3, physics, url, d_btn)
         
-        path = label+"_requirements.html"
-        check_file = os.path.isfile(path)
-        if(check_file == False):
-            view.Requirements(bg, font_color, label, view4, physics)
+        # path = label+"_requirements.html"
+        # check_file = os.path.isfile(path)
+        # if(check_file == False):
+            view.Requirements(bg, font_color, label, view4, physics, url, d_btn)
         
-        path = label+"_vertical_requirements.html"
-        check_file = os.path.isfile(path)
-        if(check_file == False):
-            view.vertical_Requirements(bg, font_color, label, view4, physics)
+        # path = label+"_vertical_requirements.html"
+        # check_file = os.path.isfile(path)
+        # if(check_file == False):
+            view.vertical_Requirements(bg, font_color, label, view4, physics, url, d_btn)
 
 #global variables:
 global uploaded_file
+global url
 
 # initial settings:
     # the "wide" layout allows the elements to be stretched to the size of the screen 
@@ -207,7 +209,9 @@ with container:
          #download
         with col3:
             download_file  = dataframe.to_csv().encode('utf-8')
-            download_btn = st.download_button("Download CSV file", data=download_file, file_name=label, mime='text/csv',)
+            # download_btn = st.download_button("Download CSV file", data=download_file, file_name=label, mime='text/csv',)
+            d_btn = st.button("Download CSV File")
+            # print (d_btn)
 
         # another container for the html components of the actual visualization
         container_html = st.container()
@@ -218,7 +222,7 @@ with container:
         physics = custom_menu.physics
         font_color = "black" if bg == "white" else "white"
         
-        __create_html_pages(label, view, bg, font_color, view1, physics); 
+        __create_html_pages(label, view, bg, font_color, view1, physics, url, d_btn); 
 
          # adding html file to the container based on the selction made by user
         with container_html:
