@@ -250,6 +250,10 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, url, d_bt
         var hasPositions = true; 
         makeCSVFile(hasPositions); 
       }
+      else{
+        var hasPositions = false; 
+        makeCSVFile(hasPositions); 
+      }
     });
 
     function makeCSVFile(hasPositions){
@@ -274,6 +278,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, url, d_bt
 
         var nodeXPosition = []; 
         var nodeYPosition = [];
+
         Papa.parse(fileUrl, 
           {
             download: true,
@@ -325,7 +330,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, url, d_bt
                     }); 
               });
               //creating the data arrays for download
-              var data = getData(nodeIDs, nodeTitles, nodeDes, nodeUrl, nodeType, nodeIsPartOf, nodeAssesses, nodeComesAfter, nodeRequires, nodeAC, nodeReference, nodeIsFormatOf, nodeDuration, nodeXPosition, nodeYPosition); 
+              var data = getData(nodeIDs, nodeTitles, nodeDes, nodeUrl, nodeType, nodeIsPartOf, nodeAssesses, nodeComesAfter, nodeRequires, nodeAC, nodeReference, nodeIsFormatOf, nodeDuration, nodeXPosition, nodeYPosition, hasPositions); 
               //downloading the data if the button is clicked
               if (download_button_clicked == true)
               {
@@ -337,11 +342,22 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, url, d_bt
         flag = true; 
       }
     }
+    function getImageFileFromUrl(url){
+          let response = await fetch(url);
+          let data = await response.blob();
+         
+          return new File([data], "result.csv");
+        }
 
-    function getData(nodeIDs, nodeTitles, nodeDes, nodeUrl, nodeType, nodeIsPartOf, nodeAssesses, nodeComesAfter, nodeRequires, nodeAC, nodeReference, nodeIsFormatOf, nodeDuration, nodeXPosition, nodeYPosition){
+    function getData(nodeIDs, nodeTitles, nodeDes, nodeUrl, nodeType, nodeIsPartOf, nodeAssesses, nodeComesAfter, nodeRequires, nodeAC, nodeReference, nodeIsFormatOf, nodeDuration, nodeXPosition, nodeYPosition, hasPositions){
       var data = [];
       //add file headers as the first element 
-      data.push(['identifier','title', 'description', 'url', 'type', 'isPartOf', 'assesses', 'comesAfter', 'requires', 'alternativeContent', 'references', 'isFormatOf', 'duration', 'x value', 'y value'])
+      if(hasPositions){
+        data.push(['identifier','title', 'description', 'url', 'type', 'isPartOf', 'assesses', 'comesAfter', 'requires', 'alternativeContent', 'references', 'isFormatOf', 'duration', 'x value', 'y value']); 
+      }
+      else{
+        data.push(['identifier','title', 'description', 'url', 'type', 'isPartOf', 'assesses', 'comesAfter', 'requires', 'alternativeContent', 'references', 'isFormatOf', 'duration']);
+      } 
       for(var i = 0; i<nodeIDs.length; i++){
         var row = []; 
         row.push(nodeIDs[i]);
@@ -358,8 +374,11 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, url, d_bt
         row.push(nodeIsFormatOf[i]); 
         row.push(nodeDuration[i]);  
 
-        row.push(nodeXPosition[i]); 
-        row.push(nodeYPosition[i]); 
+        if(hasPositions)
+        {
+          row.push(nodeXPosition[i]); 
+          row.push(nodeYPosition[i]); 
+        }
 
         data.push(row); 
       }
@@ -371,6 +390,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, url, d_bt
         var processRow = function (row) {
             var finalVal = '';
             for (var j = 0; j < row.length; j++) {
+              console.log(row[j]); 
                 var innerValue = row[j] === null ? '' : row[j].toString();
                 if (row[j] instanceof Date) {
                     innerValue = row[j].toLocaleString();
