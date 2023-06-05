@@ -1,6 +1,6 @@
 import json
 
-def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, url, d_btn):
+def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, csvRows):
     file_html = open(file_name , "w")
     # Adding the input data to the HTML file
     file_html.write('''
@@ -39,17 +39,18 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, url, d_bt
     </div>
     <script type="text/javascript"> 
      var nodeList = new vis.DataSet();
-     var edgeList = new vis.DataSet();\n''')
+     var edgeList = new vis.DataSet();
+     var csvRows = []; \n''')
 
     # file label 
     jsonOb_file_label = json.dumps(file_label)
     jsonOb_file_label_format = format(jsonOb_file_label)
     file_html.write("\t\t var fileLabel = "+str(jsonOb_file_label_format) +";"+"\n")
 
-    # file url
-    jsonOb_file_url = json.dumps(url)
-    jsonOb_file_url_format = format(jsonOb_file_url)
-    file_html.write("\t\t var fileUrl = "+str(jsonOb_file_url_format) +";"+"\n")
+    # # file url
+    # jsonOb_file_url = json.dumps(url)
+    # jsonOb_file_url_format = format(jsonOb_file_url)
+    # file_html.write("\t\t var fileUrl = "+str(jsonOb_file_url_format) +";"+"\n")
 
     #view name
     jsonOb_view = json.dumps(view)
@@ -97,6 +98,15 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, url, d_bt
     file_html.write('''
         document.getElementById('mynetwork').style.background = bg; 
      ''')
+
+    # csvRows for download
+    # for row in csvRows:
+    #     jsonOb_node = json.dumps(n)
+    #     jsonOb_node_format = format(jsonOb_node)
+    #     file_html.write("\t\t nodeList.add("+str(jsonOb_node_format) +");"+"\n")
+    jsonOb_csvRows = json.dumps(csvRows)
+    jsonOb_csvRows_format = format(jsonOb_csvRows)
+    file_html.write("\t\t var csvRows= "+str(jsonOb_csvRows_format) +";"+"\n")
 
     # nodes data from network
     nodes_data = data[0]
@@ -244,17 +254,36 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, url, d_bt
     var flag = false; 
     network.on('stabilized', function(params) 
     {
+     if(flag == false){
       if(view =="View 4: Requirements")
-      { 
-        network.storePositions(); // causes some visual bugs  
-        var hasPositions = true; 
-        makeCSVFile(hasPositions); 
+      {
+          network.storePositions(); // causes some visual bugs 
+          //adding x values to headers
+          csvRows[0].push("x values");
+          csvRows[0].push("y values");
+          //adding x values to array
+          for(var i = 1; i <csvRows.length; i++)
+          {
+            nodeID = csvRows[i][0];  
+            //getting x values from node list
+            nodeList.forEach(function(item) 
+            {
+              if(nodeID == item.id)
+              {
+                //console.log("node: " + nodeID + "item: " + item.id); 
+                csvRows[i].push(item.x);
+                csvRows[i].push(item.y);
+              }
+            }); 
+          } 
+        }
+        if (download_button_clicked == true)
+        {
+          exportToCsv(fileLabel, csvRows) ; 
+        }
+        flag = true; 
       }
-      else{
-        var hasPositions = false; 
-        makeCSVFile(hasPositions); 
-      }
-    });
+    });  
 
     function makeCSVFile(hasPositions){
       /*nodeList.forEach(function(item) {
@@ -342,12 +371,12 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, url, d_bt
         flag = true; 
       }
     }
-    function getImageFileFromUrl(url){
+   /* function getImageFileFromUrl(url){
           let response = await fetch(url);
           let data = await response.blob();
          
           return new File([data], "result.csv");
-        }
+        }*/
 
     function getData(nodeIDs, nodeTitles, nodeDes, nodeUrl, nodeType, nodeIsPartOf, nodeAssesses, nodeComesAfter, nodeRequires, nodeAC, nodeReference, nodeIsFormatOf, nodeDuration, nodeXPosition, nodeYPosition, hasPositions){
       var data = [];
@@ -390,7 +419,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, url, d_bt
         var processRow = function (row) {
             var finalVal = '';
             for (var j = 0; j < row.length; j++) {
-              console.log(row[j]); 
+              //console.log(row[j]); 
                 var innerValue = row[j] === null ? '' : row[j].toString();
                 if (row[j] instanceof Date) {
                     innerValue = row[j].toLocaleString();

@@ -9,6 +9,7 @@ import requests
 import Legend
 import os.path
 import atexit 
+import csv
 
 #### this file contains code for streamlit deployment
 class _Customization_menu:
@@ -78,34 +79,34 @@ class _Customization_menu:
             self.view.setColors("#FF7273", "#FF7273", "#F69159", "#ECD19A", "#FF7273", "#C0CB6B", "#ECD19A", "#C0CB6B", "#C0CB6B", "#BF87F2", "#A24052", "#FBF495", "#93C539", "#437C6C", "#20C18B", "#5FC7D3")
         return bg
 
-def __create_html_pages(label, view, bg, font_color, view1, physics, url, d_btn):
+def __create_html_pages(label, view, bg, font_color, view1, physics, d_btn):
      # create the temp html files for each views
         # add if-else statemet --> create html if it does not exsits
         # print(url)
         # path = label+"_Summative_assessment_only.html"
         # check_file = os.path.isfile(path)
         # if(check_file == False):
-            view.Summative_assessment_only( bg, font_color, label, view1, physics, url, d_btn)
+            view.Summative_assessment_only( bg, font_color, label, view1, physics, d_btn)
         
         # path = label+"_Course_Overview.html"
         # check_file = os.path.isfile(path)
         # if(check_file == False):
-            view.Course_Overview( bg, font_color, label, view2, physics, url, d_btn)
+            view.Course_Overview( bg, font_color, label, view2, physics, d_btn)
         
         # path = label+"_All_ERs.html"
         # check_file = os.path.isfile(path)
         # if(check_file == False):
-            view.All_ERs( bg, font_color, label, view3, physics, url, d_btn)
+            view.All_ERs( bg, font_color, label, view3, physics, d_btn)
         
         # path = label+"_requirements.html"
         # check_file = os.path.isfile(path)
         # if(check_file == False):
-            view.Requirements(bg, font_color, label, view4, physics, url, d_btn)
+            view.Requirements(bg, font_color, label, view4, physics, d_btn)
         
         # path = label+"_vertical_requirements.html"
         # check_file = os.path.isfile(path)
         # if(check_file == False):
-            view.vertical_Requirements(bg, font_color, label, view4, physics, url, d_btn)
+            view.vertical_Requirements(bg, font_color, label, view4, physics, d_btn)
 
 #global variables:
 global uploaded_file
@@ -205,8 +206,15 @@ with container:
         else:
             label = uploaded_file.name
         
-        view = views.Views(dataframe)
-         #download
+        # get the csv file as array
+        csvRows = []
+        with open(label, encoding='utf_8_sig') as csvfile:
+            reader = csv.reader(csvfile) # change contents to floats
+            for row in reader: # each row is a list
+                csvRows.append(row)
+        # print(csvRows)
+        view = views.Views(dataframe, csvRows)
+         #download csv file
         with col3:
             download_file  = dataframe.to_csv().encode('utf-8')
             # download_btn = st.download_button("Download CSV file", data=download_file, file_name=label, mime='text/csv',)
@@ -222,7 +230,7 @@ with container:
         physics = custom_menu.physics
         font_color = "black" if bg == "white" else "white"
         
-        __create_html_pages(label, view, bg, font_color, view1, physics, url, d_btn); 
+        __create_html_pages(label, view, bg, font_color, view1, physics, d_btn); 
 
          # adding html file to the container based on the selction made by user
         with container_html:

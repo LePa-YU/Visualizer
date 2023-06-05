@@ -9,7 +9,7 @@ import csv
 
 class Views:
     spacing = 400
-    def __init__(self, dataCSV):
+    def __init__(self, dataCSV, csvRows):
         # all the data headers are in lower case to ensure consistent connection in Node class
         dataCSV.columns = dataCSV.columns.str.lower()
         self.data = dataCSV.to_dict('records')
@@ -19,8 +19,10 @@ class Views:
             er_node = node.Node(er)
             self.nodeList.append(er_node)
 
+        self.csvRows = csvRows
+
     
-    def Summative_assessment_only(self, bg, font_color, file_label, view, physics, url, d_btn):
+    def Summative_assessment_only(self, bg, font_color, file_label, view, physics, d_btn):
         # create networkx graph
         G = nx.DiGraph()
         # aER = true, rER = true, iER = false, atomicER=false, isFixed
@@ -30,9 +32,9 @@ class Views:
         # assign a file name
         file_name = file_label+"_Summative_assessment_only.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, url, d_btn)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, d_btn, self.csvRows)
     
-    def Course_Overview(self, bg,font_color, file_label, view, physics, url, d_btn):
+    def Course_Overview(self, bg,font_color, file_label, view, physics, d_btn):
         # create networkx graph
         G = nx.DiGraph()
         #aER = true, rER = true, iER = false, atomicER=false, isFixed
@@ -42,9 +44,9 @@ class Views:
         # assign a file name
         file_name = file_label+"_Course_Overview.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, url, d_btn)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, d_btn, self.csvRows)
 
-    def  All_ERs(self, bg,font_color, file_label, view, physics, url, d_btn):
+    def  All_ERs(self, bg,font_color, file_label, view, physics, d_btn):
         # create networkx graph
         G = nx.DiGraph()
         #aER = true, rER = true, iER = true, atomicER=true, isFixed
@@ -55,9 +57,9 @@ class Views:
         # assign a file name
         file_name = file_label+"_All_ERs.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, url, d_btn)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, d_btn, self.csvRows)
     
-    def Requirements(self, bg,font_color, file_label, view, physics, url, d_btn):
+    def Requirements(self, bg,font_color, file_label, view, physics, d_btn):
          # create networkx graph
         G = nx.DiGraph()
         #has_aER, has_rER, has_iER, has_atomicER, isFixed, colorOnly, isHorizontal
@@ -69,9 +71,9 @@ class Views:
         # assign a file name
         file_name = file_label+"_requirements.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, url, d_btn)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, d_btn, self.csvRows)
     
-    def vertical_Requirements(self, bg,font_color, file_label, view, physics, url, d_btn):
+    def vertical_Requirements(self, bg,font_color, file_label, view, physics, d_btn):
          # create networkx graph
         G = nx.DiGraph()
         #has_aER, has_rER, has_iER, has_atomicER, isFixed, colorOnly, isHorizontal
@@ -83,7 +85,7 @@ class Views:
         # assign a file name
         file_name = file_label+"_vertical_requirements.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, False, url, d_btn)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, False, d_btn, self.csvRows)
     
     def setColors(self, aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node, aImg, aMov, aSW, aAudio, aText, aDataset):
         self.all_colors = colors.Color(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node, aImg, aMov, aSW, aAudio, aText, aDataset)
