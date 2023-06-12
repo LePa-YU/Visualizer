@@ -104,37 +104,48 @@ class Views:
         aER_size = 25
         rER_size = 25
 
+        # check if all nodes have x and y position
+        all_has_coordinate = True
         for node in self.nodeList:
-            node_type = node.er_type
-            if(node_type == "start"):
-                if(isHorizontal):
-                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.start_node_color,size=start_end_node_size, x = start_position, y=0, fixed = True, url = str(node.er_url))
-                else:
-                     G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.start_node_color,size=start_end_node_size, x =0, y=start_position, fixed = True, url = str(node.er_url))
-            elif(node_type == "end"):
-                if(isHorizontal):
-                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.end_node_color,size=start_end_node_size, x = end_position, y=0, fixed = True, url = str(node.er_url))
-                else:
-                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.end_node_color,size=start_end_node_size, x = 0, y=end_position, fixed = True, url = str(node.er_url))
-            elif(node_type =="aER" and has_aER):
-                if(isFixed):
-                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="box", color= self.all_colors.aER_node_color,x = position, y=0, url = str(node.er_url))
-                    position = position+self.spacing
-                else:
-                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="box",value = 1, scaling = Views.__get_atomic_node_scaling_property(aER_size) , color= self.all_colors.aER_node_color, url = str(node.er_url))
-            elif(node_type =="rER" and has_rER):
-                G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="triangle" , value = 1, scaling = Views.__get_atomic_node_scaling_property(rER_size) ,color= self.all_colors.rER_node_color, url = str(node.er_url))
-            elif(node_type =="iER" and has_iER):
-                if(isFixed):
-                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="circle" , color= self.all_colors.iER_node_color,x = position, y=0, fixed = True, url = str(node.er_url))
-                    position = position + self.spacing
-                else:
-                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="circle" , value = 1, scaling = Views.__get_atomic_node_scaling_property(iER_size) ,color= self.all_colors.iER_node_color, url = str(node.er_url))
-            elif(node_type == "IP"):
-                pass
-            elif(has_atomicER and type(node_type)==str):
-                toolTip = Views.__get_tool_tip(self, node)
-                Views.__add_atomic_nodes(self, G, node, toolTip, colorOnly)
+            if (type(node.er_x_value) != int or type(node.er_y_value)!=int):
+                all_has_coordinate = False
+                break
+        # print(all_has_coordinate)
+        if(all_has_coordinate):
+            print("ok")
+        else:
+            for node in self.nodeList:
+                node_type = node.er_type
+                if(node_type == "start"):
+                    if(isHorizontal):
+                        G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.start_node_color,size=start_end_node_size, x = start_position, y=0, fixed = True, url = str(node.er_url))
+                    else:
+                        G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.start_node_color,size=start_end_node_size, x =0, y=start_position, fixed = True, url = str(node.er_url))
+                elif(node_type == "end"):
+                    if(isHorizontal):
+                        G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.end_node_color,size=start_end_node_size, x = end_position, y=0, fixed = True, url = str(node.er_url))
+                    else:
+                        G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.end_node_color,size=start_end_node_size, x = 0, y=end_position, fixed = True, url = str(node.er_url))
+                elif(node_type =="aER" and has_aER):
+                    if(isFixed):
+                        G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="box", color= self.all_colors.aER_node_color,x = position, y=0, url = str(node.er_url))
+                        position = position+self.spacing
+                    else:
+                        G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="box",value = 1, scaling = Views.__get_atomic_node_scaling_property(aER_size) , color= self.all_colors.aER_node_color, url = str(node.er_url))
+                elif(node_type =="rER" and has_rER):
+                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="triangle" , value = 1, scaling = Views.__get_atomic_node_scaling_property(rER_size) ,color= self.all_colors.rER_node_color, url = str(node.er_url))
+                elif(node_type =="iER" and has_iER):
+                    if(isFixed):
+                        G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="circle" , color= self.all_colors.iER_node_color,x = position, y=0, fixed = True, url = str(node.er_url))
+                        position = position + self.spacing
+                    else:
+                        G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="circle" , value = 1, scaling = Views.__get_atomic_node_scaling_property(iER_size) ,color= self.all_colors.iER_node_color, url = str(node.er_url))
+                elif(node_type == "IP"):
+                    pass
+                elif(has_atomicER and type(node_type)==str):
+                    toolTip = Views.__get_tool_tip(self, node)
+                    Views.__add_atomic_nodes(self, G, node, toolTip, colorOnly)
+    
     def __get_atomic_node_scaling_property(size):
         res={
             "label":{

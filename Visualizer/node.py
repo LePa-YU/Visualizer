@@ -94,7 +94,18 @@ class Node:
             self.er_duration = int(er["duration"])
         except:
             self.er_duration = 0
-            
+
+        #x position
+        try:
+            self.er_x_value = int(er["x values"])
+        except:
+            self.er_x_value = ""
+        
+        #y position
+        try:
+            self.er_y_value = int(er["y values"])
+        except:
+            self.er_y_value = ""
 
         
     
