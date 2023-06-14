@@ -70,8 +70,14 @@ class Views:
         Views.__create_requires_relationshipAll(self, G)
         # assign a file name
         file_name = file_label+"_requirements.html"
+        # check if nodes have coordinates
+        all_has_coordinate = True
+        for node in self.nodeList:
+            if (type(node.er_x_value) != int or type(node.er_y_value)!=int):
+                all_has_coordinate = False
+                break
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, d_btn, self.csvRows, True)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, d_btn, self.csvRows, all_has_coordinate)
     
     def vertical_Requirements(self, bg,font_color, file_label, view, physics, d_btn):
          # create networkx graph
