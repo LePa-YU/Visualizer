@@ -1,6 +1,6 @@
 import json
 
-def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, csvRows):
+def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, csvRows,  needsStabilization):
     file_html = open(file_name , "w")
     # Adding the input data to the HTML file
     file_html.write('''
@@ -90,6 +90,11 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
     jsonOb_d_btn = json.dumps(d_btn)
     jsonOb_d_btn_format = format(jsonOb_d_btn)  
     file_html.write("\t\t var download_button_clicked = "+str(jsonOb_d_btn_format) +";"+"\n\n")
+
+    # needsStabilization
+    jsonOb_needsStabilization = json.dumps(needsStabilization)
+    jsonOb_needsStabilization_format = format(jsonOb_needsStabilization)  
+    file_html.write("\t\t var needsStabilization = "+str(jsonOb_needsStabilization_format) +";"+"\n\n")
 
     # background data
     jsonOb_bg = json.dumps(bg)
@@ -194,13 +199,30 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
         
 			},
 			minVelocity: 0.75,
-      stabilization:{
-        enabled: true, 
-        iterations: 800
-      }
 		}
 
 	}
+  /*
+  stabilization:{
+        enabled: true, 
+        iterations: 800
+      }
+  */
+  //var needsStabilization = true; 
+  if(needsStabilization == false){
+    options.physics["stabilization"] = {
+        enabled: true, 
+        iterations: 800
+      }; 
+      //console.log("stabilization happen"); 
+  }
+  else{
+    options.physics["stabilization"] = {
+        enabled: true, 
+        iterations: 50
+      };  
+      //console.log("stabilization did not happen"); 
+  }
     //creating the vis network
     var network = new vis.Network(container, data, options);
     network.setSize(width, height);
@@ -250,10 +272,24 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
 
         
     });
+   /* network.on('startStabilizing', function(params) {
+      let s = nodeList.length; 
+      console.log("node number: "+String(s)); 
+      const d = new Date();
+      let time = d.getTime();
+      console.log("Start time: " + String(time)); 
+    });*/
 
+    
     var flag = false; 
     network.on('stabilized', function(params) 
     {
+     /* const d = new Date();
+      let time = d.getTime();
+      console.log("end time: " + String(time)); 
+      console.log("number of iteration: "+ String(params.iterations));*/
+
+
      if(flag == false){
       if(view =="View 4: Requirements")
       {
