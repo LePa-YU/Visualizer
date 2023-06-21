@@ -132,12 +132,12 @@ class Views:
                         G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.start_node_color,size=start_end_node_size, x =0, y=start_position, fixed = True, url = str(node.er_url))
             elif(node_type == "end"):
                 if(all_has_coordinate):
-                     G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.end_node_color,size=start_end_node_size, x = node.er_x_value, y=node.er_y_value, fixed = True, url = str(node.er_url))
+                     G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.end_node_color,size=start_end_node_size, x = node.er_x_value, y=node.er_y_value, url = str(node.er_url))
                 else:
                     if(isHorizontal):
-                        G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.end_node_color,size=start_end_node_size, x = end_position, y=0, fixed = True, url = str(node.er_url))
+                        G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.end_node_color,size=start_end_node_size, x = end_position, y=0, url = str(node.er_url))
                     else:
-                        G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.end_node_color,size=start_end_node_size, x = 0, y=end_position, fixed = True, url = str(node.er_url))
+                        G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.end_node_color,size=start_end_node_size, x = 0, y=end_position, url = str(node.er_url))
             elif(node_type =="aER" and has_aER):
                 if(all_has_coordinate):
                     G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="box", color= self.all_colors.aER_node_color,x = node.er_x_value, y=node.er_y_value, url = str(node.er_url))

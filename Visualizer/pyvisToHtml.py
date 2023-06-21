@@ -272,22 +272,22 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
 
         
     });
-   /* network.on('startStabilizing', function(params) {
+    network.on('startStabilizing', function(params) {
       let s = nodeList.length; 
       console.log("node number: "+String(s)); 
       const d = new Date();
       let time = d.getTime();
       console.log("Start time: " + String(time)); 
-    });*/
+    });
 
     
     var flag = false; 
     network.on('stabilized', function(params) 
     {
-     /* const d = new Date();
+     const d = new Date();
       let time = d.getTime();
       console.log("end time: " + String(time)); 
-      console.log("number of iteration: "+ String(params.iterations));*/
+      console.log("number of iteration: "+ String(params.iterations));
 
 
      if(flag == false){
