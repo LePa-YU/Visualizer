@@ -1,6 +1,6 @@
 import json
 
-def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, csvRows,  needsStabilization):
+def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, csvRows,  needsStabilization, physics):
     file_html = open(file_name , "w")
     # Adding the input data to the HTML file
     file_html.write('''
@@ -12,10 +12,14 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
         <script src = "https://d3js.org/d3.v4.min.js"></script>
 
         <style type="text/css">
-            #mynetwork {
+             #mynetwork {
                 width: 100%;
                 height: 800px;
                 border: 1px solid lightgray;
+            }
+            #container{
+               display: flex;
+               height: 800px;
             }
             #canvas {
                 width: 100%;
@@ -33,10 +37,13 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
         <script type="text/javascript" src="network.js"></script>
     </head>
     <body>
-    <div id="mynetwork">
-      <div id="labelContainer"><p id="label"></p></div> 
-      <div id="canvas"></div>
-    </div>
+    <div id="container">
+        <div id="mynetwork">
+          <div id="labelContainer"><p id="label"></p></div> 
+          <div id="canvas"></div>
+	      </div> 
+     </div>   
+   
     <script type="text/javascript"> 
      var nodeList = new vis.DataSet();
      var edgeList = new vis.DataSet();
@@ -47,10 +54,10 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
     jsonOb_file_label_format = format(jsonOb_file_label)
     file_html.write("\t\t var fileLabel = "+str(jsonOb_file_label_format) +";"+"\n")
 
-    # # file url
-    # jsonOb_file_url = json.dumps(url)
-    # jsonOb_file_url_format = format(jsonOb_file_url)
-    # file_html.write("\t\t var fileUrl = "+str(jsonOb_file_url_format) +";"+"\n")
+      # physics
+    jsonOb_physics = json.dumps(physics)
+    jsonOb_physics_format = format(jsonOb_physics)
+    file_html.write("\t\t var physics = "+str(jsonOb_physics_format) +";"+"\n")
 
     #view name
     jsonOb_view = json.dumps(view)
@@ -131,6 +138,13 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
     
     # add rest of the html
     file_html.write('''
+   
+    if(physics){
+      var physicsContainer = document.createElement("div");
+      physicsContainer.style.overflow = "scroll";
+      physicsContainer.style.width = "70%";
+      document.getElementById("container").appendChild(physicsContainer);
+    }
     
     document.getElementById("label").innerHTML = fileLabel +" (" + view + ")";
     if(bg == "black"){
@@ -150,6 +164,10 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
     };
    //options:
       var options = {
+        configure:{
+          enabled: physics,
+          container: physicsContainer
+        },
 		nodes: {
 			borderWidth: 3,
 			borderWidthSelected: 6,

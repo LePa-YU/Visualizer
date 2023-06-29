@@ -92,6 +92,13 @@ class Views:
         file_name = file_label+"_vertical_requirements.html"
         #convert the network to pyvis
         nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, False, d_btn, self.csvRows, False)
+    def set_atomic_size_limit(self, atomic_max_size, atomic_min_size, start_end_size, ier_size, aer_size, rer_size):
+        self.atomic_max_size = atomic_max_size
+        self.atomic_min_size = atomic_min_size
+        self.start_end_size = start_end_size
+        self.ier_size = ier_size
+        self.aer_size = aer_size
+        self.rer_size = rer_size
     
     def setColors(self, aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node, aImg, aMov, aSW, aAudio, aText, aDataset):
         self.all_colors = colors.Color(aER_node_color, rER_node_color, iER_node_color,  general_node_color, assess_edge_color, requires_edge_color, isPartOf_edge_color, start_node, end_node, requires_node, aImg, aMov, aSW, aAudio, aText, aDataset)
@@ -105,10 +112,14 @@ class Views:
         position = start_position + self.spacing
         rER_position = 50
 
-        start_end_node_size = 20
-        iER_size = 25
-        aER_size = 25
-        rER_size = 25
+        # start_end_node_size = 20
+        # iER_size = 25
+        # aER_size = 25
+        # rER_size = 25
+        start_end_node_size = self.start_end_size
+        iER_size = self.ier_size
+        aER_size = self.aer_size
+        rER_size = self.rer_size
 
         # check if all nodes have x and y position
         all_has_coordinate = False
@@ -140,7 +151,7 @@ class Views:
                         G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="diamond", color= self.all_colors.end_node_color,size=start_end_node_size, x = 0, y=end_position, fixed = True, url = str(node.er_url))
             elif(node_type =="aER" and has_aER):
                 if(all_has_coordinate):
-                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="box", color= self.all_colors.aER_node_color,x = node.er_x_value, y=node.er_y_value, url = str(node.er_url))
+                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="box", value = 1, scaling = Views.__get_atomic_node_scaling_property(aER_size), color= self.all_colors.aER_node_color,x = node.er_x_value, y=node.er_y_value, url = str(node.er_url))
                 else:
                     if(isFixed):
                         G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="box", color= self.all_colors.aER_node_color,x = position, y=0, url = str(node.er_url))
@@ -149,12 +160,12 @@ class Views:
                         G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="box",value = 1, scaling = Views.__get_atomic_node_scaling_property(aER_size) , color= self.all_colors.aER_node_color, url = str(node.er_url))
             elif(node_type =="rER" and has_rER):
                 if(all_has_coordinate):
-                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="triangle" , value = 1, scaling = Views.__get_atomic_node_scaling_property(rER_size) ,color= self.all_colors.rER_node_color, x = node.er_x_value, y = node.er_y_value, url = str(node.er_url))
+                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="triangle" , size =rER_size,color= self.all_colors.rER_node_color, x = node.er_x_value, y = node.er_y_value, url = str(node.er_url))
                 else:
-                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="triangle" , value = 1, scaling = Views.__get_atomic_node_scaling_property(rER_size) ,color= self.all_colors.rER_node_color, url = str(node.er_url))
+                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="triangle" , size = rER_size ,color= self.all_colors.rER_node_color, url = str(node.er_url))
             elif(node_type =="iER" and has_iER):
                 if(all_has_coordinate):
-                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="circle" , color= self.all_colors.iER_node_color,x = node.er_x_value, y=node.er_y_value, url = str(node.er_url))
+                    G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="circle" ,value = 1, scaling = Views.__get_atomic_node_scaling_property(iER_size), color= self.all_colors.iER_node_color,x = node.er_x_value, y=node.er_y_value, url = str(node.er_url))
                 else:
                     if(isFixed):
                         G.add_node(node.er_id, label = node.er_title, title=node.er_type, shape="circle" , color= self.all_colors.iER_node_color,x = position, y=0, fixed = True, url = str(node.er_url))
@@ -242,8 +253,8 @@ class Views:
     
     def __get_atomic_size_size(self,node):
         size = 0
-        atomic_min_allowed = 10
-        atomic_max_allowed = 30
+        atomic_min_allowed = self.atomic_min_size
+        atomic_max_allowed = self.atomic_max_size
         #ration for increment
         atomic_increments = Views.__get_atomic_size_increment(self, atomic_min_allowed, atomic_max_allowed)
 
