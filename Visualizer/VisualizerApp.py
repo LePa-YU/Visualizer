@@ -236,14 +236,21 @@ with container:
         , unsafe_allow_html=True)
         # user enters csv file in the file_uplader with the following properties
         uploaded_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
+        with open(uploaded_file.name,"wb") as f:
+            f.write(uploaded_file.getbuffer())
+        # uploaded_file.seek(0)
+        # df = pd.read_csv(uploaded_file)
+        # print(uploaded_file.)
+        # df.to_csv(uploaded_file.name)
         # print(uploaded_file.name)
         # if uploaded_file is not None:
-        #     uploaded_file.seek(0)
+        #     # uploaded_file.seek(0)
         #     df = pd.read_csv(uploaded_file)
-        # dataframe.to_csv('file_name.csv')
+        #     df.to_csv(uploaded_file.name)
         # with open(uploaded_file.name,'wb') as file:
-        #     dataframe = pd.read_csv(uploaded_file)
-        #     file.write(res.content)
+            # dataframe = pd.read_csv(uploaded_file)
+            # print(dataframe)
+            # file.write(res.content)
             # uploaded_file = "3461_dataset_overview.csv")
     
     if uploaded_file is not None:
@@ -256,11 +263,10 @@ with container:
         else:
             label = uploaded_file.name
         
-        # dataframe.to_csv(label)
-        
         # get the csv file as array
         # print(type(uploaded_file))
         csvRows = []
+        print(label)
         with open(label, encoding='utf_8_sig') as csvfile:
             reader = csv.reader(csvfile) # change contents to floats
             for row in reader: # each row is a list
