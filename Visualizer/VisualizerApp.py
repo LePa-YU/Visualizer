@@ -16,7 +16,6 @@ class _Customization_menu:
     def __init__(self, create_customization_menu, view):
         self.create_customization_menu = create_customization_menu
         self.view = view
-        # self.physics = False
     def _update_slider(start_end, atomic_min_size, atomic_max_size, ier_size, aer_size, rer_size):
         st.session_state["start_end_size"] = start_end
         st.session_state["atomic_min_size"] = atomic_min_size
@@ -24,15 +23,12 @@ class _Customization_menu:
         st.session_state["ier_size"] = ier_size
         st.session_state["aer_size"] = aer_size
         st.session_state["rer_size"] = rer_size
-        # print("ok")
     def _update_atomic_max_slider():
         if st.session_state.atomic_max_size  <  st.session_state.atomic_min_size:
-            # print(0)
             st.session_state.atomic_max_size  = st.session_state.atomic_min_size + 20
     def _update_atomic_min_slider():
         
         if st.session_state.atomic_max_size  <  st.session_state.atomic_min_size:
-            # print(0)
             st.session_state.atomic_max_size  = st.session_state.atomic_min_size - 20
     def create_menu(self):
         bg = "white"
@@ -43,7 +39,6 @@ class _Customization_menu:
         aer_size = 25
         rer_size = 25
         if(self.create_customization_menu):
-            # customization menu --> temporary. comment before releases
             with st.expander("Customization"):
                 # Theme options
                 # dark --> boolean -- true then background is set to black and text to white/ fasle then background is set to white and text is set to black
@@ -122,37 +117,14 @@ class _Customization_menu:
 
 
 def __create_html_pages(label, view, bg, font_color, view1, physics, d_btn):
-     # create the temp html files for each views
-        # add if-else statemet --> create html if it does not exsits
-        # print(url)
-        # path = label+"_Summative_assessment_only.html"
-        # check_file = os.path.isfile(path)
-        # if(check_file == False):
-            view.Summative_assessment_only( bg, font_color, label, view1, physics, d_btn)
-        
-        # path = label+"_Course_Overview.html"
-        # check_file = os.path.isfile(path)
-        # if(check_file == False):
-            view.Course_Overview( bg, font_color, label, view2, physics, d_btn)
-        
-        # path = label+"_All_ERs.html"
-        # check_file = os.path.isfile(path)
-        # if(check_file == False):
-            view.All_ERs( bg, font_color, label, view3, physics, d_btn)
-        
-        # path = label+"_requirements.html"
-        # check_file = os.path.isfile(path)
-        # if(check_file == False):
-            view.Requirements(bg, font_color, label, view4, physics, d_btn)
-        
-        # path = label+"_vertical_requirements.html"
-        # check_file = os.path.isfile(path)
-        # if(check_file == False):
-            view.vertical_Requirements(bg, font_color, label, view4, physics, d_btn)
+    view.Summative_assessment_only( bg, font_color, label, view1, physics, d_btn)
+    view.Course_Overview( bg, font_color, label, view2, physics, d_btn)
+    view.All_ERs( bg, font_color, label, view3, physics, d_btn)
+    view.Requirements(bg, font_color, label, view4, physics, d_btn)
+    view.vertical_Requirements(bg, font_color, label, view4, physics, d_btn)
 
 #global variables:
 global uploaded_file
-# global url
 
 # initial settings:
     # the "wide" layout allows the elements to be stretched to the size of the screen 
@@ -238,20 +210,6 @@ with container:
         uploaded_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
         with open(uploaded_file.name,"wb") as f:
             f.write(uploaded_file.getbuffer())
-        # uploaded_file.seek(0)
-        # df = pd.read_csv(uploaded_file)
-        # print(uploaded_file.)
-        # df.to_csv(uploaded_file.name)
-        # print(uploaded_file.name)
-        # if uploaded_file is not None:
-        #     # uploaded_file.seek(0)
-        #     df = pd.read_csv(uploaded_file)
-        #     df.to_csv(uploaded_file.name)
-        # with open(uploaded_file.name,'wb') as file:
-            # dataframe = pd.read_csv(uploaded_file)
-            # print(dataframe)
-            # file.write(res.content)
-            # uploaded_file = "3461_dataset_overview.csv")
     
     if uploaded_file is not None:
         # store file in a dataframe 
@@ -259,26 +217,21 @@ with container:
 
         #get file labe:
         if(type(uploaded_file) == str):
-            label = uploaded_file #.split("csv_temp/",1)[1]
+            label = uploaded_file 
         else:
             label = uploaded_file.name
         
         # get the csv file as array
-        # print(type(uploaded_file))
         csvRows = []
         print(label)
         with open(label, encoding='utf_8_sig') as csvfile:
             reader = csv.reader(csvfile) # change contents to floats
             for row in reader: # each row is a list
                 csvRows.append(row)
-        # print(csvRows)
         view = views.Views(dataframe, csvRows)
          #download csv file
         with col3:
-            # download_file  = dataframe.to_csv().encode('utf-8')
-            # download_btn = st.download_button("Download CSV file", data=download_file, file_name=label, mime='text/csv',)
             d_btn = st.button("Download CSV File")
-            # print (d_btn)
 
         # another container for the html components of the actual visualization
         container_html = st.container()
@@ -296,7 +249,6 @@ with container:
         aer_size = custom_menu.aER_size
         rer_size = custom_menu.rER_size
         view.set_atomic_size_limit(atomic_max_size, atomic_min_size, start_end_size, ier_size, aer_size, rer_size)
-        # print(atomic_max_size)
         
         __create_html_pages(label, view, bg, font_color, view1, physics, d_btn); 
 
