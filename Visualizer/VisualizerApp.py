@@ -10,6 +10,7 @@ import Legend
 import os.path
 import atexit 
 import csv
+import os
 
 #### this file contains code for streamlit deployment
 class _Customization_menu:
@@ -145,7 +146,7 @@ with container:
         ds_3461 = "EECS 3461"
         ds_1530 = "EECS 1530"
         ds_4462 = "EECS 4462"
-        enter_own = "Enter your own data"
+        enter_own = "Custom dataset"
         dataset_options=st.selectbox('',(fake_ds, ds_2311, ds_3461, ds_1530, ds_4462, enter_own), label_visibility="collapsed")
     with col2:
         view1 = 'View 1: Summative assessment only'
@@ -155,6 +156,15 @@ with container:
         view5 = "View 5: Requirements - Vertical"
         option=st.selectbox('',(view1, view2, view3, view4, view5), label_visibility="collapsed")
     
+    #create layout for enter/modify data
+    if dataset_options == enter_own:
+        upload_col, edit_col = st.columns([3.5, 4.5])
+        with edit_col:
+            container_html = st.container()
+    else:    
+        container_html = st.container()
+
+
     if dataset_options == fake_ds:
         # get demo file from github in the Dataset repo (main) 
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/FAKE1001/FAKE1001.csv"
@@ -197,34 +207,50 @@ with container:
             uploaded_file = "4462_dataset_overview.csv"
     elif dataset_options == enter_own:
         # to write on the file browser itself
-        st.markdown(
-                """
-                <style>
-                    .css-9ycgxx::before {
-                        content: "Load dataset, ";
-                    }
-                <style>
-                """
-        , unsafe_allow_html=True)
-        # user enters csv file in the file_uplader with the following properties
-        uploaded_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
-        if uploaded_file is not None:
-            with open(uploaded_file.name,"wb") as f:
-                f.write(uploaded_file.getbuffer())
-        # uploaded_file.seek(0)
-        # df = pd.read_csv(uploaded_file)
-        # print(uploaded_file.)
-        # df.to_csv(uploaded_file.name)
-        # print(uploaded_file.name)
-        # if uploaded_file is not None:
-        #     # uploaded_file.seek(0)
-        #     df = pd.read_csv(uploaded_file)
-        #     df.to_csv(uploaded_file.name)
-        # with open(uploaded_file.name,'wb') as file:
-            # dataframe = pd.read_csv(uploaded_file)
-            # print(dataframe)
-            # file.write(res.content)
-            # uploaded_file = "3461_dataset_overview.csv")
+        with upload_col:
+            new_dataset = "Create a new Dataset"
+            existing_dataset = "Upload your dataset"
+            select_options=st.selectbox('',(existing_dataset, new_dataset), label_visibility="collapsed")
+            if (select_options == existing_dataset):
+                st.markdown(
+                        """
+                        <style>
+                            .css-9ycgxx::before {
+                                content: "Load dataset, ";
+                            }
+                        <style>
+                        """
+                , unsafe_allow_html=True)
+                # user enters csv file in the file_uplader with the following properties
+                uploaded_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
+                if uploaded_file is not None:
+                    with open(uploaded_file.name,"wb") as f:
+                        f.write(uploaded_file.getbuffer())
+            elif(select_options == new_dataset):
+                # create a temp csv 
+                df = pd.DataFrame(columns=['identifier','title','description','url','type','isPartOf','assesses','comesAfter','requires','alternativeContent','references','isFormatOf','duration'])
+                # with open("temp.csv", "w") as my_empty_csv:
+                #     # now you have an empty file already
+                #     pass  # or write something to it already
+                df.to_csv("temp.csv", index=False)
+                uploaded_file = "temp.csv"
+
+                # file name
+                f_name= st.text_input("Enter file name:")
+                if(f_name != ""):
+                    f_name = f_name + ".csv"
+                    df.to_csv(f_name, index=False)
+                    uploaded_file = f_name 
+                    # remove temp files
+                    os.remove("temp.csv"); os.remove("temp.csv_Course_Overview.html"); os.remove("temp.csv_requirements.html"); 
+                    os.remove("temp.csv_Summative_assessment_only.html");os.remove("temp.csv_All_ERs.html"); 
+                    os.remove("temp.csv_vertical_requirements.html")
+                    
+                    # add start and end node
+                    df.loc[len(df.index)] = [0,'Start','start','','start','','','','','','','','']
+                    df.loc[len(df.index)] = [1,'End','end','','end','','','','','','','','']
+                    df.to_csv(f_name, index=False)
+
     
     if uploaded_file is not None:
         # store file in a dataframe 
@@ -238,7 +264,6 @@ with container:
         
         # get the csv file as array
         csvRows = []
-        print(label)
         with open(label, encoding='utf_8_sig') as csvfile:
             reader = csv.reader(csvfile) # change contents to floats
             for row in reader: # each row is a list
@@ -249,7 +274,7 @@ with container:
             d_btn = st.button("Download CSV File")
 
         # another container for the html components of the actual visualization
-        container_html = st.container()
+       
 
         # get the backgrounf color of the canvas. if true creates customization menu and if false set the colors to the pumpkin color palette
         custom_menu = _Customization_menu(True, view)
