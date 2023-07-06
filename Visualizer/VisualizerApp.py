@@ -236,8 +236,9 @@ with container:
         , unsafe_allow_html=True)
         # user enters csv file in the file_uplader with the following properties
         uploaded_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
-        with open(uploaded_file.name,"wb") as f:
-            f.write(uploaded_file.getbuffer())
+        if uploaded_file is not None:
+            with open(uploaded_file.name,"wb") as f:
+                f.write(uploaded_file.getbuffer())
         # uploaded_file.seek(0)
         # df = pd.read_csv(uploaded_file)
         # print(uploaded_file.)
