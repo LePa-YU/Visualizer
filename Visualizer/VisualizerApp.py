@@ -124,17 +124,46 @@ def __create_html_pages(label, view, bg, font_color, view1, physics, d_btn):
     view.Requirements(bg, font_color, label, view4, physics, d_btn)
     view.vertical_Requirements(bg, font_color, label, view4, physics, d_btn)
 def __create_node_addition_fields(df):
-    col1, col2, col3 = st.columns([1,3, 3])
-    with col1:
-        node_id = st.text_input("identifier", value=len(df.index), disabled=True)
-    with col2:
+    node_id = len(df.index)
+    node_title = ""
+    node_type = ""
+    node_des = ""
+    node_url = ""
+    node_dur = 0
+    node_type_select = ""
+    #necessary data
+    must_input  = False
+    title_col, ER_col, atomic_col = st.columns([1.75,0.875,0.875])
+    with title_col:
         node_title = st.text_input("Title")
-    with col3:
-        node_type = st.selectbox("ER type", ('iER', 'aER', 'rER', "atomic ER"))
-        if(node_type == "atomic ER"):
-            # with col4:
-                atomic_type = st.selectbox("atomic type", ('.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip' ))
-            
+    with ER_col:
+        if(node_title !=""):
+            must_input = True
+            node_type_select = st.selectbox("ER type", ('iER', 'aER', 'rER', "atomic ER"))
+            node_type = node_type_select
+            if(node_type_select == "atomic ER"):
+                with atomic_col:
+                    atomic_type = st.selectbox("atomic type", ('.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip' ))
+                    node_type = atomic_type
+    if(must_input):
+        if(node_type=="iER" or node_type=="aER" or node_type=="rER"):
+            des_col, url_col= st.columns(2)
+            with des_col:
+                node_des = st.text_input("Description")
+            with url_col:
+                node_url = st.text_input("URL")
+        else:
+            des_col, url_col, dur_col = st.columns(3)
+            with des_col:
+                node_des = st.text_input("Description")
+            with url_col:
+                node_url = st.text_input("URL")
+            with dur_col:
+                node_dur = st.number_input('Duration', value = 2)
+    if(node_des!="" or node_url!=""):
+        add_node = st.button("Add ER")
+
+
 def disable_file_name():
     st.session_state["disabled"] = True
 def enable_file_name():
@@ -254,11 +283,12 @@ with container:
                 df.to_csv(f_name, index=False)
                 
                 # create tabs
-                node_tab, relation_tab = st.tabs(["    Add Elements", "    Edit Elements"])
+                node_tab, relation_tab = st.tabs(["    Educational Resource", "    ER Relations"])
 
-                #add _tab
-                # with add_tab:
-                #     if(len(df.index)<3):
+                #Node tab
+                with node_tab:
+                    if(len(df.index)<3):
+                        __create_node_addition_fields(df)
                     #     add_node_btn = st.button("Add a Node")
                     #     # flag = True
                         # if(add_node_btn):
