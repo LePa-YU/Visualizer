@@ -245,29 +245,49 @@ with container:
             elif(select_options == new_dataset):
                 # create a temp csv 
                 df = pd.DataFrame(columns=['identifier','title','description','url','type','isPartOf','assesses','comesAfter','requires','alternativeContent','references','isFormatOf','duration'])
-                # with open("temp.csv", "w") as my_empty_csv:
-                #     # now you have an empty file already
-                #     pass  # or write something to it already
+                f_name = "temp.csv"
                 df.to_csv("temp.csv", index=False)
-                uploaded_file = "temp.csv"
+                uploaded_file = f_name
+                # add start and end node
+                df.loc[len(df.index)] = [0,'Start','start','','start','','','','','','','','']
+                df.loc[len(df.index)] = [1,'End','end','','end','','','','','','','','']
+                df.to_csv(f_name, index=False)
+
+                #download csv file
+                dow_container = st.container()
+                with dow_container:
+                    # save_check_col, f_name_col, down_btn_col = st.columns([1, 1.5, 1])
+                # with save_check_col:
+                    save_file = st.checkbox("Download CSV File")
+                    if(save_file):
+                        f_name_col, down_btn_col = st.columns([2.5, 1])
+                        with f_name_col:
+                            file_name= st.text_input("", placeholder="What do you want to call this dataset?", label_visibility="collapsed")
+                            if(file_name !=""):
+                                with down_btn_col:
+                                    file_name = file_name + ".csv"
+                                    csv_file = df.to_csv(index=False).encode('utf-8')
+                                    download_btn = st.download_button(label="Download", data=csv_file, file_name=file_name, mime='text/csv')
+
+
 
                 # file name
                 
-                if "disabled" not in st.session_state:
-                    st.session_state["disabled"] = False
-                f_name = ""
-                f_name_col, change_f_name_col = st.columns([2.5, 1])
+                # if "disabled" not in st.session_state:
+                #     st.session_state["disabled"] = False
+                # f_name = ""
+                # f_name_col, change_f_name_col = st.columns([2.5, 1])
 
-                with f_name_col:
-                    f_name= st.text_input("Enter file name:", disabled=st.session_state.disabled, on_change=disable_file_name, placeholder="What do you want to call this dataset?", label_visibility="collapsed")
-                if(f_name != ""):
-                    # create change file name
-                    with  change_f_name_col:                        
-                        change_f_name = st.button ("Change file name", on_click=enable_file_name)
+                # with f_name_col:
+                #     f_name= st.text_input("Enter file name:", disabled=st.session_state.disabled, on_change=disable_file_name, placeholder="What do you want to call this dataset?", label_visibility="collapsed")
+                # if(f_name != ""):
+                #     # create change file name
+                #     with  change_f_name_col:                        
+                #         change_f_name = st.button ("Change file name", on_click=enable_file_name)
 
-                    f_name = f_name + ".csv"
-                    df.to_csv(f_name, index=False)
-                    uploaded_file = f_name 
+                #     f_name = f_name + ".csv"
+                #     df.to_csv(f_name, index=False)
+                #     uploaded_file = f_name 
                     # remove temp files
                     # os.remove("temp.csv"); 
                     # os.remove("temp.csv_Course_Overview.html"); os.remove("temp.csv_requirements.html"); 
@@ -275,9 +295,9 @@ with container:
                     # os.remove("temp.csv_vertical_requirements.html")
                     
                     # add start and end node
-                    df.loc[len(df.index)] = [0,'Start','start','','start','','','','','','','','']
-                    df.loc[len(df.index)] = [1,'End','end','','end','','','','','','','','']
-                    df.to_csv(f_name, index=False)
+                    # df.loc[len(df.index)] = [0,'Start','start','','start','','','','','','','','']
+                    # df.loc[len(df.index)] = [1,'End','end','','end','','','','','','','','']
+                    # df.to_csv(f_name, index=False)
                     # if(len(df.index)<3):
                     #     add_node_btn = st.button("Add a Node")
                     #     # flag = True
