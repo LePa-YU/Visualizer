@@ -255,10 +255,15 @@ with container:
                 
                 if "disabled" not in st.session_state:
                     st.session_state["disabled"] = False
-                f_name= st.text_input("Enter file name:", disabled=st.session_state.disabled, on_change=disable_file_name)
+                f_name = ""
+                f_name_col, change_f_name_col = st.columns([2.5, 1])
+
+                with f_name_col:
+                    f_name= st.text_input("Enter file name:", disabled=st.session_state.disabled, on_change=disable_file_name, placeholder="What do you want to call this dataset?", label_visibility="collapsed")
                 if(f_name != ""):
                     # create change file name
-                    change_f_name = st.button ("Change file name", on_click=enable_file_name)
+                    with  change_f_name_col:                        
+                        change_f_name = st.button ("Change file name", on_click=enable_file_name)
 
                     f_name = f_name + ".csv"
                     df.to_csv(f_name, index=False)
