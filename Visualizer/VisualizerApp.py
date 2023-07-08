@@ -252,12 +252,23 @@ with container:
                 df.loc[len(df.index)] = [0,'Start','start','','start','','','','','','','','']
                 df.loc[len(df.index)] = [1,'End','end','','end','','','','','','','','']
                 df.to_csv(f_name, index=False)
+                
+                # create tabs
+                add_tab, edit_tab = st.tabs(["    Add Elements", "    Edit Elements"])
+                #add nodes
+                # if(len(df.index)<3):
+                    #     add_node_btn = st.button("Add a Node")
+                    #     # flag = True
+                        # if(add_node_btn):
+                        #     __create_node_addition_fields(df)
+                        #     while(flag):
+                        #         add_node_btn = True
+
+
 
                 #download csv file
                 dow_container = st.container()
                 with dow_container:
-                    # save_check_col, f_name_col, down_btn_col = st.columns([1, 1.5, 1])
-                # with save_check_col:
                     save_file = st.checkbox("Download CSV File")
                     if(save_file):
                         f_name_col, down_btn_col = st.columns([2.5, 1])
@@ -294,18 +305,8 @@ with container:
                     # os.remove("temp.csv_Summative_assessment_only.html");os.remove("temp.csv_All_ERs.html"); 
                     # os.remove("temp.csv_vertical_requirements.html")
                     
-                    # add start and end node
-                    # df.loc[len(df.index)] = [0,'Start','start','','start','','','','','','','','']
-                    # df.loc[len(df.index)] = [1,'End','end','','end','','','','','','','','']
-                    # df.to_csv(f_name, index=False)
-                    # if(len(df.index)<3):
-                    #     add_node_btn = st.button("Add a Node")
-                    #     # flag = True
-                        # if(add_node_btn):
-                        #     __create_node_addition_fields(df)
-                        #     while(flag):
-                        #         add_node_btn = True
-
+                    
+                    
     if (uploaded_file is not None):
         # store file in a dataframe 
         dataframe = pd.read_csv(uploaded_file)
