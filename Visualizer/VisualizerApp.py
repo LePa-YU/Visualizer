@@ -123,7 +123,23 @@ def __create_html_pages(label, view, bg, font_color, view1, physics, d_btn):
     view.All_ERs( bg, font_color, label, view3, physics, d_btn)
     view.Requirements(bg, font_color, label, view4, physics, d_btn)
     view.vertical_Requirements(bg, font_color, label, view4, physics, d_btn)
-
+def __create_node_addition_fields(df):
+    col1, col2, col3 = st.columns([1,3, 3])
+    with col1:
+        node_id = st.text_input("identifier", value=len(df.index), disabled=True)
+    with col2:
+        node_title = st.text_input("Title")
+    with col3:
+        node_type = st.selectbox("ER type", ('iER', 'aER', 'rER', "atomic ER"))
+        if(node_type == "atomic ER"):
+            # with col4:
+                atomic_type = st.selectbox("atomic type", ('.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip' ))
+            
+def disable_file_name():
+    st.session_state["disabled"] = True
+def enable_file_name():
+    st.session_state["disabled"] = False     
+    
 #global variables:
 global uploaded_file
 
@@ -236,23 +252,36 @@ with container:
                 uploaded_file = "temp.csv"
 
                 # file name
-                f_name= st.text_input("Enter file name:")
+                
+                if "disabled" not in st.session_state:
+                    st.session_state["disabled"] = False
+                f_name= st.text_input("Enter file name:", disabled=st.session_state.disabled, on_change=disable_file_name)
                 if(f_name != ""):
+                    # create change file name
+                    change_f_name = st.button ("Change file name", on_click=enable_file_name)
+
                     f_name = f_name + ".csv"
                     df.to_csv(f_name, index=False)
                     uploaded_file = f_name 
                     # remove temp files
-                    os.remove("temp.csv"); os.remove("temp.csv_Course_Overview.html"); os.remove("temp.csv_requirements.html"); 
-                    os.remove("temp.csv_Summative_assessment_only.html");os.remove("temp.csv_All_ERs.html"); 
-                    os.remove("temp.csv_vertical_requirements.html")
+                    # os.remove("temp.csv"); 
+                    # os.remove("temp.csv_Course_Overview.html"); os.remove("temp.csv_requirements.html"); 
+                    # os.remove("temp.csv_Summative_assessment_only.html");os.remove("temp.csv_All_ERs.html"); 
+                    # os.remove("temp.csv_vertical_requirements.html")
                     
                     # add start and end node
                     df.loc[len(df.index)] = [0,'Start','start','','start','','','','','','','','']
                     df.loc[len(df.index)] = [1,'End','end','','end','','','','','','','','']
                     df.to_csv(f_name, index=False)
+                    # if(len(df.index)<3):
+                    #     add_node_btn = st.button("Add a Node")
+                    #     # flag = True
+                        # if(add_node_btn):
+                        #     __create_node_addition_fields(df)
+                        #     while(flag):
+                        #         add_node_btn = True
 
-    
-    if uploaded_file is not None:
+    if (uploaded_file is not None):
         # store file in a dataframe 
         dataframe = pd.read_csv(uploaded_file)
 
