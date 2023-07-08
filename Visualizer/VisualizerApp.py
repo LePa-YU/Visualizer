@@ -254,9 +254,11 @@ with container:
                 df.to_csv(f_name, index=False)
                 
                 # create tabs
-                add_tab, edit_tab = st.tabs(["    Add Elements", "    Edit Elements"])
-                #add nodes
-                # if(len(df.index)<3):
+                node_tab, relation_tab = st.tabs(["    Add Elements", "    Edit Elements"])
+
+                #add _tab
+                # with add_tab:
+                #     if(len(df.index)<3):
                     #     add_node_btn = st.button("Add a Node")
                     #     # flag = True
                         # if(add_node_btn):
