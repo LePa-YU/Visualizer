@@ -123,55 +123,72 @@ def __create_html_pages(label, view, bg, font_color, view1, physics, d_btn):
     view.All_ERs( bg, font_color, label, view3, physics, d_btn)
     view.Requirements(bg, font_color, label, view4, physics, d_btn)
     view.vertical_Requirements(bg, font_color, label, view4, physics, d_btn)
-def __create_node_addition_fields(df):
-    node_id = len(df.index)
+def __disable_add_node_button():
+    if st.session_state.add_node_button:
+        st.session_state.add_node_button = False
+
+def __create_node_addition_fields(file_name):
+    adder = st.container()
+    node_id = len(df.index)-1
     node_title = ""
     node_type = ""
     node_des = ""
     node_url = ""
     node_dur = 0
     node_type_select = ""
-    #necessary data
-    must_input  = False
-    title_col, ER_col, atomic_col = st.columns([1.75,0.875,0.875])
-    with title_col:
-        node_title = st.text_input("Title")
-    with ER_col:
-        if(node_title !=""):
-            must_input = True
-            node_type_select = st.selectbox("ER type", ('iER', 'aER', 'rER', "atomic ER"))
-            node_type = node_type_select
-            if(node_type_select == "atomic ER"):
-                with atomic_col:
-                    atomic_type = st.selectbox("atomic type", ('.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip' ))
-                    node_type = atomic_type
-    if(must_input):
-        if(node_type=="iER" or node_type=="aER" or node_type=="rER"):
-            des_col, url_col= st.columns(2)
-            with des_col:
-                node_des = st.text_input("Description")
-            with url_col:
-                node_url = st.text_input("URL")
-        else:
-            des_col, url_col, dur_col = st.columns(3)
-            with des_col:
-                node_des = st.text_input("Description")
-            with url_col:
-                node_url = st.text_input("URL")
-            with dur_col:
-                node_dur = st.number_input('Duration', value = 2)
-    if(node_des!="" or node_url!=""):
-        add_node = st.button("Add ER")
+    node = []
+    # res = False
+    with adder:
+        # title
+        st.subheader("Add a New Node")
+        #necessary data
+        must_input  = False
+        title_col, ER_col, atomic_col = st.columns([1.75,0.875,0.875])
+        with title_col:
+            node_title = st.text_input("Title")
+        with ER_col:
+            if(node_title !=""):
+                must_input = True
+                node_type_select = st.selectbox("ER type", ('iER', 'aER', 'rER', "atomic ER"))
+                node_type = node_type_select
+                if(node_type_select == "atomic ER"):
+                    with atomic_col:
+                        atomic_type = st.selectbox("atomic type", ('.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip' ))
+                        node_type = atomic_type
+        if(must_input):
+            if(node_type=="iER" or node_type=="aER" or node_type=="rER"):
+                des_col, url_col= st.columns(2)
+                with des_col:
+                    node_des = st.text_input("Description")
+                with url_col:
+                    node_url = st.text_input("URL")
+            else:
+                des_col, url_col, dur_col = st.columns(3)
+                with des_col:
+                    node_des = st.text_input("Description")
+                with url_col:
+                    node_url = st.text_input("URL")
+                with dur_col:
+                    node_dur = st.number_input('Duration', value = 2)
+        if(node_des!="" or node_url!=""):
+            add_node = st.button("Save")
+            if(add_node):
+                node = [len(df.index)-1,node_title,node_des,node_url,node_type,'','','','','','','',node_dur]
+    return node
 
+def  __find_node():
+    # select type:
+    type_selector = st.selectboc("Select the ER type", ('iER', 'aER', 'rER', "atomic ER"))
+    #search by title           
 
-def disable_file_name():
-    st.session_state["disabled"] = True
-def enable_file_name():
-    st.session_state["disabled"] = False     
+# def disable_file_name():
+#     st.session_state["disabled"] = True
+# def enable_file_name():
+#     st.session_state["disabled"] = False     
     
 #global variables:
 global uploaded_file
-
+global df
 # initial settings:
     # the "wide" layout allows the elements to be stretched to the size of the screen 
 st.set_page_config(page_title = "LePa Visualizer", layout="wide", initial_sidebar_state="collapsed")
@@ -272,45 +289,52 @@ with container:
                     with open(uploaded_file.name,"wb") as f:
                         f.write(uploaded_file.getbuffer())
             elif(select_options == new_dataset):
-                # create a temp csv 
-                df = pd.DataFrame(columns=['identifier','title','description','url','type','isPartOf','assesses','comesAfter','requires','alternativeContent','references','isFormatOf','duration'])
-                f_name = "temp.csv"
-                df.to_csv("temp.csv", index=False)
-                uploaded_file = f_name
-                # add start and end node
-                df.loc[len(df.index)] = [0,'Start','start','','start','','','','','','','','']
-                df.loc[len(df.index)] = [1,'End','end','','end','','','','','','','','']
-                df.to_csv(f_name, index=False)
-                
-                # create tabs
-                node_tab, relation_tab = st.tabs(["    Educational Resource", "    ER Relations"])
+                #new df_container
+                new_df_container = st.container()
+                with new_df_container:
+                    # create tabs
+                    node_tab, relation_tab = st.tabs(["    Educational Resource", "    ER Relations"])
 
-                #Node tab
-                with node_tab:
-                    if(len(df.index)<3):
-                        __create_node_addition_fields(df)
-                    #     add_node_btn = st.button("Add a Node")
-                    #     # flag = True
-                        # if(add_node_btn):
-                        #     __create_node_addition_fields(df)
-                        #     while(flag):
-                        #         add_node_btn = True
-
-
-
-                #download csv file
-                dow_container = st.container()
-                with dow_container:
-                    save_file = st.checkbox("Download CSV File")
-                    if(save_file):
-                        f_name_col, down_btn_col = st.columns([2.5, 1])
-                        with f_name_col:
-                            file_name= st.text_input("", placeholder="What do you want to call this dataset?", label_visibility="collapsed")
-                            if(file_name !=""):
-                                with down_btn_col:
-                                    file_name = file_name + ".csv"
-                                    csv_file = df.to_csv(index=False).encode('utf-8')
-                                    download_btn = st.download_button(label="Download", data=csv_file, file_name=file_name, mime='text/csv')
+                    #Node tab
+                    with node_tab:
+                        # create a temp csv
+                        f_name = "temp.csv"
+                        uploaded_file = f_name
+                        if(not os.path.isfile(f_name)): 
+                            df = pd.DataFrame(columns=['identifier','title','description','url','type','isPartOf','assesses','comesAfter','requires','alternativeContent','references','isFormatOf','duration'])
+                            # add start and end node
+                            if(len(df.index)==0):
+                                df.loc[len(df.index)] = [0,'Start','start','','start','','','','','','','','']
+                                df.loc[len(df.index)] = [len(df.index),'End','end','','end','','',len(df.index)-1,'','','','','']
+                                df.to_csv(f_name, index=False)
+                # uploaded_file = f_name
+                        node_option = st.radio("What do you want to do?", ("Add a new node", "Edit a node"))
+                        df = pd.read_csv(f_name)
+                        if(node_option == "Add a new node"):
+                            node = __create_node_addition_fields(f_name)
+                            if(node):
+                                df.loc[len(df.index)-1] = node
+                                df.loc[len(df.index)] = [len(df.index),'End','end','','end','','',0,'','','','','']
+                                df.to_csv(f_name, index=False)
+                                df.to_csv("temp1.csv", index=False)
+                        # print(df)
+                        elif(node_option == "Edit a node"):
+                            node = __find_node()
+                            pass
+                    with relation_tab:
+                        pass
+                    # dow_container = st.container()
+                    # with dow_container:
+                    #     save_file = st.checkbox("Download CSV File")
+                    #     if(save_file):
+                    #         f_name_col, down_btn_col = st.columns([2.5, 1])
+                    #         with f_name_col:
+                    #             file_name= st.text_input("", placeholder="What do you want to call this dataset?", label_visibility="collapsed")
+                    #             if(file_name !=""):
+                    #                 with down_btn_col:
+                    #                     file_name = file_name + ".csv"
+                    #                     csv_file = df.to_csv(index=False).encode('utf-8')
+                    #                     download_btn = st.download_button(label="Download", data=csv_file, file_name=file_name, mime='text/csv')
 
 
 
