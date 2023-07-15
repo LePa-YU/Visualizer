@@ -70,24 +70,18 @@ class datasetCreator:
             self.df.loc[len(self.df.index)] = [len(self.df.index),'End','end','','end','','',0,'','','','','']
             self.df.to_csv(self.file_name, index=False)
     def edit_node(self):
-        node_list = datasetCreator.__find_node_list(self)
-        # conf_btn = st.button("confirm selection")
-        # i = 0
-        # node_id = node_list[i]
-        # while(not conf_btn ):
-        #     node_id = node_list[i]
-        #     i = i + 1
-        # if(conf_btn): datasetCreator.set_selected_node(node_id)
-
-        # print(node_list)
-    def __find_node_list(self):
-        node_id_list = []    
-        type_col, title_col = st.columns(2)
-        # select type:
+        node = datasetCreator.__find_node_list(self)
+        confirm_node_btn = st.button("Confirm Selection")
+        if(confirm_node_btn): datasetCreator.set_selected_node(self, node)
+        else: datasetCreator.set_selected_node(self, None)
+    
+    # this function return id of node for editing purposes
+    def __find_node_list(self):   
+        type_col, title_col, id_col = st.columns(3)
+        # select type: there are 4 type: iER, aER, rER, atomic ER or all --> default = All
         with type_col:
             type_selector = st.selectbox("Select the ER type", ("All",'iER', 'aER', 'rER', "atomic ER"))
-        #search by title
-        #get iER titles
+        # after choosing type and selectbox of unique titles is created based on the type (ordered alphabetically)
         with title_col:
             ier_title_list = []; aer_title_list = []; rer_title_list = []; atomic_title_list = []; all_title_list = []
             for i in range(len(self.df.index)):
@@ -99,33 +93,57 @@ class datasetCreator:
                     elif(node_type == "aER"):aer_title_list.append(node_title)
                     elif(node_type =="rER"):rer_title_list.append(node_title)
                     else:atomic_title_list.append(node_title)
-            title_selector = ""
             title_has_duplicate = False
-            if(type_selector == "All"): title_selector = st.selectbox("Select ER", all_title_list)    
+            if(type_selector == "All"): 
+                title_selector = st.selectbox("Select ER", set(all_title_list))
+                title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, all_title_list)    
             elif(type_selector == "iER"): 
-                title_selector = st.selectbox("Select ER", ier_title_list)
-                
-            elif(type_selector == "aER"): title_selector = st.selectbox("Select ER", aer_title_list) 
-            elif(type_selector == "rER"): title_selector = st.selectbox("Select ER", rer_title_list)
-            elif(type_selector == "atomic ER"): title_selector = st.selectbox("Select ER", atomic_title_list)
-
+                title_selector = st.selectbox("Select ER", set(ier_title_list))
+                title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, ier_title_list)
+            elif(type_selector == "aER"): 
+                title_selector = st.selectbox("Select ER", set(aer_title_list))
+                title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, aer_title_list) 
+            elif(type_selector == "rER"): 
+                title_selector = st.selectbox("Select ER", set(rer_title_list))
+                title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, rer_title_list)
+            elif(type_selector == "atomic ER"): 
+                title_selector = st.selectbox("Select ER", set(atomic_title_list))
+                title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, atomic_title_list)
+        #if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find 
+        # the corret node
+        with id_col:
             id_selector = ""
-
-        for i in range(len(self.df.index)):
-            # this is not going to work --> the title and type are not unique and user cannot see the ids ( the only unique)
-            # needs somes sort of visual to ensure the correct node is being edited
-            node_id = self.df["identifier"][i]
-            node_title = self.df["title"][i]
-            node_type = self.df["type"][i]
-            if(type_selector == "All" or type_selector == "atomic ER"):
-                if(title_selector == node_title): node_id_list.append(node_id)
-            else:
-                if(type_selector == node_type and title_selector == node_title):
-                    node_id_list.append(node_id)
-            
-        return node_id_list
+            if(title_has_duplicate):
+                id_list = []
+                for i in range(len(self.df.index)):
+                    node_id = self.df["identifier"][i]
+                    node_title = self.df["title"][i]
+                    node_type = self.df["type"][i]
+                    if(type_selector == "All" or type_selector == "atomic ER"):
+                        if(title_selector == node_title): id_list.append(node_id)
+                    else:
+                        if(type_selector == node_type and title_selector == node_title): id_list.append(node_id)
+                id_selector = st.selectbox("Select ID: ", id_list)    
+        if(id_selector):
+            return int(id_selector)
+        else:
+            #if node is unique --> no id selector --> find id
+            for i in range(len(self.df.index)):
+                node_id = self.df["identifier"][i]
+                node_title = self.df["title"][i]
+                node_type = self.df["type"][i]
+                if(type_selector == "All" or type_selector == "atomic ER"):
+                    if(title_selector == node_title): return node_id
+                else:
+                    if(type_selector == node_type and title_selector == node_title): return node_id
                       
-    
+    def __title_has_duplicate(title, title_list):
+        count = 0
+        title_has_duplicate = False
+        for t in title_list:
+            if(t == title): count = count + 1
+        if count > 1: title_has_duplicate = True
+        return title_has_duplicate
     def print_df(self):
         print(self.df)
     def set_selected_node(self, node_id):
