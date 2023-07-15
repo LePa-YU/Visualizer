@@ -1,6 +1,6 @@
 import json
 
-def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, csvRows,  needsStabilization, physics):
+def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, csvRows,  needsStabilization, physics, select_edit_node_id):
     file_html = open(file_name , "w")
     # Adding the input data to the HTML file
     file_html.write('''
@@ -102,6 +102,11 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
     jsonOb_needsStabilization = json.dumps(needsStabilization)
     jsonOb_needsStabilization_format = format(jsonOb_needsStabilization)  
     file_html.write("\t\t var needsStabilization = "+str(jsonOb_needsStabilization_format) +";"+"\n\n")
+    
+    # select_edit_node_id
+    jsonOb_select_edit_node_id = json.dumps(select_edit_node_id)
+    jsonOb_select_edit_node_id_format = format(jsonOb_select_edit_node_id)  
+    file_html.write("\t\t var select_edit_node_id = "+str(jsonOb_select_edit_node_id_format) +";"+"\n\n")
 
     # background data
     jsonOb_bg = json.dumps(bg)
@@ -339,12 +344,12 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
       }
       // select given nodes for creating dataset
     if (fileLabel == 'temp.csv'){
-      nodeID = 1
+      
       nodeList.forEach(function(item) 
       {
-        if(nodeID == item.id)
+        if(select_edit_node_id == item.id)
         {
-          nodeList.update([{id: nodeID, color: {background: '#F0F8FF'}}]);
+          nodeList.update([{id: select_edit_node_id, color: {background: '#F0F8FF'}}]);
         }
       }); 
     }

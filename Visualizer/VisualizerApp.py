@@ -349,8 +349,11 @@ with container:
             for row in reader: # each row is a list
                 csvRows.append(row)
         view = views.Views(dataframe, csvRows)
-        select_node_edit = dataset.get_selected_node()
-        print(select_node_edit)
+        try:
+            select_node_edit = dataset.get_selected_node()
+        except:
+            select_node_edit = None
+        view.set_select_edit_node(select_node_edit)
          #download csv file
         with col3:
             d_btn = st.button("Download CSV File")
