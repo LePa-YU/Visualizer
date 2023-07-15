@@ -337,6 +337,17 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
         }
         flag = true; 
       }
+      // select given nodes for creating dataset
+    if (fileLabel == 'temp.csv'){
+      nodeID = 1
+      nodeList.forEach(function(item) 
+      {
+        if(nodeID == item.id)
+        {
+          nodeList.update([{id: nodeID, color: {background: '#F0F8FF'}}]);
+        }
+      }); 
+    }
     });  
 
     function exportToCsv(filename, rows) {
@@ -414,6 +425,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
 
       return clusterOptionsByData;
     }
+
 
     </script>
     </body>
