@@ -1,6 +1,7 @@
 import os
 import streamlit as st
 import pandas as pd
+import numpy as np
 
 class datasetCreator:
     def __init__(self, file_name):
@@ -71,9 +72,13 @@ class datasetCreator:
             self.df.to_csv(self.file_name, index=False)
     def edit_node(self):
         node = datasetCreator.__find_node_list(self)
-        confirm_node_btn = st.button("Confirm Selection")
-        if(confirm_node_btn): datasetCreator.set_selected_node(self, node)
-        else: datasetCreator.set_selected_node(self, None)
+        if(node != None):
+            node = np.int16(node).item()
+        datasetCreator.set_selected_node(self, node)
+        confirm_node_btn = st.checkbox("Confirm Selection")
+        # if(confirm_node_btn): 
+        edited_node = datasetCreator.__edit_option(self, node)
+        # else: datasetCreator.set_selected_node(self, None)
     
     # this function return id of node for editing purposes
     def __find_node_list(self):   
@@ -137,6 +142,81 @@ class datasetCreator:
                 else:
                     if(type_selector == node_type and title_selector == node_title): return node_id
                       
+    def __edit_option(self, n_id):
+        if n_id == None: return None
+        node = datasetCreator.__get_node_from_id(self, n_id)
+        old_title = node["title"]
+        old_type = node["type"]
+
+        new_node_title = ""
+        new_node_type = ""
+        new_node_des = ""
+        new_node_url = ""
+        new_node_dur = 0
+        new_node_type_select = ""
+        node = []
+        must_input = False
+        title_col, ER_col, atomic_col = st.columns([1.75,0.875,0.875])
+        with title_col:
+            new_node_title = st.text_input("Title", value=old_title)
+        with ER_col:
+            if(new_node_title !=""):
+                must_input = True
+                ER_list = datasetCreator.__get_ER_list_for_edit(self, old_type)
+                node_type_select = st.selectbox("ER type", ER_list)
+        #         new_node_type = node_type_select
+                    # if(node_type_select == "atomic ER"):
+                    #     with atomic_col:
+                    #         atomic_type = st.selectbox("atomic type", ('.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip' ))
+                    #         node_type = atomic_type
+        #     if(must_input):
+        #         if(node_type=="iER" or node_type=="aER" or node_type=="rER"):
+        #             des_col, url_col= st.columns(2)
+        #             with des_col:
+        #                 node_des = st.text_input("Description")
+        #             with url_col:
+        #                 node_url = st.text_input("URL")
+        #         else:
+        #             des_col, url_col, dur_col = st.columns(3)
+        #             with des_col:
+        #                 node_des = st.text_input("Description")
+        #             with url_col:
+        #                 node_url = st.text_input("URL")
+        #             with dur_col:
+        #                 node_dur = st.number_input('Duration', value = 2)
+        #     if(node_des!="" or node_url!=""):
+        #         add_node = st.button("Save")
+        #         if(add_node):
+        #             node = [len(self.df.index)-1,node_title,node_des,node_url,node_type,'','','','','','','',node_dur]
+        return node
+    def __get_ER_list_for_edit(self, node_type):
+        t = node_type
+        er = []
+        if(t == "iER" or t == "aER" or t =="rER"): er.append(t)
+        else: 
+            t = "atomic ER"
+            er.append(t)
+        if "iER" not in er: er.append("iER")
+        if "aER" not in er: er.append("aER")
+        if "rER" not in er: er.append("rER")
+        if "atomic ER" not in er: er.append("atomic ER")
+        return er
+        
+
+    def __get_node_from_id(self, n_id):
+        node = {}
+        for i in range(len(self.df.index)):
+            node_id = self.df["identifier"][i]
+            node_title = self.df["title"][i]
+            node_type = self.df["type"][i]
+            node_des = self.df["description"][i]
+            node_url = self.df["url"][i]
+            node_dur = self.df["duration"][i]
+            if(node_id == n_id):
+                node["id"] = node_id; node["title"] = node_title; node["type"] = node_type; node["des"] = node_des
+                node["url"] = node_url; node["dur"] = node_dur
+                break; 
+        return node
     def __title_has_duplicate(title, title_list):
         count = 0
         title_has_duplicate = False
