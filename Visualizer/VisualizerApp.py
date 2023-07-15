@@ -11,6 +11,7 @@ import os.path
 import atexit 
 import csv
 import os
+import datasetCreator
 
 #### this file contains code for streamlit deployment
 class _Customization_menu:
@@ -127,59 +128,40 @@ def __disable_add_node_button():
     if st.session_state.add_node_button:
         st.session_state.add_node_button = False
 
-def __create_node_addition_fields(file_name):
-    adder = st.container()
-    node_id = len(df.index)-1
-    node_title = ""
-    node_type = ""
-    node_des = ""
-    node_url = ""
-    node_dur = 0
-    node_type_select = ""
-    node = []
-    # res = False
-    with adder:
-        # title
-        st.subheader("Add a New Node")
-        #necessary data
-        must_input  = False
-        title_col, ER_col, atomic_col = st.columns([1.75,0.875,0.875])
-        with title_col:
-            node_title = st.text_input("Title")
-        with ER_col:
-            if(node_title !=""):
-                must_input = True
-                node_type_select = st.selectbox("ER type", ('iER', 'aER', 'rER', "atomic ER"))
-                node_type = node_type_select
-                if(node_type_select == "atomic ER"):
-                    with atomic_col:
-                        atomic_type = st.selectbox("atomic type", ('.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip' ))
-                        node_type = atomic_type
-        if(must_input):
-            if(node_type=="iER" or node_type=="aER" or node_type=="rER"):
-                des_col, url_col= st.columns(2)
-                with des_col:
-                    node_des = st.text_input("Description")
-                with url_col:
-                    node_url = st.text_input("URL")
-            else:
-                des_col, url_col, dur_col = st.columns(3)
-                with des_col:
-                    node_des = st.text_input("Description")
-                with url_col:
-                    node_url = st.text_input("URL")
-                with dur_col:
-                    node_dur = st.number_input('Duration', value = 2)
-        if(node_des!="" or node_url!=""):
-            add_node = st.button("Save")
-            if(add_node):
-                node = [len(df.index)-1,node_title,node_des,node_url,node_type,'','','','','','','',node_dur]
-    return node
-
 def  __find_node():
+    
+    type_col, title_col = st.columns(2)
     # select type:
-    type_selector = st.selectboc("Select the ER type", ('iER', 'aER', 'rER', "atomic ER"))
-    #search by title           
+    with type_col:
+        type_selector = st.selectbox("Select the ER type", ("All",'iER', 'aER', 'rER', "atomic ER"))
+    
+    #search by title
+    #get iER titles
+    with title_col:
+        ier_title_list = []; aer_title_list = []; rer_title_list = []; atomic_title_list = []; all_title_list = []
+        for i in range(len(df.index)):
+            node_title = df["title"][i]
+            node_type = df["type"][i]
+            if(node_type != "start" and node_type != "end"):
+                all_title_list.append(node_title)
+                if(node_type == "iER"): ier_title_list.append(node_title) 
+                elif(node_type == "aER"):aer_title_list.append(node_title)
+                elif(node_type =="rER"):rer_title_list.append(node_title)
+                else:atomic_title_list.append(node_title)
+        title_selector = ""
+        if(type_selector == "All"): title_selector = st.selectbox("Select ER", all_title_list)    
+        elif(type_selector == "iER"): title_selector = st.selectbox("Select ER", ier_title_list)
+        elif(type_selector == "aER"): title_selector = st.selectbox("Select ER", aer_title_list) 
+        elif(type_selector == "rER"): title_selector = st.selectbox("Select ER", rer_title_list)
+        elif(type_selector == "atomic ER"): title_selector = st.selectbox("Select ER", atomic_title_list)
+    for i in range(len(df.index)):
+        # this is not going to work --> the title and type are not unique and user cannot see the ids ( the only unique)
+        # needs somes sort of visual to ensure the correct node is being edited
+                node_id = df["identifier"][i]
+                node_title = df["title"][i]
+                node_type = df["type"][i]
+                if((node_type == type_selector or type_selector == "atomic ER")and node_title == title_selector):
+                    return node_id                     
 
 # def disable_file_name():
 #     st.session_state["disabled"] = True
@@ -292,35 +274,22 @@ with container:
                 #new df_container
                 new_df_container = st.container()
                 with new_df_container:
+                    # create a temp csv
+                    f_name = "temp.csv"
+                    uploaded_file = f_name
+                    dataset = datasetCreator.datasetCreator(f_name)
                     # create tabs
-                    node_tab, relation_tab = st.tabs(["    Educational Resource", "    ER Relations"])
-
+                    node_tab, relation_tab = st.tabs(["    Educational Resource", "    ER Relations"])   
                     #Node tab
                     with node_tab:
-                        # create a temp csv
-                        f_name = "temp.csv"
-                        uploaded_file = f_name
-                        if(not os.path.isfile(f_name)): 
-                            df = pd.DataFrame(columns=['identifier','title','description','url','type','isPartOf','assesses','comesAfter','requires','alternativeContent','references','isFormatOf','duration'])
-                            # add start and end node
-                            if(len(df.index)==0):
-                                df.loc[len(df.index)] = [0,'Start','start','','start','','','','','','','','']
-                                df.loc[len(df.index)] = [len(df.index),'End','end','','end','','',len(df.index)-1,'','','','','']
-                                df.to_csv(f_name, index=False)
                 # uploaded_file = f_name
                         node_option = st.radio("What do you want to do?", ("Add a new node", "Edit a node"))
                         df = pd.read_csv(f_name)
                         if(node_option == "Add a new node"):
-                            node = __create_node_addition_fields(f_name)
-                            if(node):
-                                df.loc[len(df.index)-1] = node
-                                df.loc[len(df.index)] = [len(df.index),'End','end','','end','','',0,'','','','','']
-                                df.to_csv(f_name, index=False)
-                                df.to_csv("temp1.csv", index=False)
-                        # print(df)
+                            dataset.add_node()
                         elif(node_option == "Edit a node"):
-                            node = __find_node()
-                            pass
+                            dataset.edit_node()
+                            
                     with relation_tab:
                         pass
                     # dow_container = st.container()
