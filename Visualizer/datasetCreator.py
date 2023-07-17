@@ -78,12 +78,32 @@ class datasetCreator:
         confirm_node_btn = st.checkbox("Confirm Selection", key="confirm_edit")
         if(confirm_node_btn): 
             edited_node = datasetCreator.__edit_option(self, node)
-            print(edited_node)
             if(edited_node):
-                self.df.loc[node] = edited_node
-                self.df.to_csv(self.file_name, index=False)
-            
-  
+                save_col, delete_col=st.columns([1, 3.5])
+                disable = False
+                if("delete_node" in st.session_state):
+                    if(st.session_state.delete_node == True): disable = True
+                with save_col:
+                    save_node = st.button("Save Changes", key="save_change_btn", disabled=disable)
+                    if(save_node):
+                        self.df.loc[node] = edited_node
+                        self.df.to_csv(self.file_name, index=False)
+                with delete_col:
+                    delete_node = st.button("Delete Node", key="delete_node", disabled=disable)
+                    if(delete_node):
+                        index = 0
+                        deleted_row = False
+                        for i in range(len(self.df.index)):
+                            n_id = self.df["identifier"][i]
+                            if(n_id == node ):
+                                index = i
+                                break
+                        self.df = self.df.drop(index)
+                        next_index = index+1
+                        for i in range(index, len(self.df.index)):
+                            self.df["identifier"][i+1] = i
+                        self.df.to_csv(self.file_name, index=False)  
+                       
     # this function return id of node for editing purposes
     def __find_node_list(self):   
         type_col, title_col, id_col = st.columns(3)
@@ -154,9 +174,9 @@ class datasetCreator:
         old_title = node["title"]
         old_type = node["type"]
         old_des = node["des"]
-        if(type(old_des) == float): old_des = ""
+        if(type(old_des) != str): old_des = ""
         old_url = node["url"]
-        if(type(old_url) == float): old_url = ""
+        if(type(old_url) != str): old_url = ""
         old_dur = int(node["dur"])
 
         new_node_title = ""
@@ -168,8 +188,12 @@ class datasetCreator:
         node = []
         must_input = False
         title_col, ER_col, atomic_col = st.columns([1.75,0.875,0.875])
+        disable = False
+        if("delete_node" in st.session_state):
+            if(st.session_state.delete_node == True):
+                disable = True
         with title_col:
-            new_node_title = st.text_input("Title", value=old_title)
+            new_node_title = st.text_input("Title", value=old_title, disabled=disable)
         with ER_col:
             if(new_node_title !=""):
                 must_input = True
@@ -180,7 +204,7 @@ class datasetCreator:
                 ER_index = 0; 
                 for e in ER_list:
                     if e == ER_type: ER_index = ER_list.index(e)
-                node_type_select = st.selectbox("ER type", ER_list, index=ER_index, key="node_type_select") # bug
+                node_type_select = st.selectbox("ER type", ER_list, index=ER_index, key="node_type_select", disabled=disable)
                 new_node_type = node_type_select
                 if(new_node_type == "atomic ER"):
                     with atomic_col:
@@ -188,28 +212,27 @@ class datasetCreator:
                         atomic_ER_index = 0
                         for e in atomic_ER_list:
                             if e == old_type: atomic_ER_index = atomic_ER_list.index(e)
-                        atomic_type = st.selectbox("atomic type", atomic_ER_list, index = atomic_ER_index)
+                        atomic_type = st.selectbox("atomic type", atomic_ER_list, index = atomic_ER_index, disabled=disable)
                         new_node_type = atomic_type
 
         if(must_input):
             if(new_node_type=="iER" or new_node_type=="aER" or new_node_type=="rER"):
                 des_col, url_col= st.columns(2)
                 with des_col:
-                    new_node_des = st.text_input("Description", value=old_des)
+                    new_node_des = st.text_input("Description", value=old_des, disabled=disable)
                 with url_col:
-                    new_node_url = st.text_input("URL", value=old_url)
+                    new_node_url = st.text_input("URL", value=old_url, disabled=disable)
             else:
                 des_col, url_col, dur_col = st.columns(3)
                 with des_col:
-                    new_node_des = st.text_input("Description", value=old_des)
+                    new_node_des = st.text_input("Description", value=old_des, disabled=disable)
                 with url_col:
-                    new_node_url = st.text_input("URL", value=old_url)
+                    new_node_url = st.text_input("URL", value=old_url, disabled=disable)
                 with dur_col:
-                    new_node_dur = st.number_input('Duration', value =old_dur)
+                    new_node_dur = st.number_input('Duration', value =old_dur, disabled=disable)
         if(new_node_des!="" or new_node_url!=""):
-            add_node = st.button("Save Changes", key="save_change_btn")
-            if(add_node):
-                node = [n_id ,new_node_title, new_node_des,new_node_url,new_node_type,'','','','','','','',new_node_dur]
+            node = [n_id ,new_node_title, new_node_des,new_node_url,new_node_type,'','','','','','','',new_node_dur]
+            
         return node
 
    
