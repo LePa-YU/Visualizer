@@ -75,9 +75,10 @@ class datasetCreator:
         if(node != None):
             node = np.int16(node).item()
         datasetCreator.set_selected_node(self, node)
-        confirm_node_btn = st.checkbox("Confirm Selection")
-        # if(confirm_node_btn): 
-        edited_node = datasetCreator.__edit_option(self, node)
+        confirm_node_btn = st.checkbox("Confirm Selection", key="confirm_edit")
+        if(confirm_node_btn): 
+            edited_node = datasetCreator.__edit_option(self, node)
+            
         # else: datasetCreator.set_selected_node(self, None)
     
     # this function return id of node for editing purposes
@@ -85,7 +86,9 @@ class datasetCreator:
         type_col, title_col, id_col = st.columns(3)
         # select type: there are 4 type: iER, aER, rER, atomic ER or all --> default = All
         with type_col:
-            type_selector = st.selectbox("Select the ER type", ("All",'iER', 'aER', 'rER', "atomic ER"))
+            if "confirm_edit" not in st.session_state:
+                st.session_state.confirm_edit = False
+            type_selector = st.selectbox("Select the ER type", ("All",'iER', 'aER', 'rER', "atomic ER"), disabled=st.session_state.confirm_edit)
         # after choosing type and selectbox of unique titles is created based on the type (ordered alphabetically)
         with title_col:
             ier_title_list = []; aer_title_list = []; rer_title_list = []; atomic_title_list = []; all_title_list = []
@@ -100,19 +103,19 @@ class datasetCreator:
                     else:atomic_title_list.append(node_title)
             title_has_duplicate = False
             if(type_selector == "All"): 
-                title_selector = st.selectbox("Select ER", set(all_title_list))
+                title_selector = st.selectbox("Select ER", set(all_title_list), disabled=st.session_state.confirm_edit)
                 title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, all_title_list)    
             elif(type_selector == "iER"): 
-                title_selector = st.selectbox("Select ER", set(ier_title_list))
+                title_selector = st.selectbox("Select ER", set(ier_title_list),  disabled=st.session_state.confirm_edit)
                 title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, ier_title_list)
             elif(type_selector == "aER"): 
-                title_selector = st.selectbox("Select ER", set(aer_title_list))
+                title_selector = st.selectbox("Select ER", set(aer_title_list),  disabled=st.session_state.confirm_edit)
                 title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, aer_title_list) 
             elif(type_selector == "rER"): 
-                title_selector = st.selectbox("Select ER", set(rer_title_list))
+                title_selector = st.selectbox("Select ER", set(rer_title_list),  disabled=st.session_state.confirm_edit)
                 title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, rer_title_list)
             elif(type_selector == "atomic ER"): 
-                title_selector = st.selectbox("Select ER", set(atomic_title_list))
+                title_selector = st.selectbox("Select ER", set(atomic_title_list),  disabled=st.session_state.confirm_edit)
                 title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, atomic_title_list)
         #if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find 
         # the corret node
@@ -128,7 +131,7 @@ class datasetCreator:
                         if(title_selector == node_title): id_list.append(node_id)
                     else:
                         if(type_selector == node_type and title_selector == node_title): id_list.append(node_id)
-                id_selector = st.selectbox("Select ID: ", id_list)    
+                id_selector = st.selectbox("Select ID: ", id_list,  disabled=st.session_state.confirm_edit)    
         if(id_selector):
             return int(id_selector)
         else:
@@ -153,7 +156,7 @@ class datasetCreator:
         new_node_des = ""
         new_node_url = ""
         new_node_dur = 0
-        new_node_type_select = ""
+        node_type_select = ""
         node = []
         must_input = False
         title_col, ER_col, atomic_col = st.columns([1.75,0.875,0.875])
@@ -163,13 +166,33 @@ class datasetCreator:
             if(new_node_title !=""):
                 must_input = True
                 ER_list = datasetCreator.__get_ER_list_for_edit(self, old_type)
-                node_type_select = st.selectbox("ER type", ER_list)
-        #         new_node_type = node_type_select
-                    # if(node_type_select == "atomic ER"):
-                    #     with atomic_col:
-                    #         atomic_type = st.selectbox("atomic type", ('.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip' ))
-                    #         node_type = atomic_type
-        #     if(must_input):
+                ER_type = old_type
+                # if er type is one of the atomic, then it is changed to "atomic ER"
+                if(ER_type!= "iER" and ER_type != "aER" and ER_type !="rER"): ER_type = "atomic ER"
+                ER_index = 0; 
+                for e in ER_list:
+                    if e == ER_type: ER_index = ER_list.index(e)
+                print(ER_type)
+                node_type_select = st.selectbox("ER type", ER_list, index=ER_index, key="node_type_select") # bug
+                new_node_type = node_type_select
+                
+                print(new_node_type)
+                if(new_node_type == "atomic ER"):
+                    with atomic_col:
+                        atomic_ER_list = ['.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip']
+                        atomic_ER_index = 0
+                        for e in atomic_ER_list:
+                            if e == old_type: atomic_ER_index = atomic_ER_list.index(e)
+                        atomic_type = st.selectbox("atomic type", atomic_ER_list, index = atomic_ER_index)
+                        new_node_type = atomic_type
+
+                # if(new_node_type == "atomic ER"):
+                #     with atomic_col:
+                #         atomic_type = st.selectbox("atomic type", ('.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip' ))
+                #"         new_node_type = atomic_type
+
+            if(must_input):
+                pass
         #         if(node_type=="iER" or node_type=="aER" or node_type=="rER"):
         #             des_col, url_col= st.columns(2)
         #             with des_col:
@@ -189,6 +212,17 @@ class datasetCreator:
         #         if(add_node):
         #             node = [len(self.df.index)-1,node_title,node_des,node_url,node_type,'','','','','','','',node_dur]
         return node
+
+    def __reset_edit_ER_confirm_checkbox(ER_type):
+        st.session_state.selection = ER_type
+    def __get_atomic_ER_list_for_edit(self, old_type):
+        atomic_ers = ['.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip']
+        res = []
+        res.append(old_type)
+        for er in atomic_ers:
+            if er not in res: res.append(er)
+        return res
+
     def __get_ER_list_for_edit(self, node_type):
         t = node_type
         er = []
@@ -200,8 +234,8 @@ class datasetCreator:
         if "aER" not in er: er.append("aER")
         if "rER" not in er: er.append("rER")
         if "atomic ER" not in er: er.append("atomic ER")
+        # print(er)
         return er
-        
 
     def __get_node_from_id(self, n_id):
         node = {}
