@@ -71,38 +71,41 @@ class datasetCreator:
             self.df.to_csv(self.file_name, index=False)
     
     def edit_node(self):
-        node = datasetCreator.__find_node_list(self)
-        if(node != None):
-            node = np.int16(node).item()
-        datasetCreator.set_selected_node(self, node)
-        confirm_node_btn = st.checkbox("Confirm Selection", key="confirm_edit")
-        if(confirm_node_btn): 
-            edited_node = datasetCreator.__edit_option(self, node)
-            if(edited_node):
-                save_col, delete_col=st.columns([1, 3.5])
-                disable = False
-                if("delete_node" in st.session_state):
-                    if(st.session_state.delete_node == True): disable = True
-                with save_col:
-                    save_node = st.button("Save Changes", key="save_change_btn", disabled=disable)
-                    if(save_node):
-                        self.df.loc[node] = edited_node
-                        self.df.to_csv(self.file_name, index=False)
-                with delete_col:
-                    delete_node = st.button("Delete Node", key="delete_node", disabled=disable)
-                    if(delete_node):
-                        index = 0
-                        deleted_row = False
-                        for i in range(len(self.df.index)):
-                            n_id = self.df["identifier"][i]
-                            if(n_id == node ):
-                                index = i
-                                break
-                        self.df = self.df.drop(index)
-                        next_index = index+1
-                        for i in range(index, len(self.df.index)):
-                            self.df["identifier"][i+1] = i
-                        self.df.to_csv(self.file_name, index=False)  
+        if(len(self.df.index) <= 2):
+            st.text("Dataset is empty please add a node")
+        else:
+            node = datasetCreator.__find_node_list(self)
+            if(node != None):
+                node = np.int16(node).item()
+            datasetCreator.set_selected_node(self, node)
+            confirm_node_btn = st.checkbox("Confirm Selection", key="confirm_edit")
+            if(confirm_node_btn): 
+                edited_node = datasetCreator.__edit_option(self, node)
+                if(edited_node):
+                    save_col, delete_col=st.columns([1, 3.5])
+                    disable = False
+                    if("delete_node" in st.session_state):
+                        if(st.session_state.delete_node == True): disable = True
+                    with save_col:
+                        save_node = st.button("Save Changes", key="save_change_btn", disabled=disable)
+                        if(save_node):
+                            self.df.loc[node] = edited_node
+                            self.df.to_csv(self.file_name, index=False)
+                    with delete_col:
+                        delete_node = st.button("Delete Node", key="delete_node", disabled=disable)
+                        if(delete_node):
+                            index = 0
+                            deleted_row = False
+                            for i in range(len(self.df.index)):
+                                n_id = self.df["identifier"][i]
+                                if(n_id == node ):
+                                    index = i
+                                    break
+                            self.df = self.df.drop(index)
+                            next_index = index+1
+                            for i in range(index, len(self.df.index)):
+                                self.df["identifier"][i+1] = i
+                            self.df.to_csv(self.file_name, index=False)  
                        
     # this function return id of node for editing purposes
     def __find_node_list(self):   
