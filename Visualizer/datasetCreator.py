@@ -25,7 +25,6 @@ class datasetCreator:
         node_dur = 0
         node_type_select = ""
         node = []
-        # res = False
         with adder:
             # title
             st.subheader("Add a New Node")
@@ -70,6 +69,7 @@ class datasetCreator:
             self.df.loc[len(self.df.index)-1] = node
             self.df.loc[len(self.df.index)] = [len(self.df.index),'End','end','','end','','',0,'','','','','']
             self.df.to_csv(self.file_name, index=False)
+    
     def edit_node(self):
         node = datasetCreator.__find_node_list(self)
         if(node != None):
@@ -78,9 +78,12 @@ class datasetCreator:
         confirm_node_btn = st.checkbox("Confirm Selection", key="confirm_edit")
         if(confirm_node_btn): 
             edited_node = datasetCreator.__edit_option(self, node)
+            print(edited_node)
+            if(edited_node):
+                self.df.loc[node] = edited_node
+                self.df.to_csv(self.file_name, index=False)
             
-        # else: datasetCreator.set_selected_node(self, None)
-    
+  
     # this function return id of node for editing purposes
     def __find_node_list(self):   
         type_col, title_col, id_col = st.columns(3)
@@ -150,6 +153,11 @@ class datasetCreator:
         node = datasetCreator.__get_node_from_id(self, n_id)
         old_title = node["title"]
         old_type = node["type"]
+        old_des = node["des"]
+        if(type(old_des) == float): old_des = ""
+        old_url = node["url"]
+        if(type(old_url) == float): old_url = ""
+        old_dur = int(node["dur"])
 
         new_node_title = ""
         new_node_type = ""
@@ -172,11 +180,8 @@ class datasetCreator:
                 ER_index = 0; 
                 for e in ER_list:
                     if e == ER_type: ER_index = ER_list.index(e)
-                print(ER_type)
                 node_type_select = st.selectbox("ER type", ER_list, index=ER_index, key="node_type_select") # bug
                 new_node_type = node_type_select
-                
-                print(new_node_type)
                 if(new_node_type == "atomic ER"):
                     with atomic_col:
                         atomic_ER_list = ['.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip']
@@ -186,35 +191,28 @@ class datasetCreator:
                         atomic_type = st.selectbox("atomic type", atomic_ER_list, index = atomic_ER_index)
                         new_node_type = atomic_type
 
-                # if(new_node_type == "atomic ER"):
-                #     with atomic_col:
-                #         atomic_type = st.selectbox("atomic type", ('.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip' ))
-                #"         new_node_type = atomic_type
-
-            if(must_input):
-                pass
-        #         if(node_type=="iER" or node_type=="aER" or node_type=="rER"):
-        #             des_col, url_col= st.columns(2)
-        #             with des_col:
-        #                 node_des = st.text_input("Description")
-        #             with url_col:
-        #                 node_url = st.text_input("URL")
-        #         else:
-        #             des_col, url_col, dur_col = st.columns(3)
-        #             with des_col:
-        #                 node_des = st.text_input("Description")
-        #             with url_col:
-        #                 node_url = st.text_input("URL")
-        #             with dur_col:
-        #                 node_dur = st.number_input('Duration', value = 2)
-        #     if(node_des!="" or node_url!=""):
-        #         add_node = st.button("Save")
-        #         if(add_node):
-        #             node = [len(self.df.index)-1,node_title,node_des,node_url,node_type,'','','','','','','',node_dur]
+        if(must_input):
+            if(new_node_type=="iER" or new_node_type=="aER" or new_node_type=="rER"):
+                des_col, url_col= st.columns(2)
+                with des_col:
+                    new_node_des = st.text_input("Description", value=old_des)
+                with url_col:
+                    new_node_url = st.text_input("URL", value=old_url)
+            else:
+                des_col, url_col, dur_col = st.columns(3)
+                with des_col:
+                    new_node_des = st.text_input("Description", value=old_des)
+                with url_col:
+                    new_node_url = st.text_input("URL", value=old_url)
+                with dur_col:
+                    new_node_dur = st.number_input('Duration', value =old_dur)
+        if(new_node_des!="" or new_node_url!=""):
+            add_node = st.button("Save Changes", key="save_change_btn")
+            if(add_node):
+                node = [n_id ,new_node_title, new_node_des,new_node_url,new_node_type,'','','','','','','',new_node_dur]
         return node
 
-    def __reset_edit_ER_confirm_checkbox(ER_type):
-        st.session_state.selection = ER_type
+   
     def __get_atomic_ER_list_for_edit(self, old_type):
         atomic_ers = ['.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip']
         res = []
