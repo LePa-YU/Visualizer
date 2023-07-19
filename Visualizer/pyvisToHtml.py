@@ -1,6 +1,6 @@
 import json
 
-def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, csvRows,  needsStabilization, physics, select_edit_node_id):
+def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, csvRows,  needsStabilization, physics, select_edit_node_id, select_edit_node2_id):
     file_html = open(file_name , "w")
     # Adding the input data to the HTML file
     file_html.write('''
@@ -103,10 +103,15 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
     jsonOb_needsStabilization_format = format(jsonOb_needsStabilization)  
     file_html.write("\t\t var needsStabilization = "+str(jsonOb_needsStabilization_format) +";"+"\n\n")
     
-    # select_edit_node_id
+    # select_edit_node_id used to highlight/ focus on node for dataset creation/ modification
     jsonOb_select_edit_node_id = json.dumps(select_edit_node_id)
     jsonOb_select_edit_node_id_format = format(jsonOb_select_edit_node_id)  
     file_html.write("\t\t var select_edit_node_id = "+str(jsonOb_select_edit_node_id_format) +";"+"\n\n")
+
+    # select_edit_node2_id used for relation creation/ modification
+    jsonOb_select_edit_node2_id = json.dumps(select_edit_node2_id)
+    jsonOb_select_edit_node2_id_format = format(jsonOb_select_edit_node2_id)  
+    file_html.write("\t\t var select_edit_node2_id = "+str(jsonOb_select_edit_node2_id_format) +";"+"\n\n")
 
     # background data
     jsonOb_bg = json.dumps(bg)
@@ -249,6 +254,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
     //creating the vis network
     var network = new vis.Network(container, data, options);
     network.setSize(width, height);
+    //Focus 
     network.once("beforeDrawing", function () {
       if(isHorizontal){
         network.focus(0, {
@@ -263,11 +269,12 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
         });
       }
        if (fileLabel == 'temp.csv'){
-        network.focus(select_edit_node_id , {
-          scale: 0.5,
-          offset: {x:0, y:-300}
-        });
-      
+        if (select_edit_node2_id == null){
+            network.focus(select_edit_node_id , {
+            scale: 0.5,
+            offset: {x:0, y:-300}
+          });
+        }
      /* nodeList.forEach(function(item) 
       {
         if(select_edit_node_id == item.id)
@@ -364,6 +371,10 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
         if(select_edit_node_id == item.id)
         {
           nodeList.update([{id: select_edit_node_id, color: {background: '#F0F8FF'}}]);
+        }
+        if(select_edit_node2_id == item.id)
+        {
+          nodeList.update([{id: select_edit_node2_id, color: {background: '#F0F8FF'}}]);
         }
       }); 
     }

@@ -5,7 +5,7 @@ from pyvis.network import Network
 import textwrap
 
 # method  that convert networkx to pyvis
-def convert_to_pyvis(G, file_name, bg, font_color,file_label, view, physics, isHorizontal, d_btn, csvRows, needsStabilization, select_edit_node_id):
+def convert_to_pyvis(G, file_name, bg, font_color,file_label, view, physics, isHorizontal, d_btn, csvRows, needsStabilization, select_edit_node_id, select_edit_node2_id):
 
     # create pyvis network
     G2 = Network(height="750px", width="100%", bgcolor=bg, font_color=font_color, notebook=True, directed=True)
@@ -30,4 +30,4 @@ def convert_to_pyvis(G, file_name, bg, font_color,file_label, view, physics, isH
     data = G2.get_network_data()
 
   # the data is used to create an html file, args: data(network infor)/ file_name(name of the html file)/ bg(background selected by user-initially white)
-    pyvisToHtml.convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, csvRows, needsStabilization, physics, select_edit_node_id)
+    pyvisToHtml.convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, csvRows, needsStabilization, physics, select_edit_node_id,  select_edit_node2_id)

@@ -362,7 +362,12 @@ with container:
             select_node_edit = dataset.get_selected_node()
         except:
             select_node_edit = None
-        view.set_select_edit_node(select_node_edit)
+        try:
+            select_node_edit2 = dataset.get_selected_node2()
+        except:
+            select_node_edit2 = None
+        
+        view.set_select_edit_node(select_node_edit, select_node_edit2)
          #download csv file
         with col3:
             d_btn = st.button("Download CSV File")

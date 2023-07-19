@@ -21,8 +21,9 @@ class Views:
 
         self.csvRows = csvRows
 
-    def set_select_edit_node(self, node_id):
+    def set_select_edit_node(self, node_id, node2_id):
         self.select_edit_node_id = node_id
+        self.select_edit_node2_id =node2_id
     def Summative_assessment_only(self, bg, font_color, file_label, view, physics, d_btn):
         # create networkx graph
         G = nx.DiGraph()
@@ -33,7 +34,7 @@ class Views:
         # assign a file name
         file_name = file_label+"_Summative_assessment_only.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, d_btn, self.csvRows, False, self.select_edit_node_id)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, d_btn, self.csvRows, False, self.select_edit_node_id, self.select_edit_node2_id)
     
     def Course_Overview(self, bg,font_color, file_label, view, physics, d_btn):
         # create networkx graph
@@ -45,7 +46,7 @@ class Views:
         # assign a file name
         file_name = file_label+"_Course_Overview.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, d_btn, self.csvRows, False, self.select_edit_node_id)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, d_btn, self.csvRows, False, self.select_edit_node_id, self.select_edit_node2_id)
 
     def  All_ERs(self, bg,font_color, file_label, view, physics, d_btn):
         # create networkx graph
@@ -58,7 +59,7 @@ class Views:
         # assign a file name
         file_name = file_label+"_All_ERs.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, d_btn, self.csvRows, False, self.select_edit_node_id)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, d_btn, self.csvRows, False, self.select_edit_node_id, self.select_edit_node2_id)
     
     def Requirements(self, bg,font_color, file_label, view, physics, d_btn):
          # create networkx graph
@@ -78,7 +79,7 @@ class Views:
                 all_has_coordinate = False
                 break
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, d_btn, self.csvRows, all_has_coordinate, self.select_edit_node_id)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, d_btn, self.csvRows, all_has_coordinate, self.select_edit_node_id, self.select_edit_node2_id)
     
     def vertical_Requirements(self, bg,font_color, file_label, view, physics, d_btn):
          # create networkx graph
@@ -92,7 +93,7 @@ class Views:
         # assign a file name
         file_name = file_label+"_vertical_requirements.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, False, d_btn, self.csvRows, False, self.select_edit_node_id)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, False, d_btn, self.csvRows, False, self.select_edit_node_id, self.select_edit_node2_id)
 
     def set_atomic_size_limit(self, atomic_max_size, atomic_min_size, start_end_size, ier_size, aer_size, rer_size):
         self.atomic_max_size = atomic_max_size

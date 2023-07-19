@@ -103,8 +103,8 @@ class datasetCreator:
             node1_id = datasetCreator.__find_node1_for_relations(self)
             if(node1_id != None):
                 node1_id = np.int16(node1_id).item()
-            # datasetCreator.set_selected_node(self, node1_id)
-            node1_confirm = st.checkbox("confirm ER 1", key="confirm_ER_1")
+            datasetCreator.set_selected_node(self, node1_id)
+            node1_confirm = True #st.checkbox("confirm ER 1", key="confirm_ER_1")
             if(node1_confirm):
                 # datasetCreator.set_selected_node(self, None)
                 for i in range(len(self.df.index)):
@@ -129,13 +129,12 @@ class datasetCreator:
                 relation_select = st.selectbox("", relation_list, key="relation select")
         with col3:
             st.text("select node 2")
-            print(relation_select)
             # the avaiable nodes are changed based oon in col 2
-            # if(node1_confirm):
             node2_id = datasetCreator.__find_node2_for_relations(self, node1_id, relation_select)
+            print(node2_id)
             if(node2_id != None):
                 node2_id = np.int16(node2_id).item()
-                # datasetCreator.set_selected_node(self, node2_id)
+            datasetCreator.set_selected_node2(self, node2_id)
             #     if(node2_id != None):
             #         node2_confirm = st.checkbox("confirm ER 2", key="confirm_ER_2")
         
@@ -146,6 +145,9 @@ class datasetCreator:
                 st.session_state.confirm_ER_2 = False
         # based on relation the types of nodes present change:
         if(relation == "Comes After"):
+            datasetCreator.__add_relation_comesAfter(self, node_1)
+            
+    def __add_relation_comesAfter(self, node_1):
             type_list = []; node_2 = None
             type_list = ["All",'start','iER', 'aER']
             type_select = st.selectbox("Select the ER type", type_list, key="find_node2_type_relation", disabled=False)
@@ -532,3 +534,7 @@ class datasetCreator:
         self.selected_node_id = node_id
     def get_selected_node(self):
         return self.selected_node_id
+    def set_selected_node2(self, node_id):
+        self.selected_node2_id = node_id
+    def get_selected_node2(self):
+        return self.selected_node2_id
