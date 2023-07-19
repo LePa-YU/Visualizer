@@ -30,6 +30,7 @@ class datasetCreator:
         
     
     def edit_node(self):
+        datasetCreator.set_selected_node(self, None)
         if(len(self.df.index) <= 2):
             st.text("Dataset is empty please add a node")
         else:
@@ -87,10 +88,12 @@ class datasetCreator:
                     
                      
     def add_relation(self):
+        # datasetCreator.set_selected_node(self, None)
         node_with_relation = datasetCreator.__add_relation_fields(self)
         
     
     def __add_relation_fields(self):
+        # datasetCreator.set_selected_node(self, None)
         col1, col2, col3 = st.columns(3)
         node1_id = None; node2_id = None
         node1_confirm = False; node2_confirm = False
@@ -100,10 +103,10 @@ class datasetCreator:
             node1_id = datasetCreator.__find_node1_for_relations(self)
             if(node1_id != None):
                 node1_id = np.int16(node1_id).item()
-            datasetCreator.set_selected_node(self, node1_id)
+            # datasetCreator.set_selected_node(self, node1_id)
             node1_confirm = st.checkbox("confirm ER 1", key="confirm_ER_1")
             if(node1_confirm):
-                datasetCreator.set_selected_node(self, None)
+                # datasetCreator.set_selected_node(self, None)
                 for i in range(len(self.df.index)):
                     node_id = self.df["identifier"][i]
                     if (node_id == node1_id):
@@ -132,7 +135,7 @@ class datasetCreator:
             node2_id = datasetCreator.__find_node2_for_relations(self, node1_id, relation_select)
             if(node2_id != None):
                 node2_id = np.int16(node2_id).item()
-                datasetCreator.set_selected_node(self, node2_id)
+                # datasetCreator.set_selected_node(self, node2_id)
             #     if(node2_id != None):
             #         node2_confirm = st.checkbox("confirm ER 2", key="confirm_ER_2")
         

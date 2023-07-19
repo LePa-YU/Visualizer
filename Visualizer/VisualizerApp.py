@@ -281,22 +281,24 @@ with container:
                     # create tabs
                     node_tab, relation_tab = st.tabs(["    Educational Resource", "    ER Relations"])   
                     #Node tab
-                    with node_tab:
-                        node_option = st.radio("What do you want to do?", ("Add a new node", "Edit a node"), key="node_tab")
+                    # with node_tab:
+                        
+                    node_option = st.radio("What do you want to do?", ("Add a new node", "Edit a node", "Add a new Relation", "Edit a Relation"), key="node_tab")
                         # df = pd.read_csv(f_name)
-                        if(node_option == "Add a new node"):
+                    if(node_option == "Add a new node"):
                             dataset.add_node()
-                        elif(node_option == "Edit a node"):
+                    elif(node_option == "Edit a node"):
+                            # dataset.set_selected_node(None)
                             dataset.edit_node()
-                            pass
+                            # pass
                     #Relations tab
-                    with relation_tab:
-                        node_option = st.radio("What do you want to do?", ("Add a new Relation", "Edit a Relation"))
-                        df = pd.read_csv(f_name)
-                        if(node_option == "Add a new Relation"):
+                    # with relation_tab:
+                    # node_option = st.radio("What do you want to do?", ("Add a new Relation", "Edit a Relation"), key="relation_tab")
+                    df = pd.read_csv(f_name)
+                    if(node_option == "Add a new Relation"):
                             dataset.add_relation()
                             pass
-                        elif(node_option == "Edit a Relation"):
+                    elif(node_option == "Edit a Relation"):
                             # dataset.edit_node()
                             pass
                     # dow_container = st.container()
