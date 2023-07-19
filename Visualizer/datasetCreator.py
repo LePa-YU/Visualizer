@@ -15,59 +15,14 @@ class datasetCreator:
                 self.df.to_csv(file_name, index=False)
         else:
             self.df = pd.read_csv(file_name)
-
-    def __create_node_addition_fields(self):
-        adder = st.container()
-        node_title = ""
-        node_type = ""
-        node_des = ""
-        node_url = ""
-        node_dur = 0
-        node_type_select = ""
-        node = []
-        with adder:
-            # title
-            st.subheader("Add a New Node")
-            #necessary data
-            must_input  = False
-            title_col, ER_col, atomic_col = st.columns([1.75,0.875,0.875])
-            with title_col:
-                node_title = st.text_input("Title")
-            with ER_col:
-                if(node_title !=""):
-                    must_input = True
-                    node_type_select = st.selectbox("ER type", ('iER', 'aER', 'rER', "atomic ER"))
-                    node_type = node_type_select
-                    if(node_type_select == "atomic ER"):
-                        with atomic_col:
-                            atomic_type = st.selectbox("atomic type", ('.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip' ))
-                            node_type = atomic_type
-            if(must_input):
-                if(node_type=="iER" or node_type=="aER" or node_type=="rER"):
-                    des_col, url_col= st.columns(2)
-                    with des_col:
-                        node_des = st.text_input("Description")
-                    with url_col:
-                        node_url = st.text_input("URL")
-                else:
-                    des_col, url_col, dur_col = st.columns(3)
-                    with des_col:
-                        node_des = st.text_input("Description")
-                    with url_col:
-                        node_url = st.text_input("URL")
-                    with dur_col:
-                        node_dur = st.number_input('Duration', value = 2)
-            if(node_des!="" or node_url!=""):
-                add_node = st.button("Save")
-                if(add_node):
-                    node = [len(self.df.index)-1,node_title,node_des,node_url,node_type,'','','','','','','',node_dur]
-        return node
     
     def add_node(self):
         node = datasetCreator.__create_node_addition_fields(self)
         if(node):
+            end_node_comesAfter = self.df["comesAfter"].iloc[-1]
+            print(end_node_comesAfter)
             self.df.loc[len(self.df.index)-1] = node
-            self.df.loc[len(self.df.index)] = [len(self.df.index),'End','end','','end','','',0,'','','','','']
+            self.df.loc[len(self.df.index)] = [len(self.df.index),'End','end','','end','','',end_node_comesAfter,'','','','','']
             self.df.to_csv(self.file_name, index=False)
     
     def edit_node(self):
@@ -105,8 +60,249 @@ class datasetCreator:
                             next_index = index+1
                             for i in range(index, len(self.df.index)):
                                 self.df["identifier"][i+1] = i
-                            self.df.to_csv(self.file_name, index=False)  
-                       
+                            self.df.to_csv(self.file_name, index=False)
+                            self.df = pd.read_csv(self.file_name)  
+    def add_relation(self):
+        node_with_relation = datasetCreator.__add_relation_fields(self)
+        
+    
+    def __add_relation_fields(self):
+        col1, col2, col3 = st.columns(3)
+        node1_id = None; node2_id = None
+        node1_confirm = False; node2_confirm = False
+        node1_is_composite = False; node1_type =""; relation_select=""
+        with col1: 
+            st.text("select node 1")
+            node1_id = datasetCreator.__find_node1_for_relations(self)
+            if(node1_id != None):
+                node1_id = np.int16(node1_id).item()
+            datasetCreator.set_selected_node(self, node1_id)
+            node1_confirm = st.checkbox("confirm ER 1", key="confirm_ER_1")
+            if(node1_confirm):
+                datasetCreator.set_selected_node(self, None)
+                for i in range(len(self.df.index)):
+                    node_id = self.df["identifier"][i]
+                    if (node_id == node1_id):
+                        node1_type = self.df["type"][i]
+                        if(node1_type == "iER" or node1_type == "aER" or node1_type=="rER"): node1_is_composite = True
+                        break        
+        with col2:
+            st.text("select relation")
+            if node1_is_composite:
+                # if first node is composite we can have: 
+                # composite-composite relation: 
+                #   1. comesAfter, comesBefore: assumption --> between aER, rER, start and end
+                #       a. node1 comesAfter nodeB (add to node A)
+                #       b. node1 comesBefore node B (add to node B)
+                #   2. if node1_type is rER --> assess else is assessedBy
+                # composite-atomic relation: hasPart --> node 1 has node 2 (for now only atomic)
+                relation_list = ["Comes After", "Comes Before", "Has Part"]
+                if node1_type == "rER": relation_list.append("Assesses")
+                else: relation_list.append("Is assessed By")
+                relation_select = st.selectbox("", relation_list, key="relation select")
+        with col3:
+            st.text("select node 2")
+            print(relation_select)
+            # the avaiable nodes are changed based oon in col 2
+            # if(node1_confirm):
+            node2_id = datasetCreator.__find_node2_for_relations(self, node1_id, relation_select)
+            if(node2_id != None):
+                node2_id = np.int16(node2_id).item()
+                datasetCreator.set_selected_node(self, node2_id)
+            #     if(node2_id != None):
+            #         node2_confirm = st.checkbox("confirm ER 2", key="confirm_ER_2")
+        
+    def __find_node2_for_relations(self, node_1, relation):
+        # type_col, title_col, id_col = st.columns(3)
+        # # select type: there are 4 type: iER, aER, rER, atomic ER or all --> default = All
+        if "confirm_ER_2" not in st.session_state:
+                st.session_state.confirm_ER_2 = False
+        # based on relation the types of nodes present change:
+        if(relation == "Comes After"):
+            type_list = []; node_2 = None
+            type_list = ["All",'start','iER', 'aER']
+            type_select = st.selectbox("Select the ER type", type_list, key="find_node2_type_relation", disabled=False)
+            ier_title_list = []; aer_title_list = []; all_title_list = []
+            if(type_select == "start"):
+                node_2 = 0
+            else:
+                node1_title = ""
+                for i in range(len(self.df.index)):
+                    node_id = self.df["identifier"][i]
+                    if(node_id == node_1):
+                        node1_title = self.df["title"][i]
+                        break
+                # print(node1_title)   
+                for i in range(len(self.df.index)):
+                    node_title = self.df["title"][i]
+                    node_type = self.df["type"][i]
+                    if(node_title != node1_title):
+                        if(node_type == "iER"): 
+                            ier_title_list.append(node_title)
+                            all_title_list.append(node_title) 
+                        elif(node_type == "aER"):
+                            aer_title_list.append(node_title)
+                            all_title_list.append(node_title)
+                title_has_duplicate = False 
+                if(type_select == "All"): 
+                    title_selector = st.selectbox("Select ER", set(all_title_list), key="find_node2_title_relation", disabled= False)
+                    title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, all_title_list)    
+                elif(type_select == "iER"): 
+                    title_selector = st.selectbox("Select ER", set(ier_title_list), key="find_node2_title_relation", disabled= False)
+                    title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, ier_title_list)
+                elif(type_select == "aER"): 
+                    title_selector = st.selectbox("Select ER", set(aer_title_list), key="find_node2_title_relation", disabled= False)
+                    title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, aer_title_list) 
+                
+                # #if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find 
+                # # the corret node
+                id_selector = ""
+                if(title_has_duplicate):
+                    id_list = []
+                    for i in range(len(self.df.index)):
+                        node_id = self.df["identifier"][i]
+                        node_title = self.df["title"][i]
+                        node_type = self.df["type"][i]
+                        if(type_select == "All"):
+                            if(title_selector == node_title): id_list.append(node_id)
+                        else:
+                            if(type_select == node_type and title_selector == node_title): id_list.append(node_id)
+                    id_selector = st.selectbox("Select ID: ", id_list, key="find_node1_id_relation", disabled= False)    
+                if(id_selector): return int(id_selector)
+                else:
+                    #if node is unique --> no id selector --> find id
+                    for i in range(len(self.df.index)):
+                        node_id = self.df["identifier"][i]
+                        node_title = self.df["title"][i]
+                        node_type = self.df["type"][i]
+                        if(type_select == "All" or type_select == "atomic ER"):
+                            if(title_selector == node_title): return node_id
+                        else:
+                            if(type_select == node_type and title_selector == node_title): return node_id
+            # find the node with `comesAfter` == node2 --> change this field to node1
+            add_relation = st.button("Add Relation", key="add_relation")
+            if(add_relation):
+                for i in range(len(self.df.index)):
+                    node_comesAfter_node2 = self.df["comesAfter"][i]
+                    if(node_comesAfter_node2 == node_2):
+                        self.df["comesAfter"][i] = node_1
+                        self.df.to_csv(self.file_name, index=False)
+                        break
+                # then change node1's `comesAfter` field to node 2
+                for i in range(len(self.df.index)):
+                    node_id= self.df["identifier"][i]
+                    if(node_id == node_1):
+                        self.df["comesAfter"][i] = node_2
+                        self.df.to_csv(self.file_name, index=False)
+                        break
+    def __find_node1_for_relations(self):
+        # type_col, title_col, id_col = st.columns(3)
+        # # select type: there are 4 type: iER, aER, rER, atomic ER or all --> default = All
+        if "confirm_ER_1" not in st.session_state:
+                st.session_state.confirm_ER_1 = False
+        type_selector = st.selectbox("Select the ER type", ("All",'iER', 'aER', 'rER', "atomic ER"), key="find_node1_type_relation", disabled= st.session_state.confirm_ER_1)
+        # after choosing type and selectbox of unique titles is created based on the type (ordered alphabetically)
+        ier_title_list = []; aer_title_list = []; rer_title_list = []; atomic_title_list = []; all_title_list = []
+        for i in range(len(self.df.index)):
+            node_title = self.df["title"][i]
+            node_type = self.df["type"][i]
+            if(node_type != "start" and node_type != "end"):
+                all_title_list.append(node_title)
+                if(node_type == "iER"): ier_title_list.append(node_title) 
+                elif(node_type == "aER"):aer_title_list.append(node_title)
+                elif(node_type =="rER"):rer_title_list.append(node_title)
+                else:atomic_title_list.append(node_title)
+        title_has_duplicate = False
+        if(type_selector == "All"): 
+            title_selector = st.selectbox("Select ER", set(all_title_list), key="find_node1_title_relation", disabled= st.session_state.confirm_ER_1)
+            title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, all_title_list)    
+        elif(type_selector == "iER"): 
+            title_selector = st.selectbox("Select ER", set(ier_title_list), key="find_node1_title_relation", disabled= st.session_state.confirm_ER_1)
+            title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, ier_title_list)
+        elif(type_selector == "aER"): 
+            title_selector = st.selectbox("Select ER", set(aer_title_list), key="find_node1_title_relation", disabled= st.session_state.confirm_ER_1)
+            title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, aer_title_list) 
+        elif(type_selector == "rER"): 
+            title_selector = st.selectbox("Select ER", set(rer_title_list), key="find_node1_title_relation", disabled= st.session_state.confirm_ER_1)
+            title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, rer_title_list)
+        elif(type_selector == "atomic ER"): 
+            title_selector = st.selectbox("Select ER", set(atomic_title_list), key="find_node1_title_relation", disabled= st.session_state.confirm_ER_1)
+            title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, atomic_title_list)
+        #if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find 
+        # the corret node
+        id_selector = ""
+        if(title_has_duplicate):
+            id_list = []
+            for i in range(len(self.df.index)):
+                node_id = self.df["identifier"][i]
+                node_title = self.df["title"][i]
+                node_type = self.df["type"][i]
+                if(type_selector == "All" or type_selector == "atomic ER"):
+                    if(title_selector == node_title): id_list.append(node_id)
+                else:
+                    if(type_selector == node_type and title_selector == node_title): id_list.append(node_id)
+            id_selector = st.selectbox("Select ID: ", id_list, key="find_node1_id_relation", disabled= st.session_state.confirm_ER_1)    
+        if(id_selector): return int(id_selector)
+        else:
+            #if node is unique --> no id selector --> find id
+            for i in range(len(self.df.index)):
+                node_id = self.df["identifier"][i]
+                node_title = self.df["title"][i]
+                node_type = self.df["type"][i]
+                if(type_selector == "All" or type_selector == "atomic ER"):
+                    if(title_selector == node_title): return node_id
+                else:
+                    if(type_selector == node_type and title_selector == node_title): return node_id
+
+    def __create_node_addition_fields(self):
+        adder = st.container()
+        node_title = ""
+        node_type = ""
+        node_des = ""
+        node_url = ""
+        node_dur = 0
+        node_type_select = ""
+        node = []
+        with adder:
+            # title
+            st.subheader("Add a New Node")
+            #necessary data
+            must_input  = False
+            title_col, ER_col, atomic_col = st.columns([1.75,0.875,0.875])
+            with title_col:
+                node_title = st.text_input("Title", key="add_node_title")
+            with ER_col:
+                if(node_title !=""):
+                    must_input = True
+                    node_type_select = st.selectbox("ER type", ('iER', 'aER', 'rER', "atomic ER"))
+                    node_type = node_type_select
+                    if(node_type_select == "atomic ER"):
+                        with atomic_col:
+                            atomic_type = st.selectbox("atomic type", ('.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip' ))
+                            node_type = atomic_type
+            if(must_input):
+                if(node_type=="iER" or node_type=="aER" or node_type=="rER"):
+                    des_col, url_col= st.columns(2)
+                    with des_col:
+                        node_des = st.text_input("Description")
+                    with url_col:
+                        node_url = st.text_input("URL")
+                else:
+                    des_col, url_col, dur_col = st.columns(3)
+                    with des_col:
+                        node_des = st.text_input("Description")
+                    with url_col:
+                        node_url = st.text_input("URL")
+                    with dur_col:
+                        node_dur = st.number_input('Duration', value = 2)
+            if(node_des!="" or node_url!=""):
+                add_node = st.button("Save", key="save_node_button", on_click=datasetCreator.__reset_field_after_node_saved())
+                if(add_node):
+                    node = [len(self.df.index)-1,node_title,node_des,node_url,node_type,'','','','','','','',node_dur]
+        return node                  
+    def __reset_field_after_node_saved():
+    #    st.session_state["add_node_title"] = " "
+        pass
     # this function return id of node for editing purposes
     def __find_node_list(self):   
         type_col, title_col, id_col = st.columns(3)
