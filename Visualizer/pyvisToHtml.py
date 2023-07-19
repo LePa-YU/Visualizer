@@ -262,6 +262,20 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
           offset: {x:0, y:-300}
         });
       }
+       if (fileLabel == 'temp.csv'){
+        network.focus(select_edit_node_id , {
+          scale: 0.5,
+          offset: {x:0, y:-300}
+        });
+      
+     /* nodeList.forEach(function(item) 
+      {
+        if(select_edit_node_id == item.id)
+        {
+          nodeList.update([{id: select_edit_node_id, color: {background: '#F0F8FF'}}]);
+        }
+      }); */
+    }
     }); 
     // node collapse. if only one node is selected if the node is clustred (collapsed) then the cluster is open
     // else the node is collapsed if if they have the isPartOf relation corresponding to this node's id (var v)
