@@ -326,7 +326,7 @@ class datasetCreator:
             if(node_des!="" or node_url!=""):
                 col1, col2 = st.columns([1, 8])
                 with col1:
-                    add_node = st.button("Save", key="Save_node")
+                    add_node = st.button("Save", key="Save_node", disabled=disable)
                 if(add_node):
                     node = [len(self.df.index)-1,node_title,node_des,node_url,node_type,'','','','','','','',node_dur]
                 with col2:
