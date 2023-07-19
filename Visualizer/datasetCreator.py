@@ -2,6 +2,7 @@ import os
 import streamlit as st
 import pandas as pd
 import numpy as np
+import time
 
 class datasetCreator:
     def __init__(self, file_name):
@@ -15,7 +16,7 @@ class datasetCreator:
                 self.df.to_csv(file_name, index=False)
         else:
             self.df = pd.read_csv(file_name)
-    
+   
     def add_node(self):
         node = datasetCreator.__create_node_addition_fields(self)
         if(node):
@@ -24,6 +25,7 @@ class datasetCreator:
             self.df.loc[len(self.df.index)-1] = node
             self.df.loc[len(self.df.index)] = [len(self.df.index),'End','end','','end','','',end_node_comesAfter,'','','','','']
             self.df.to_csv(self.file_name, index=False)
+        
     
     def edit_node(self):
         if(len(self.df.index) <= 2):
@@ -267,42 +269,52 @@ class datasetCreator:
             # title
             st.subheader("Add a New Node")
             #necessary data
+            disable = False
+            if "Save_node" in st.session_state:
+                disable = st.session_state.Save_node
+            if "add_next" in st.session_state:
+                disable = not st.session_state.add_next
+                if (not disable): st.session_state.add_node_title = ""
             must_input  = False
             title_col, ER_col, atomic_col = st.columns([1.75,0.875,0.875])
             with title_col:
-                node_title = st.text_input("Title", key="add_node_title")
+                node_title = st.text_input("Title", key="add_node_title", disabled=disable)
             with ER_col:
                 if(node_title !=""):
                     must_input = True
-                    node_type_select = st.selectbox("ER type", ('iER', 'aER', 'rER', "atomic ER"))
+                    node_type_select = st.selectbox("ER type", ('iER', 'aER', 'rER', "atomic ER"), disabled=disable)
                     node_type = node_type_select
                     if(node_type_select == "atomic ER"):
                         with atomic_col:
-                            atomic_type = st.selectbox("atomic type", ('.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip' ))
+                            atomic_type = st.selectbox("atomic type", ('.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip' ), disabled=disable)
                             node_type = atomic_type
             if(must_input):
                 if(node_type=="iER" or node_type=="aER" or node_type=="rER"):
                     des_col, url_col= st.columns(2)
                     with des_col:
-                        node_des = st.text_input("Description")
+                        node_des = st.text_input("Description", disabled=disable)
                     with url_col:
-                        node_url = st.text_input("URL")
+                        node_url = st.text_input("URL", disabled=disable)
                 else:
                     des_col, url_col, dur_col = st.columns(3)
                     with des_col:
-                        node_des = st.text_input("Description")
+                        node_des = st.text_input("Description", disabled=disable)
                     with url_col:
-                        node_url = st.text_input("URL")
+                        node_url = st.text_input("URL", disabled=disable)
                     with dur_col:
-                        node_dur = st.number_input('Duration', value = 2)
+                        node_dur = st.number_input('Duration', value = 2, disabled=disable)
             if(node_des!="" or node_url!=""):
-                add_node = st.button("Save", key="save_node_button", on_click=datasetCreator.__reset_field_after_node_saved())
+                col1, col2 = st.columns([1, 8])
+                with col1:
+                    add_node = st.button("Save", key="Save_node")
                 if(add_node):
                     node = [len(self.df.index)-1,node_title,node_des,node_url,node_type,'','','','','','','',node_dur]
+                with col2:
+                    if(disable):
+                        add_new_node = st.button("Add another node", key="add_next")
         return node                  
-    def __reset_field_after_node_saved():
-    #    st.session_state["add_node_title"] = " "
-        pass
+    def __reset_field_after_node_saved(self):
+       print( st.session_state.add_node_title)
     # this function return id of node for editing purposes
     def __find_node_list(self):   
         type_col, title_col, id_col = st.columns(3)
