@@ -288,12 +288,14 @@ with container:
                             dataset.add_node()
                         elif(node_option == "Edit a node"):
                             dataset.edit_node()
+                            pass
                     #Relations tab
                     with relation_tab:
                         node_option = st.radio("What do you want to do?", ("Add a new Relation", "Edit a Relation"))
                         # df = pd.read_csv(f_name)
                         if(node_option == "Add a new Relation"):
-                            dataset.add_relation()
+                            # dataset.add_relation()
+                            pass
                         elif(node_option == "Edit a Relation"):
                             # dataset.edit_node()
                             pass

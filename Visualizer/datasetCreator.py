@@ -31,23 +31,40 @@ class datasetCreator:
         if(len(self.df.index) <= 2):
             st.text("Dataset is empty please add a node")
         else:
+            st.divider()
+            st.text("find the node you want to edit:")
             node = datasetCreator.__find_node_list(self)
             if(node != None):
                 node = np.int16(node).item()
             datasetCreator.set_selected_node(self, node)
-            confirm_node_btn = st.checkbox("Confirm Selection", key="confirm_edit")
-            if(confirm_node_btn): 
+            disable = False
+            if("delete_node" in st.session_state):
+                if(st.session_state.delete_node == True): disable = True
+                # if(st.session_state.confirm_edit):disable = False
+            confirm_edit = st.checkbox("Confirm selection", key="confirm_edit")
+            if(confirm_edit):
+                st.divider()
+                # node_name = ""
+                # for i in range(len(self.df.index)):
+                #     n_id = self.df["identifier"][i]
+                #     if (n_id == node): 
+                #         self.edit_node_name = self.df["title"][i]
+                #         break
+                # st.text("Edit fields for: " + self.edit_node_name)
                 edited_node = datasetCreator.__edit_option(self, node)
                 if(edited_node):
                     save_col, delete_col=st.columns([1, 3.5])
-                    disable = False
-                    if("delete_node" in st.session_state):
-                        if(st.session_state.delete_node == True): disable = True
                     with save_col:
                         save_node = st.button("Save Changes", key="save_change_btn", disabled=disable)
                         if(save_node):
                             self.df.loc[node] = edited_node
                             self.df.to_csv(self.file_name, index=False)
+                            node_name = ""
+                            # for i in range(len(self.df.index)):
+                            #     n_id = self.df["identifier"][i]
+                            #     if (n_id == node): 
+                            #         self.edit_node_name = self.df["title"][i]
+                            #         break
                     with delete_col:
                         delete_node = st.button("Delete Node", key="delete_node", disabled=disable)
                         if(delete_node):
@@ -63,7 +80,10 @@ class datasetCreator:
                             for i in range(index, len(self.df.index)):
                                 self.df["identifier"][i+1] = i
                             self.df.to_csv(self.file_name, index=False)
-                            self.df = pd.read_csv(self.file_name)  
+                            self.df = pd.read_csv(self.file_name)
+                            datasetCreator.set_selected_node(self, None)
+                    
+                     
     def add_relation(self):
         node_with_relation = datasetCreator.__add_relation_fields(self)
         
@@ -320,9 +340,13 @@ class datasetCreator:
         type_col, title_col, id_col = st.columns(3)
         # select type: there are 4 type: iER, aER, rER, atomic ER or all --> default = All
         with type_col:
-            if "confirm_edit" not in st.session_state:
-                st.session_state.confirm_edit = False
-            type_selector = st.selectbox("Select the ER type", ("All",'iER', 'aER', 'rER', "atomic ER"), disabled=st.session_state.confirm_edit)
+            disable = False
+            if "confirm_edit" in st.session_state:
+                disable = st.session_state.confirm_edit
+            # if("delete_node" in st.session_state):
+            #     if(st.session_state.delete_node == True): disable = False
+            #     # if(not disable): st.session_state.confirm_edit = False
+            type_selector = st.selectbox("Select the ER type", ("All",'iER', 'aER', 'rER', "atomic ER"), disabled=disable)
         # after choosing type and selectbox of unique titles is created based on the type (ordered alphabetically)
         with title_col:
             ier_title_list = []; aer_title_list = []; rer_title_list = []; atomic_title_list = []; all_title_list = []
@@ -336,20 +360,21 @@ class datasetCreator:
                     elif(node_type =="rER"):rer_title_list.append(node_title)
                     else:atomic_title_list.append(node_title)
             title_has_duplicate = False
+                # = st.session_state.new_edit_node_title
             if(type_selector == "All"): 
-                title_selector = st.selectbox("Select ER", set(all_title_list), disabled=st.session_state.confirm_edit)
+                title_selector = st.selectbox("Select ER", set(all_title_list), disabled=disable, key="find_node_title")
                 title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, all_title_list)    
             elif(type_selector == "iER"): 
-                title_selector = st.selectbox("Select ER", set(ier_title_list),  disabled=st.session_state.confirm_edit)
+                title_selector = st.selectbox("Select ER", set(ier_title_list),  disabled=disable, key="find_node_title")
                 title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, ier_title_list)
             elif(type_selector == "aER"): 
-                title_selector = st.selectbox("Select ER", set(aer_title_list),  disabled=st.session_state.confirm_edit)
+                title_selector = st.selectbox("Select ER", set(aer_title_list),  disabled=disable, key="find_node_title")
                 title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, aer_title_list) 
             elif(type_selector == "rER"): 
-                title_selector = st.selectbox("Select ER", set(rer_title_list),  disabled=st.session_state.confirm_edit)
+                title_selector = st.selectbox("Select ER", set(rer_title_list),  disabled=disable, key="find_node_title")
                 title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, rer_title_list)
             elif(type_selector == "atomic ER"): 
-                title_selector = st.selectbox("Select ER", set(atomic_title_list),  disabled=st.session_state.confirm_edit)
+                title_selector = st.selectbox("Select ER", set(atomic_title_list),  disabled=disable, key="find_node_title")
                 title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, atomic_title_list)
         #if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find 
         # the corret node
@@ -365,7 +390,7 @@ class datasetCreator:
                         if(title_selector == node_title): id_list.append(node_id)
                     else:
                         if(type_selector == node_type and title_selector == node_title): id_list.append(node_id)
-                id_selector = st.selectbox("Select ID: ", id_list,  disabled=st.session_state.confirm_edit)    
+                id_selector = st.selectbox("Select ID: ", id_list,  disabled=disable)    
         if(id_selector):
             return int(id_selector)
         else:
@@ -378,7 +403,11 @@ class datasetCreator:
                     if(title_selector == node_title): return node_id
                 else:
                     if(type_selector == node_type and title_selector == node_title): return node_id
-                      
+
+    def __on_change_for_editing_node(self):
+        if "new_edit_node_title" in st.session_state:
+            st.session_state.find_node_title = st.session_state.new_edit_node_title
+
     def __edit_option(self, n_id):
         if n_id == None: return None
         node = datasetCreator.__get_node_from_id(self, n_id)
@@ -403,8 +432,9 @@ class datasetCreator:
         if("delete_node" in st.session_state):
             if(st.session_state.delete_node == True):
                 disable = True
+            # if(st.session_state.confirm_edit):disable = False
         with title_col:
-            new_node_title = st.text_input("Title", value=old_title, disabled=disable)
+            new_node_title = st.text_input("Title", value=old_title, disabled=disable, key = "new_edit_node_title")
         with ER_col:
             if(new_node_title !=""):
                 must_input = True
