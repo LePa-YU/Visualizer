@@ -282,7 +282,7 @@ with container:
                     node_tab, relation_tab = st.tabs(["    Educational Resource", "    ER Relations"])   
                     #Node tab
                     with node_tab:
-                        node_option = st.radio("What do you want to do?", ("Add a new node", "Edit a node"))
+                        node_option = st.radio("What do you want to do?", ("Add a new node", "Edit a node"), key="node_tab")
                         # df = pd.read_csv(f_name)
                         if(node_option == "Add a new node"):
                             dataset.add_node()
@@ -292,9 +292,9 @@ with container:
                     #Relations tab
                     with relation_tab:
                         node_option = st.radio("What do you want to do?", ("Add a new Relation", "Edit a Relation"))
-                        # df = pd.read_csv(f_name)
+                        df = pd.read_csv(f_name)
                         if(node_option == "Add a new Relation"):
-                            # dataset.add_relation()
+                            dataset.add_relation()
                             pass
                         elif(node_option == "Edit a Relation"):
                             # dataset.edit_node()

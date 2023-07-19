@@ -18,6 +18,7 @@ class datasetCreator:
             self.df = pd.read_csv(file_name)
    
     def add_node(self):
+        datasetCreator.set_selected_node(self, None)
         node = datasetCreator.__create_node_addition_fields(self)
         if(node):
             end_node_comesAfter = self.df["comesAfter"].iloc[-1]
@@ -25,6 +26,7 @@ class datasetCreator:
             self.df.loc[len(self.df.index)-1] = node
             self.df.loc[len(self.df.index)] = [len(self.df.index),'End','end','','end','','',end_node_comesAfter,'','','','','']
             self.df.to_csv(self.file_name, index=False)
+        
         
     
     def edit_node(self):
@@ -329,6 +331,7 @@ class datasetCreator:
                     add_node = st.button("Save", key="Save_node", disabled=disable)
                 if(add_node):
                     node = [len(self.df.index)-1,node_title,node_des,node_url,node_type,'','','','','','','',node_dur]
+                    datasetCreator.set_selected_node(self, len(self.df.index)-1)
                 with col2:
                     if(disable):
                         add_new_node = st.button("Add another node", key="add_next")
