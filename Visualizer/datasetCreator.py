@@ -123,10 +123,21 @@ class datasetCreator:
                 #       b. node1 comesBefore node B (add to node B)
                 #   2. if node1_type is rER --> assess else is assessedBy
                 # composite-atomic relation: hasPart --> node 1 has node 2 (for now only atomic)
-                relation_list = ["Comes After", "Comes Before", "Has Part"]
-                if node1_type == "rER": relation_list.append("Assesses")
-                else: relation_list.append("Is assessed By")
-                relation_select = st.selectbox("", relation_list, key="relation select")
+                relation_list = []
+                if node1_type == "rER": 
+                    relation_list = ["Has Part", "Assesses"]
+                elif node1_type == "aER":
+                    relation_list  = ["Comes After", "Comes Before", "Has Part", "Is Assessed By"]
+                else: 
+                    relation_list = ["Comes After", "Comes Before", "Has Part"]
+            else:
+                # if a node a not a composite then it is atomic ER. the only atomic-atomic relation:
+                #   1. Requires if node 1 requires node 2 --> add to node 1
+                #   2. is required by: if node 1 is required by node 2 --> add to node 2
+                # atomic_composite relations:
+                # 1. is Part of: atomic ER can be part of any composite ER --> add to node 1
+                relation_list = ["Requires", "Is Required By", "Is Part Of"]
+            relation_select = st.selectbox("", relation_list, key="relation select")
         with col3:
             st.text("select node 2")
             # the avaiable nodes are changed based oon in col 2
