@@ -141,11 +141,10 @@ class datasetCreator:
         with col3:
             st.text("select node 2")
             # the avaiable nodes are changed based oon in col 2
-            node2_id = datasetCreator.__find_node2_for_relations(self, node1_id, relation_select)
-            print(node2_id)
-            if(node2_id != None):
-                node2_id = np.int16(node2_id).item()
-            datasetCreator.set_selected_node2(self, node2_id)
+            datasetCreator.__find_node2_for_relations(self, node1_id, relation_select)
+            # print(node2_id)
+            # if(node2_id != None):
+            #     node2_id = np.int16(node2_id).item()
             #     if(node2_id != None):
             #         node2_confirm = st.checkbox("confirm ER 2", key="confirm_ER_2")
         
@@ -166,17 +165,14 @@ class datasetCreator:
             if(type_select == "start"):
                 node_2 = 0
             else:
-                node1_title = ""
+                #add start node to all:
+                all_title_list.append(self.df["title"][0])
+                # adding aer and ier to their respective lists excluding the node 1   
                 for i in range(len(self.df.index)):
                     node_id = self.df["identifier"][i]
-                    if(node_id == node_1):
-                        node1_title = self.df["title"][i]
-                        break
-                # print(node1_title)   
-                for i in range(len(self.df.index)):
                     node_title = self.df["title"][i]
                     node_type = self.df["type"][i]
-                    if(node_title != node1_title):
+                    if( node_id != node_1):
                         if(node_type == "iER"): 
                             ier_title_list.append(node_title)
                             all_title_list.append(node_title) 
@@ -207,8 +203,8 @@ class datasetCreator:
                             if(title_selector == node_title): id_list.append(node_id)
                         else:
                             if(type_select == node_type and title_selector == node_title): id_list.append(node_id)
-                    id_selector = st.selectbox("Select ID: ", id_list, key="find_node1_id_relation", disabled= False)    
-                if(id_selector): return int(id_selector)
+                    id_selector = st.selectbox("Select ID: ", id_list, key="find_node2_id_relation", disabled= False)    
+                if(id_selector): node_2 = int(id_selector)
                 else:
                     #if node is unique --> no id selector --> find id
                     for i in range(len(self.df.index)):
@@ -216,25 +212,180 @@ class datasetCreator:
                         node_title = self.df["title"][i]
                         node_type = self.df["type"][i]
                         if(type_select == "All" or type_select == "atomic ER"):
-                            if(title_selector == node_title): return node_id
+                            if(title_selector == node_title): node_2 = node_id
                         else:
-                            if(type_select == node_type and title_selector == node_title): return node_id
+                            if(type_select == node_type and title_selector == node_title): node_2= node_id
+            if(node_2!= None):
+                node_2 = np.int16(node_2).item()
+            datasetCreator.set_selected_node2(self, node_2)
             # find the node with `comesAfter` == node2 --> change this field to node1
             add_relation = st.button("Add Relation", key="add_relation")
             if(add_relation):
-                for i in range(len(self.df.index)):
-                    node_comesAfter_node2 = self.df["comesAfter"][i]
-                    if(node_comesAfter_node2 == node_2):
-                        self.df["comesAfter"][i] = node_1
-                        self.df.to_csv(self.file_name, index=False)
-                        break
-                # then change node1's `comesAfter` field to node 2
+                node1_has_CA = datasetCreator.__node_has_CA(self, node_1)
+                # print(node1_has_CA)
+                node1_is_referred_ca = datasetCreator.__node_is_referred_by_other_ca(self, node_1)
+                # print(node1_is_referred_ca)
+                # refer to algorithm in doc
+                if(node1_has_CA):
+                    if(node1_is_referred_ca): #case 4
+                        # node_comesAfter_node1's CA = node1's CA
+                        # find node_1's ca in df"
+                        for i in range(len(self.df.index)):
+                            node_id = self.df["identifier"][i]
+                            if(node_id == node_1): #found node_1
+                                node1_ca = self.df["comesAfter"][i] # found node1's ca
+                                for j in range(len(self.df.index)): # look for the node that refers node 1
+                                    try: ca = int(self.df["comesAfter"][j])
+                                    except: ca = None
+                                    if(ca != None and ca == node_1): # found the node that comesAFter node1
+                                        # change this node's ca to node1's ca
+                                        self.df["comesAfter"][j] = node1_ca
+                                        self.df.to_csv(self.file_name, index=False)
+                                        break 
+                                break
+                    # node_comesAfter_node2's CA = node1's ID
+                    # look for the node that refers node 2
+                    for i in range(len(self.df.index)):
+                        try: ca = int(self.df["comesAfter"][i])
+                        except: ca = None
+                        if(ca != None and ca == node_2): # found the node that comesAFter node1
+                            # change this node's ca to node1's ca
+                            self.df["comesAfter"][i] = node_1
+                            self.df.to_csv(self.file_name, index=False)
+                            break             
+                else:
+                    if(node1_is_referred_ca): # case 2
+                        # find the last node in the chain starting with node_1 where node 1 does not come after anything
+                        y = datasetCreator.__find_last_node_in_chain(self, node_1) 
+                        # node_comesAfter_node2's CA = y
+                        # look for the node that refers node 2
+                        for i in range(len(self.df.index)):
+                            try: ca = int(self.df["comesAfter"][i])
+                            except: ca = None
+                            if(ca != None and ca == node_2): # found the node that comesAFter node1
+                                # change this node's ca to node1's ca
+                                self.df["comesAfter"][i] = y
+                                self.df.to_csv(self.file_name, index=False)
+                                break 
+                        pass
+                    else:
+                        # node_comesAfter_node2's CA = node1's ID
+                        # look for the node that refers node 2
+                        for i in range(len(self.df.index)):
+                            try: ca = int(self.df["comesAfter"][i])
+                            except: ca = None
+                            if(ca != None and ca == node_2): # found the node that comesAFter node1
+                                # change this node's ca to node1's ca
+                                self.df["comesAfter"][i] = node_1
+                                self.df.to_csv(self.file_name, index=False)
+                                break 
+
+                # then change node1's `comesAfter` field to node 2's id --> case 1: General case
+                # algorithm in doc: Node1's CA = Node2's id
+                #task: check if node 2 has ca == node 1 id and if yes remove it
                 for i in range(len(self.df.index)):
                     node_id= self.df["identifier"][i]
-                    if(node_id == node_1):
-                        self.df["comesAfter"][i] = node_2
-                        self.df.to_csv(self.file_name, index=False)
+                    if(node_id == node_1): #find node 1 in df
+                        self.df["comesAfter"][i] = node_2 # set node1's ca to node 2
+                        self.df.to_csv(self.file_name, index=False) # save the df
                         break
+    
+                
+                
+                
+                # # if node 1 has value in comesAFter --> it is already part of a path
+                # # so we need to allow replacing without changing the position of other nodes --> abcd -->acbd
+                # node1_has_CA = False
+                # # find the node 1's comesAfter
+                # for i in range(len(self.df.index)):
+                #     node_id= self.df["identifier"][i]
+                #     if(node_id == node_1): # find node
+                #         try: ca = int(self.df["comesAfter"][i])
+                #         except: ca = None
+                #         if(ca != None): 
+                #            node1_has_CA = True
+                #         # self.df.to_csv(self.file_name, index=False)
+                #         break
+                # print(node1_has_CA) 
+                # if(node1_has_CA):
+                #     pass
+                # else:    
+                #     # check if there are node that come after node 1 
+                #     node1_is_chain = datasetCreator.__is_node_a_chain(self, node_1)
+                #     # print(node1_is_chain)
+                #     if(node1_is_chain):
+                #         # find the id of last nodes that comes After node 1 recursively: e.g. a-->b-->c , find id of c
+                #         y = datasetCreator.__find_last_node_in_chain(self, node_1)
+                #         # from algorithm: x comes after y
+                #         for i in range(len(self.df.index)):
+                #             node_comesAfter_node2 = self.df["comesAfter"][i]
+                #             if(node_comesAfter_node2 == node_2):
+                #                 self.df["comesAfter"][i] = y
+                #                 self.df.to_csv(self.file_name, index=False)
+                #                 break
+                #         # pass
+                #     else:
+                #         # if there is no node comes After node 1 fnd the node that comes after node_2 and make it to come after node_1
+                #         # finding x comes after a
+                #         for i in range(len(self.df.index)):
+                #             node_comesAfter_node2 = self.df["comesAfter"][i]
+                #             if(node_comesAfter_node2 == node_2):
+                #                 self.df["comesAfter"][i] = node_1
+                #                 self.df.to_csv(self.file_name, index=False)
+                #                 break
+                #     # then change node1's `comesAfter` field to node 2
+                #     # algorithm a comes after b
+                #     for i in range(len(self.df.index)):
+                #         node_id= self.df["identifier"][i]
+                #         if(node_id == node_1):
+                #             self.df["comesAfter"][i] = node_2
+                #             self.df.to_csv(self.file_name, index=False)
+                #             break
+    
+    # given a node id this function returns true if there is another node with id of this node in its comesAfter field
+    def __node_is_referred_by_other_ca(self, node_1):
+        res = False
+        for i in range(len(self.df.index)):
+            try: ca = int(self.df["comesAfter"][i])
+            except: ca = None
+            if(ca == node_1): # check if there is a comesAfter fields that refer to node_1's id
+                if(ca != None): 
+                    res = True
+                    break
+        return res
+
+    # given a node id this function returns true if the node has a value in comesAFter field of the dataset
+    def __node_has_CA(self, node_1):
+        res = False
+        for i in range(len(self.df.index)):
+            node_id= self.df["identifier"][i]
+            if(node_id == node_1): # find node_1
+                try: ca = int(self.df["comesAfter"][i])
+                except: ca = None
+                if(ca != None): 
+                    res = True
+                    break
+        return res
+    #Recursive function to find the last node in a chain of nodes with comesAfter relation starting with given node
+    def __find_last_node_in_chain(self, node):
+        current_node = node
+        for i in range(len(self.df.index)):
+            node_comesAfter_current_node = self.df["comesAfter"][i]
+            node_comesAfter_current_node_id = self.df["identifier"][i]
+            if(node_comesAfter_current_node == current_node):
+                current_node = node_comesAfter_current_node_id
+                current_node = datasetCreator.__find_last_node_in_chain(self, current_node)
+                break
+        return current_node
+            
+    
+    def __is_node_a_chain(self, node):
+        res = False
+        for i in range(len(self.df.index)):
+            node_comesAfter_node1 = self.df["comesAfter"][i]
+            if(node_comesAfter_node1 == node):
+                res = True
+        return res 
     def __find_node1_for_relations(self):
         # type_col, title_col, id_col = st.columns(3)
         # # select type: there are 4 type: iER, aER, rER, atomic ER or all --> default = All
