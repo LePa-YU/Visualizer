@@ -157,6 +157,7 @@ class datasetCreator:
         # based on relation the types of nodes present change:
         if(relation == "Comes After"):
             datasetCreator.__add_relation_comesAfter(self, node_1)
+        print(relation)
             
     def __add_relation_comesAfter(self, node_1):
             type_list = []; node_2 = None
@@ -289,6 +290,16 @@ class datasetCreator:
                     if(node_id == node_1): #find node 1 in df
                         self.df["comesAfter"][i] = node_2 # set node1's ca to node 2
                         self.df.to_csv(self.file_name, index=False) # save the df
+                        # if node 2's CA == node 1 --> remove it
+                        for j in range(len(self.df.index)):
+                            node2_id= self.df["identifier"][j]
+                            if(node2_id == node_2): #find node 2
+                                try: ca = int(self.df["comesAfter"][j])
+                                except: ca = None
+                                if(ca != None and ca == node_1):
+                                    self.df["comesAfter"][j] = None
+                                    self.df.to_csv(self.file_name, index=False) # save the df
+                                    break
                         break
     
                 
