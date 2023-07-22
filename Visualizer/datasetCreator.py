@@ -124,12 +124,13 @@ class datasetCreator:
                 #   2. if node1_type is rER --> assess else is assessedBy
                 # composite-atomic relation: hasPart --> node 1 has node 2 (for now only atomic)
                 relation_list = []
-                if node1_type == "rER": 
-                    relation_list = ["Has Part", "Assesses"]
+                if node1_type == "rER": relation_list = ["Has Part", "Assesses"]
                 elif node1_type == "aER":
-                    relation_list  = ["Comes After", "Comes Before", "Has Part", "Is Assessed By"]
+                    # possiblity of adding ComesBefore
+                    relation_list  = ["Comes After", "Has Part", "Is Assessed By"]
                 else: 
-                    relation_list = ["Comes After", "Comes Before", "Has Part"]
+                    # possiblity of adding ComesBefore
+                    relation_list = ["Comes After", "Has Part"]
             else:
                 # if a node a not a composite then it is atomic ER. the only atomic-atomic relation:
                 #   1. Requires if node 1 requires node 2 --> add to node 1
