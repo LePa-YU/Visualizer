@@ -37,6 +37,7 @@ class datasetCreator:
             st.divider()
             st.text("find the node you want to edit:")
             node = datasetCreator.__find_node_list(self)
+            print(node)
             if(node != None):
                 node = np.int16(node).item()
             datasetCreator.set_selected_node(self, node)
@@ -57,20 +58,60 @@ class datasetCreator:
                     with delete_col:
                         delete_node = st.button("Delete Node", key="delete_node", disabled=disable)
                         if(delete_node):
+                            print(node)
                             index = 0
-                            deleted_row = False
+                            # find the index to be removed
                             for i in range(len(self.df.index)):
                                 n_id = self.df["identifier"][i]
                                 if(n_id == node ):
                                     index = i
                                     break
-                            self.df = self.df.drop(index)
-                            next_index = index+1
-                            for i in range(index, len(self.df.index)):
-                                self.df["identifier"][i+1] = i
+                                  # before deleting, get this node's ca, find  the node that comes after this and set it ca to this node's ca
+                            for i in range(len(self.df.index)):
+                                this_id = self.df["identifier"][i]
+                                if(this_id == node):
+                                    try: this_ca = int(self.df["comesAfter"][i])
+                                    except: this_ca =None
+                                    for j in range(len(self.df.index)):
+                                            try: ca = int(self.df["comesAfter"][j])
+                                            except: ca =None
+                                            if(ca == node and ca != None):
+                                                self.df["comesAfter"][j] = this_ca
+                                    break
+                            self.df = self.df.drop(index) # remove the node itself
                             self.df.to_csv(self.file_name, index=False)
                             self.df = pd.read_csv(self.file_name)
-                            datasetCreator.set_selected_node(self, None)
+                            datasetCreator.set_selected_node(self, None)    
+                        #     # before deleting, get this node's ca, find  the node that comes after this and set it ca to this node's ca
+                        #     for i in range(len(self.df.index)):
+                        #         this_id = self.df["identifier"][i]
+                        #         if(this_id == node):
+                        #             try: this_ca = int(self.df["comesAfter"][i])
+                        #             except: this_ca =None
+                        #             for j in range(len(self.df.index)):
+                        #                     try: ca = int(self.df["comesAfter"][j])
+                        #                     except: ca =None
+                        #                     if(ca == node and ca != None):
+                        #                         self.df["comesAfter"][j] = this_ca
+                        #             break
+                            
+                        #     self.df = self.df.drop(index) # remove the node itself
+                        #     #update identifiers
+                        #     for i in range(index, len(self.df.index)):
+                        #         self.df["identifier"][i+1] = i
+                        #         for j in range(len(self.df.index)):
+                        #             try: ca = int(self.df["comesAfter"][j])
+                        #             except: ca =None
+                        #             if (ca != None and ca ==i+1):
+                        #                 self.df["comesAfter"][j] = i
+                        #    # find nodes with largest ca and set end nodes ca to this
+                        #     copy_df = self.df.drop(len(self.df.index))
+                        #     try: maxCA_index = int(copy_df ['comesAfter'].idxmax())
+                        #     except: maxCA_index = 0
+                        #     # if(maxCA_index == None): maxCA_index = 0
+                        #     maxCA_id = copy_df["identifier"][maxCA_index]
+                        #     self.df["comesAfter"][len(self.df.index)] = maxCA_id 
+                           
                     
                      
     def add_relation(self):
@@ -509,9 +550,9 @@ class datasetCreator:
         old_title = node["title"]
         old_type = node["type"]
         old_des = node["des"]
-        if(type(old_des) != str): old_des = ""
+        if(np.isnan(np.min(old_des))): old_des = ""
         old_url = node["url"]
-        if(type(old_url) != str): old_url = ""
+        if(np.isnan(np.min(old_url))): old_url = ""
         old_dur = int(node["dur"])
 
         new_node_title = ""
@@ -606,7 +647,7 @@ class datasetCreator:
                 node["url"] = node_url; node["dur"] = node_dur
                 break; 
         return node
-        
+
     def __title_has_duplicate(title, title_list):
         count = 0
         title_has_duplicate = False
