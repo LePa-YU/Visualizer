@@ -43,17 +43,9 @@ class datasetCreator:
             disable = False
             if("delete_node" in st.session_state):
                 if(st.session_state.delete_node == True): disable = True
-                # if(st.session_state.confirm_edit):disable = False
             confirm_edit = st.checkbox("Confirm selection", key="confirm_edit")
             if(confirm_edit):
                 st.divider()
-                # node_name = ""
-                # for i in range(len(self.df.index)):
-                #     n_id = self.df["identifier"][i]
-                #     if (n_id == node): 
-                #         self.edit_node_name = self.df["title"][i]
-                #         break
-                # st.text("Edit fields for: " + self.edit_node_name)
                 edited_node = datasetCreator.__edit_option(self, node)
                 if(edited_node):
                     save_col, delete_col=st.columns([1, 3.5])
@@ -62,12 +54,6 @@ class datasetCreator:
                         if(save_node):
                             self.df.loc[node] = edited_node
                             self.df.to_csv(self.file_name, index=False)
-                            node_name = ""
-                            # for i in range(len(self.df.index)):
-                            #     n_id = self.df["identifier"][i]
-                            #     if (n_id == node): 
-                            #         self.edit_node_name = self.df["title"][i]
-                            #         break
                     with delete_col:
                         delete_node = st.button("Delete Node", key="delete_node", disabled=disable)
                         if(delete_node):
@@ -104,7 +90,7 @@ class datasetCreator:
             if(node1_id != None):
                 node1_id = np.int16(node1_id).item()
             datasetCreator.set_selected_node(self, node1_id)
-            node1_confirm = True #st.checkbox("confirm ER 1", key="confirm_ER_1")
+            node1_confirm = True 
             if(node1_confirm):
                 # datasetCreator.set_selected_node(self, None)
                 for i in range(len(self.df.index)):
@@ -143,11 +129,6 @@ class datasetCreator:
             st.text("select node 2")
             # the avaiable nodes are changed based oon in col 2
             datasetCreator.__find_node2_for_relations(self, node1_id, relation_select)
-            # print(node2_id)
-            # if(node2_id != None):
-            #     node2_id = np.int16(node2_id).item()
-            #     if(node2_id != None):
-            #         node2_confirm = st.checkbox("confirm ER 2", key="confirm_ER_2")
         
     def __find_node2_for_relations(self, node_1, relation):
         # type_col, title_col, id_col = st.columns(3)
@@ -302,58 +283,6 @@ class datasetCreator:
                                     break
                         break
     
-                
-                
-                
-                # # if node 1 has value in comesAFter --> it is already part of a path
-                # # so we need to allow replacing without changing the position of other nodes --> abcd -->acbd
-                # node1_has_CA = False
-                # # find the node 1's comesAfter
-                # for i in range(len(self.df.index)):
-                #     node_id= self.df["identifier"][i]
-                #     if(node_id == node_1): # find node
-                #         try: ca = int(self.df["comesAfter"][i])
-                #         except: ca = None
-                #         if(ca != None): 
-                #            node1_has_CA = True
-                #         # self.df.to_csv(self.file_name, index=False)
-                #         break
-                # print(node1_has_CA) 
-                # if(node1_has_CA):
-                #     pass
-                # else:    
-                #     # check if there are node that come after node 1 
-                #     node1_is_chain = datasetCreator.__is_node_a_chain(self, node_1)
-                #     # print(node1_is_chain)
-                #     if(node1_is_chain):
-                #         # find the id of last nodes that comes After node 1 recursively: e.g. a-->b-->c , find id of c
-                #         y = datasetCreator.__find_last_node_in_chain(self, node_1)
-                #         # from algorithm: x comes after y
-                #         for i in range(len(self.df.index)):
-                #             node_comesAfter_node2 = self.df["comesAfter"][i]
-                #             if(node_comesAfter_node2 == node_2):
-                #                 self.df["comesAfter"][i] = y
-                #                 self.df.to_csv(self.file_name, index=False)
-                #                 break
-                #         # pass
-                #     else:
-                #         # if there is no node comes After node 1 fnd the node that comes after node_2 and make it to come after node_1
-                #         # finding x comes after a
-                #         for i in range(len(self.df.index)):
-                #             node_comesAfter_node2 = self.df["comesAfter"][i]
-                #             if(node_comesAfter_node2 == node_2):
-                #                 self.df["comesAfter"][i] = node_1
-                #                 self.df.to_csv(self.file_name, index=False)
-                #                 break
-                #     # then change node1's `comesAfter` field to node 2
-                #     # algorithm a comes after b
-                #     for i in range(len(self.df.index)):
-                #         node_id= self.df["identifier"][i]
-                #         if(node_id == node_1):
-                #             self.df["comesAfter"][i] = node_2
-                #             self.df.to_csv(self.file_name, index=False)
-                #             break
-    
     # given a node id this function returns true if there is another node with id of this node in its comesAfter field
     def __node_is_referred_by_other_ca(self, node_1):
         res = False
@@ -389,15 +318,7 @@ class datasetCreator:
                 current_node = datasetCreator.__find_last_node_in_chain(self, current_node)
                 break
         return current_node
-            
     
-    def __is_node_a_chain(self, node):
-        res = False
-        for i in range(len(self.df.index)):
-            node_comesAfter_node1 = self.df["comesAfter"][i]
-            if(node_comesAfter_node1 == node):
-                res = True
-        return res 
     def __find_node1_for_relations(self):
         # type_col, title_col, id_col = st.columns(3)
         # # select type: there are 4 type: iER, aER, rER, atomic ER or all --> default = All
@@ -525,9 +446,6 @@ class datasetCreator:
             disable = False
             if "confirm_edit" in st.session_state:
                 disable = st.session_state.confirm_edit
-            # if("delete_node" in st.session_state):
-            #     if(st.session_state.delete_node == True): disable = False
-            #     # if(not disable): st.session_state.confirm_edit = False
             type_selector = st.selectbox("Select the ER type", ("All",'iER', 'aER', 'rER', "atomic ER"), disabled=disable)
         # after choosing type and selectbox of unique titles is created based on the type (ordered alphabetically)
         with title_col:
@@ -542,7 +460,6 @@ class datasetCreator:
                     elif(node_type =="rER"):rer_title_list.append(node_title)
                     else:atomic_title_list.append(node_title)
             title_has_duplicate = False
-                # = st.session_state.new_edit_node_title
             if(type_selector == "All"): 
                 title_selector = st.selectbox("Select ER", set(all_title_list), disabled=disable, key="find_node_title")
                 title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, all_title_list)    
@@ -586,10 +503,6 @@ class datasetCreator:
                 else:
                     if(type_selector == node_type and title_selector == node_title): return node_id
 
-    def __on_change_for_editing_node(self):
-        if "new_edit_node_title" in st.session_state:
-            st.session_state.find_node_title = st.session_state.new_edit_node_title
-
     def __edit_option(self, n_id):
         if n_id == None: return None
         node = datasetCreator.__get_node_from_id(self, n_id)
@@ -614,7 +527,6 @@ class datasetCreator:
         if("delete_node" in st.session_state):
             if(st.session_state.delete_node == True):
                 disable = True
-            # if(st.session_state.confirm_edit):disable = False
         with title_col:
             new_node_title = st.text_input("Title", value=old_title, disabled=disable, key = "new_edit_node_title")
         with ER_col:
@@ -678,7 +590,6 @@ class datasetCreator:
         if "aER" not in er: er.append("aER")
         if "rER" not in er: er.append("rER")
         if "atomic ER" not in er: er.append("atomic ER")
-        # print(er)
         return er
 
     def __get_node_from_id(self, n_id):
@@ -695,6 +606,7 @@ class datasetCreator:
                 node["url"] = node_url; node["dur"] = node_dur
                 break; 
         return node
+        
     def __title_has_duplicate(title, title_list):
         count = 0
         title_has_duplicate = False
