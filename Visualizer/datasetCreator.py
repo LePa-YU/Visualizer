@@ -66,7 +66,7 @@ class datasetCreator:
                                 if(n_id == node ):
                                     index = i
                                     break
-                                  # before deleting, get this node's ca, find  the node that comes after this and set it ca to this node's ca
+                            # before deleting, get this node's ca, find  the node that comes after this and set it ca to this node's ca
                             for i in range(len(self.df.index)):
                                 this_id = self.df["identifier"][i]
                                 if(this_id == node):
@@ -78,6 +78,7 @@ class datasetCreator:
                                             if(ca == node and ca != None):
                                                 self.df["comesAfter"][j] = this_ca
                                     break
+                            print(self.df)
                             self.df = self.df.drop(index) # remove the node itself
                             self.df.to_csv(self.file_name, index=False)
                             self.df = pd.read_csv(self.file_name)

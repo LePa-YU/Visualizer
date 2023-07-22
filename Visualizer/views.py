@@ -315,8 +315,14 @@ class Views:
                 node_being_assessed = Views.__Find_node(self,assess_id)
                 G.add_edge(node.er_id, node_being_assessed.er_id, color= self.all_colors.assess_relationship_color)
 
-    def __Find_node(self,assess_id):
-        node = self.nodeList[assess_id]
+    def __Find_node(self,n_id):
+        # node = self.nodeList[assess_id]
+        node = None
+        for n in self.nodeList:
+            if n.er_id == n_id:
+                node = n
+                break
+            # print(n.er_id)
         return node
     
     def __create_comesAfter_relationship_SA(self, G):
