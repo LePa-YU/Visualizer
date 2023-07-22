@@ -283,11 +283,11 @@ with container:
                     #Node tab
                     # with node_tab:
                     st.divider()
-                    node_option = st.radio("What do you want to do?", ("Add a new node", "Update a node", "Modify Relations"), key="node_tab")
+                    node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab")
                         # df = pd.read_csv(f_name)
-                    if(node_option == "Add a new node"):
+                    if(node_option == "Add a new ER"):
                             dataset.add_node()
-                    elif(node_option == "Update a node"):
+                    elif(node_option == "Update a ER"):
                             # dataset.set_selected_node(None)
                             dataset.edit_node()
                             # pass
