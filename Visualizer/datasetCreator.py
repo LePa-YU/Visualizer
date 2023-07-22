@@ -549,10 +549,10 @@ class datasetCreator:
         node = datasetCreator.__get_node_from_id(self, n_id)
         old_title = node["title"]
         old_type = node["type"]
-        old_des = node["des"]
-        if(np.isnan(np.min(old_des))): old_des = ""
-        old_url = node["url"]
-        if(np.isnan(np.min(old_url))): old_url = ""
+        old_des = str(node["des"])
+        if(old_des == "nan"): old_des =""
+        old_url = str(node["url"])
+        if( old_url  == "nan"):  old_url  =""
         old_dur = int(node["dur"])
 
         new_node_title = ""
