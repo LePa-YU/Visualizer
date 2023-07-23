@@ -22,9 +22,10 @@ class datasetCreator:
         node = datasetCreator.__create_node_addition_fields(self)
         if(node):
             end_node_comesAfter = self.df["comesAfter"].iloc[-1]
-            print(end_node_comesAfter)
+            # print(end_node_comesAfter)
             self.df.loc[len(self.df.index)-1] = node
-            self.df.loc[len(self.df.index)] = [len(self.df.index),'End','end','','end','','',end_node_comesAfter,'','','','','']
+            print(node[0])
+            self.df.loc[len(self.df.index)] = [node[0]+1,'End','end','','end','','',end_node_comesAfter,'','','','','']
             self.df.to_csv(self.file_name, index=False)
         
         
@@ -147,8 +148,63 @@ class datasetCreator:
         # based on relation the types of nodes present change:
         if(relation == "Comes After"):
             datasetCreator.__add_relation_comesAfter(self, node_1)
-        print(relation)
-            
+        if(relation == "Has Part"):
+            datasetCreator.__add_relation_HasPart(self, node_1)
+        # print(relation)
+    def __add_relation_HasPart(self, node_1):
+        # Has Part is only possible if node 1 is composite and node 2 is atomic
+        # so the only possible options for node 2 are atomics ER
+        atomic_title_list = []; node_2 = None
+        for i in range(len(self.df.index)):
+            node_title = self.df["title"][i]
+            node_type = self.df["type"][i]
+            if(node_type != "start" and node_type != "end" and node_type != "iER" and node_type != "rER" and node_type != "aER"):
+                atomic_title_list.append(node_title)
+        title_selector = st.selectbox("Select atomic ER", set(atomic_title_list), key="find_node2_ha_relation", disabled= False)
+        # find type or types based on title
+        type_list = []
+        for i in range(len(self.df.index)):
+            node_title = self.df["title"][i]
+            node_type = self.df["type"][i]
+            if (node_title == title_selector):
+                if(node_type != "start" and node_type != "end" and node_type != "iER" and node_type != "rER" and node_type != "aER"):
+                    type_list.append(node_type)
+        type_selector = st.selectbox("Select ER type", set(type_list))
+        node_has_duplicate = datasetCreator.__title_has_duplicate(type_selector, type_list)    
+        # if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find 
+        # the correct node
+        id_selector = ""
+        if( node_has_duplicate):
+            id_list = []
+            for i in range(len(self.df.index)):
+                node_id = self.df["identifier"][i]
+                node_title = self.df["title"][i]
+                node_type = self.df["type"][i]
+                if(node_type == type_selector):
+                     if(title_selector == node_title): id_list.append(node_id)
+            id_selector = st.selectbox("Select ID: ", id_list, key="find_node2_id_relation", disabled= False)    
+        if(id_selector): node_2 = int(id_selector)
+        else:
+            #if node is unique --> no id selector --> find id
+            for i in range(len(self.df.index)):
+                node_id = self.df["identifier"][i]
+                node_title = self.df["title"][i]
+                node_type = self.df["type"][i]
+                if(node_type == type_selector and title_selector == node_title): node_2 = node_id
+        if(node_2!= None):
+            node_2 = np.int16(node_2).item()
+        datasetCreator.set_selected_node2(self, node_2)  
+        ## the relation itself: 
+        ## node 1 id is added to is part of field of node 2
+        add_relation = st.button("Add Relation", key="add_relation_ha")
+        if(add_relation):
+            for i in range(len(self.df.index)):
+                n_id = self.df["identifier"][i]
+                if(n_id == node_2): # find node 2
+                    self.df["isPartOf"][i] = node_1
+                    break
+        self.df.to_csv(self.file_name, index=False)
+        
     def __add_relation_comesAfter(self, node_1):
             type_list = []; node_2 = None
             type_list = ["All",'start','iER', 'aER']
@@ -210,6 +266,7 @@ class datasetCreator:
             if(node_2!= None):
                 node_2 = np.int16(node_2).item()
             datasetCreator.set_selected_node2(self, node_2)
+
             # find the node with `comesAfter` == node2 --> change this field to node1
             add_relation = st.button("Add Relation", key="add_relation")
             if(add_relation):
@@ -439,8 +496,11 @@ class datasetCreator:
                 with col1:
                     add_node = st.button("Save", key="Save_node", disabled=disable)
                 if(add_node):
-                    node = [len(self.df.index)-1,node_title,node_des,node_url,node_type,'','','','','','','',node_dur]
-                    datasetCreator.set_selected_node(self, len(self.df.index)-1)
+                    new_id = self.df["identifier"][len(self.df.index)-1]
+                    if(new_id != None):
+                        new_id = np.int16(new_id).item()
+                    node = [new_id,node_title,node_des,node_url,node_type,'','','','','','','',node_dur]
+                    datasetCreator.set_selected_node(self, new_id)
                 with col2:
                     if(disable):
                         add_new_node = st.button("Add another node", key="add_next")
