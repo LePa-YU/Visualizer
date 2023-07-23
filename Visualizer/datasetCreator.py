@@ -58,7 +58,6 @@ class datasetCreator:
                                 n_id = self.df["identifier"][i]
                                 if n_id == node:
                                     self.df.loc[i] = edited_node
-                            # self.df.loc[node] = edited_node
                                     self.df.to_csv(self.file_name, index=False)
                                     break
                     with delete_col:
@@ -646,7 +645,16 @@ class datasetCreator:
                 with dur_col:
                     new_node_dur = st.number_input('Duration', value =old_dur, disabled=disable)
         if(new_node_des!="" or new_node_url!=""):
-            node = [n_id ,new_node_title, new_node_des,new_node_url,new_node_type,'','','','','','','',new_node_dur]
+            #isPartOf,assesses,comesAfter,requires,alternativeContent,references,isFormatOf,duration
+            is_part_of = ""; assesses = ""; ca = ""; req=""; ac = ""; ref = ""; is_format_of = ""
+            for i in range(len(self.df.index)):
+                n = self.df["identifier"][i]
+                if n == n_id:
+                    is_part_of = self.df["isPartOf"][i]; assesses = self.df["assesses"][i]; ca = self.df["comesAfter"][i]
+                    req = self.df["requires"][i]; ac= self.df["alternativeContent"][i]
+                    ref= self.df["references"][i]; is_format_of= self.df["isFormatOf"][i]
+                    break
+            node = [n_id ,new_node_title, new_node_des,new_node_url,new_node_type,is_part_of,assesses,ca,req,ac,ref,is_format_of,new_node_dur]
             
         return node
 
