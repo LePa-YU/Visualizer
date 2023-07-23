@@ -123,7 +123,7 @@ def __create_html_pages(label, view, bg, font_color, view1, physics, d_btn):
     view.Course_Overview( bg, font_color, label, view2, physics, d_btn)
     view.All_ERs( bg, font_color, label, view3, physics, d_btn)
     view.Requirements(bg, font_color, label, view4, physics, d_btn)
-    view.vertical_Requirements(bg, font_color, label, view4, physics, d_btn)
+    view.vertical_Requirements(bg, font_color, label, view5, physics, d_btn)
 def __disable_add_node_button():
     if st.session_state.add_node_button:
         st.session_state.add_node_button = False
