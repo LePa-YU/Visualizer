@@ -200,7 +200,10 @@ class datasetCreator:
                 node_id = self.df["identifier"][i]
                 node_title = self.df["title"][i]
                 node_type = self.df["type"][i]
-                if(node_type == type_selector and title_selector == node_title): node_2 = node_id
+                if type_selector == "":
+                    if title_selector == node_title: node_2 = node_id
+                else:
+                    if(node_type == type_selector and title_selector == node_title): node_2 = node_id
         if(node_2!= None):
             node_2 = np.int16(node_2).item()
         datasetCreator.set_selected_node2(self, node_2)  
