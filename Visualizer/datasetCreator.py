@@ -89,14 +89,7 @@ class datasetCreator:
                                 except: ipo = None
                                 if(ipo == node and ipo != None):
                                     self.df["isPartOf"][j] = ""
-                                    # try: this_ca = int(self.df["comesAfter"][i])
-                                    # except: this_ca =None
-                                    # for j in range(len(self.df.index)):
-                                    #         try: ca = int(self.df["comesAfter"][j])
-                                    #         except: ca =None
-                                    #         if(ca == node and ca != None):
-                                    #             self.df["comesAfter"][j] = this_ca
-                                    # break
+                           
                             self.df = self.df.drop(index) # remove the node itself
                             self.df.to_csv(self.file_name, index=False)
                             self.df = pd.read_csv(self.file_name)
@@ -168,7 +161,57 @@ class datasetCreator:
             datasetCreator.__add_relation_comesAfter(self, node_1)
         if(relation == "Has Part"):
             datasetCreator.__add_relation_HasPart(self, node_1)
+        if(relation == "Is Assessed By"):
+            datasetCreator.__add_relation_isAssessedBy(self, node_1)
         # print(relation)
+    def __add_relation_isAssessedBy(self, node_1):
+        rER_list = []; node_2 = None
+        for i in range(len(self.df.index)):
+            node_title = self.df["title"][i]
+            node_type = self.df["type"][i]
+            if(node_type == "rER"):
+                rER_list.append(node_title)
+        title_selector = st.selectbox("Select rER", set(rER_list), key="find_node2_isb_relation", disabled= False)
+        title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, rER_list)
+        id_selector = ""
+        if title_has_duplicate:
+            id_list = []
+            for i in range(len(self.df.index)):
+                node_id = self.df["identifier"][i]
+                node_title = self.df["title"][i]
+                node_type = self.df["type"][i]
+                if node_type == "rER":
+                     if(title_selector == node_title): id_list.append(node_id)
+            id_selector = st.selectbox("Select ID: ", id_list, key="find_node2_id_relation", disabled= False)    
+        if(id_selector): node_2 = int(id_selector)
+        else:
+            #if node is unique --> no id selector --> find id
+            for i in range(len(self.df.index)):
+                node_id = self.df["identifier"][i]
+                node_title = self.df["title"][i]
+                node_type = self.df["type"][i]
+                if node_type == "rER":
+                    if(title_selector == node_title): node_2 = node_id
+        if(node_2!= None):
+            node_2 = np.int16(node_2).item()
+        datasetCreator.set_selected_node2(self, node_2) 
+         ## the relation itself: 
+        ## the node_1 is added to “assesses” field of node with id  node_2.
+        add_relation = st.button("Add Relation", key="add_relation_ha")
+        if(add_relation):
+             ## is Assessed by is one to one --> check if any other node refers to node_1 in assesses
+                ## and if it does then set this field to empty
+            for j in range(len(self.df.index)):
+                try: assess = int(self.df["assesses"][j] )
+                except: assess = None
+                if(assess != None and assess == node_1): 
+                    self.df["assesses"][j] = ""
+            for i in range(len(self.df.index)):
+                n_id = self.df["identifier"][i]
+                if(n_id == node_2): # find node 2
+                    self.df["assesses"][i] = node_1
+                    break
+            self.df.to_csv(self.file_name, index=False)
 
     def __add_relation_HasPart(self, node_1):
         # Has Part is only possible if node 1 is composite and node 2 is atomic
@@ -214,7 +257,9 @@ class datasetCreator:
                 node_title = self.df["title"][i]
                 node_type = self.df["type"][i]
                 if type_selector == "":
-                    if title_selector == node_title: node_2 = node_id
+                    if title_selector == node_title: 
+                        if(node_type != "start" and node_type != "end" and node_type != "iER" and node_type != "rER" and node_type != "aER"):    
+                            node_2 = node_id
                 else:
                     if(node_type == type_selector and title_selector == node_title): node_2 = node_id
         if(node_2!= None):
