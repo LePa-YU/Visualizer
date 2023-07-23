@@ -84,6 +84,19 @@ class datasetCreator:
                                                 self.df["comesAfter"][j] = this_ca
                                     break
                             # if a node is refered in isPartOf anonther node, clear the 2nd ndoe's isPart of or add this node's isPartof
+                            for j in range(len(self.df.index)):
+                                try: ipo = int(self.df["isPartOf"][j])
+                                except: ipo = None
+                                if(ipo == node and ipo != None):
+                                    self.df["isPartOf"][j] = ""
+                                    # try: this_ca = int(self.df["comesAfter"][i])
+                                    # except: this_ca =None
+                                    # for j in range(len(self.df.index)):
+                                    #         try: ca = int(self.df["comesAfter"][j])
+                                    #         except: ca =None
+                                    #         if(ca == node and ca != None):
+                                    #             self.df["comesAfter"][j] = this_ca
+                                    # break
                             self.df = self.df.drop(index) # remove the node itself
                             self.df.to_csv(self.file_name, index=False)
                             self.df = pd.read_csv(self.file_name)
