@@ -361,17 +361,39 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
       }
       // select given nodes for creating dataset
     if (fileLabel == 'temp.csv'){
-      
       nodeList.forEach(function(item) 
       {
-        if(select_edit_node_id == item.id)
-        {
-          nodeList.update([{id: select_edit_node_id, color: {background: '#F0F8FF'}}]);
+        if(view == "View 4: Requirements" || view == "View 5: Requirements - Vertical"){
+            if(select_edit_node_id == item.id)
+            {
+              if (item.title == "iER" ||item.title == "aER" || item.title == "rER" || item.title == "start"|| item.title == "end"){
+                nodeList.update([{id: select_edit_node_id, color: {background: '#cde4f7'}}]);
+              }
+              else{
+                nodeList.update([{id: select_edit_node_id, color: {"border": "black", background: '#cde4f7'}}]);
+              }
+            }
+            if(select_edit_node2_id == item.id)
+            {
+              if (item.title == "iER" ||item.title == "aER" || item.title == "rER" || item.title == "start"|| item.title == "end"){
+                nodeList.update([{id: select_edit_node_id, color: {background: '#cde4f7'}}]);
+              }
+              else{
+                nodeList.update([{id: select_edit_node2_id, color: {"border": "black", background: '#cde4f7'}}]);
+              }
+            }
         }
-        if(select_edit_node2_id == item.id)
-        {
-          nodeList.update([{id: select_edit_node2_id, color: {background: '#F0F8FF'}}]);
+        else{
+            if(select_edit_node_id == item.id)
+            {
+              nodeList.update([{id: select_edit_node_id, color: {background: '#cde4f7'}}]);
+            }
+            if(select_edit_node2_id == item.id)
+            {
+              nodeList.update([{id: select_edit_node2_id, color: {background: '#cde4f7'}}]);
+            }
         }
+        
       }); 
     }
     });  
