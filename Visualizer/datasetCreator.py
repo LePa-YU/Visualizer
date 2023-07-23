@@ -54,12 +54,17 @@ class datasetCreator:
                     with save_col:
                         save_node = st.button("Save Changes", key="save_change_btn", disabled=disable)
                         if(save_node):
-                            self.df.loc[node] = edited_node
-                            self.df.to_csv(self.file_name, index=False)
+                            for i in range(len(self.df.index)):
+                                n_id = self.df["identifier"][i]
+                                if n_id == node:
+                                    self.df.loc[i] = edited_node
+                            # self.df.loc[node] = edited_node
+                                    self.df.to_csv(self.file_name, index=False)
+                                    break
                     with delete_col:
                         delete_node = st.button("Delete Node", key="delete_node", disabled=disable)
                         if(delete_node):
-                            print(node)
+                            # print(node)
                             index = 0
                             # find the index to be removed
                             for i in range(len(self.df.index)):
@@ -79,6 +84,7 @@ class datasetCreator:
                                             if(ca == node and ca != None):
                                                 self.df["comesAfter"][j] = this_ca
                                     break
+                            # if a node is refered in isPartOf anonther node, clear the 2nd ndoe's isPart of or add this node's isPartof
                             self.df = self.df.drop(index) # remove the node itself
                             self.df.to_csv(self.file_name, index=False)
                             self.df = pd.read_csv(self.file_name)
@@ -151,6 +157,7 @@ class datasetCreator:
         if(relation == "Has Part"):
             datasetCreator.__add_relation_HasPart(self, node_1)
         # print(relation)
+
     def __add_relation_HasPart(self, node_1):
         # Has Part is only possible if node 1 is composite and node 2 is atomic
         # so the only possible options for node 2 are atomics ER
@@ -162,15 +169,19 @@ class datasetCreator:
                 atomic_title_list.append(node_title)
         title_selector = st.selectbox("Select atomic ER", set(atomic_title_list), key="find_node2_ha_relation", disabled= False)
         # find type or types based on title
-        type_list = []
-        for i in range(len(self.df.index)):
-            node_title = self.df["title"][i]
-            node_type = self.df["type"][i]
-            if (node_title == title_selector):
-                if(node_type != "start" and node_type != "end" and node_type != "iER" and node_type != "rER" and node_type != "aER"):
-                    type_list.append(node_type)
-        type_selector = st.selectbox("Select ER type", set(type_list))
-        node_has_duplicate = datasetCreator.__title_has_duplicate(type_selector, type_list)    
+        title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, atomic_title_list)
+        node_has_duplicate = False
+        type_selector  = ""
+        if title_has_duplicate: 
+            type_list = []
+            for i in range(len(self.df.index)):
+                node_title = self.df["title"][i]
+                node_type = self.df["type"][i]
+                if (node_title == title_selector):
+                    if(node_type != "start" and node_type != "end" and node_type != "iER" and node_type != "rER" and node_type != "aER"):
+                        type_list.append(node_type)
+            type_selector = st.selectbox("Select ER type", set(type_list))
+            node_has_duplicate = datasetCreator.__title_has_duplicate(type_selector, type_list)    
         # if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find 
         # the correct node
         id_selector = ""
@@ -204,7 +215,7 @@ class datasetCreator:
                     self.df["isPartOf"][i] = node_1
                     break
         self.df.to_csv(self.file_name, index=False)
-        
+
     def __add_relation_comesAfter(self, node_1):
             type_list = []; node_2 = None
             type_list = ["All",'start','iER', 'aER']
