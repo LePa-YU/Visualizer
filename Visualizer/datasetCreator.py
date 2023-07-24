@@ -169,7 +169,52 @@ class datasetCreator:
             datasetCreator.__add_relation_HasPart(self, node_1)
         if(relation == "Is Assessed By"):
             datasetCreator.__add_relation_isAssessedBy(self, node_1)
+        if( relation == "Assesses"):
+            datasetCreator.__add_relation_assesses(self, node_1)
         # print(relation)
+    
+    def __add_relation_assesses(self, node_1):
+        ## node 1 is rER and 2 nodes must be aER
+        aER_list = []; node_2 = None
+        for i in range(len(self.df.index)):
+            node_title = self.df["title"][i]
+            node_type = self.df["type"][i]
+            if(node_type == "aER"):
+                aER_list.append(node_title)
+        title_selector = st.selectbox("Select aER you want to assess", set(aER_list), key="find_node2_assess_relation")
+        title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, aER_list)
+        id_selector = ""
+        if title_has_duplicate:
+            id_list = []
+            for i in range(len(self.df.index)):
+                node_id = self.df["identifier"][i]
+                node_title = self.df["title"][i]
+                node_type = self.df["type"][i]
+                if node_type == "aER":
+                     if(title_selector == node_title): id_list.append(node_id)
+            id_selector = st.selectbox("Select ID: ", id_list, key="find_node2_id_relation", disabled= False)    
+        if(id_selector): node_2 = int(id_selector)
+        else:
+            #if node is unique --> no id selector --> find id
+            for i in range(len(self.df.index)):
+                node_id = self.df["identifier"][i]
+                node_title = self.df["title"][i]
+                node_type = self.df["type"][i]
+                if node_type == "aER":
+                    if(title_selector == node_title): node_2 = node_id
+        if(node_2!= None):
+            node_2 = np.int16(node_2).item()
+        datasetCreator.set_selected_node2(self, node_2) 
+        ## the relation itself: 
+        ## the node_1 is added to “assesses” field of node with id  node_2.
+        add_relation = st.button("Add Relation", key="add_relation_ha")
+        if(add_relation):
+            for i in range(len(self.df.index)):
+                n_id = self.df["identifier"][i]
+                if(n_id == node_1): # find node 1
+                    self.df["assesses"][i] = node_2
+                    break
+            self.df.to_csv(self.file_name, index=False)
     def __add_relation_isAssessedBy(self, node_1):
         rER_list = []; node_2 = None
         for i in range(len(self.df.index)):
