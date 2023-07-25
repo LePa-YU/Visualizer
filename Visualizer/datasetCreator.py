@@ -822,7 +822,12 @@ class datasetCreator:
                                     try: a = int(self.df["isPartOf"][j])
                                     except: a =None
                                     if a != None and a == n_id: self.df["isPartOf"][j] = ""
-                      
+                    old_is_atomic = old_type != "iER" and old_type != "aER" and old_type != "rER"
+                    new_is_atomic = new_node_type != "iER" and new_node_type != "aER" and new_node_type != "rER"
+                    if old_is_atomic and not new_is_atomic:
+                        #if new type is not atomic --> remove ispartof this node
+                        is_part_of = ""
+                        pass
                     break
             node = [n_id ,new_node_title, new_node_des,new_node_url,new_node_type,is_part_of,assesses,ca,req,ac,ref,is_format_of,new_node_dur]
             
