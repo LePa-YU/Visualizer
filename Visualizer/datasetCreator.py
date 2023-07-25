@@ -137,13 +137,13 @@ class datasetCreator:
                 #   2. if node1_type is rER --> assess else is assessedBy
                 # composite-atomic relation: hasPart --> node 1 has node 2 (for now only atomic)
                 relation_list = []
-                if node1_type == "rER": relation_list = ["Has Part", "Assesses"]
+                if node1_type == "rER": relation_list = ["Has Part", "Assesses"] #done
                 elif node1_type == "aER":
                     # possiblity of adding ComesBefore
-                    relation_list  = ["Comes After", "Has Part", "Is Assessed By"]
+                    relation_list  = ["Comes After", "Has Part", "Is Assessed By"] #done
                 else: 
                     # possiblity of adding ComesBefore
-                    relation_list = ["Comes After", "Has Part"]
+                    relation_list = ["Comes After", "Has Part"] #done
             else:
                 # if a node a not a composite then it is atomic ER. the only atomic-atomic relation:
                 #   1. Requires if node 1 requires node 2 --> add to node 1
@@ -171,8 +171,78 @@ class datasetCreator:
             datasetCreator.__add_relation_isAssessedBy(self, node_1)
         if( relation == "Assesses"):
             datasetCreator.__add_relation_assesses(self, node_1)
+        if( relation == "Is Part Of"):
+            datasetCreator.__add_relation_Is_Part_Of(self, node_1)
         # print(relation)
-    
+     
+    def __add_relation_Is_Part_Of(self, node_1):
+        # Is part of is only possible if node 1 is atomic and node 2 is composite
+        # so the option for node are all composite --> choose type, choose title, choose ID
+        type_selector = st.selectbox("Select Type:", ("All", "aER", "rER", "iER"))
+        aer_list = []; ier_list = []; rer_list = []; all_list = []; node_2 = None
+        for i in range(len(self.df.index)):
+            node_title = self.df["title"][i]
+            node_type = self.df["type"][i]
+            if(node_type != "start" and node_type != "end"):
+                if node_type == "aER": 
+                    aer_list.append(node_title); all_list.append(node_title)
+                if node_type == "iER": 
+                    ier_list.append(node_title); all_list.append(node_title)
+                if node_type == "rER": 
+                    rer_list.append(node_title); all_list.append(node_title)
+        if type_selector == "All": 
+            title_selector = st.selectbox("Select ER", set(all_list))
+            title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, all_list)
+        elif type_selector == "aER": 
+            title_selector = st.selectbox("Select ER", set(aer_list))
+            title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, aer_list)
+        elif type_selector == "rER": 
+            title_selector = st.selectbox("Select ER", set(rer_list))
+            title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, rer_list)
+        elif type_selector == "iER": 
+            title_selector = st.selectbox("Select ER", set(ier_list))  
+            title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, ier_list)
+        
+        id_selector = ""
+        if(title_has_duplicate):
+            id_list = []
+            for i in range(len(self.df.index)):
+                node_id = self.df["identifier"][i]
+                node_title = self.df["title"][i]
+                node_type = self.df["type"][i]
+                if(type_selector == "All"):
+                    if (node_type == "aER" or node_type == "iER" or node_type == "rER"):
+                        if(title_selector == node_title): id_list.append(node_id)
+                else:
+                    if(type_selector == node_type and title_selector == node_title): id_list.append(node_id)
+            id_selector = st.selectbox("Select ID: ", id_list)    
+        if(id_selector):
+           node_2 =  int(id_selector)
+        else:
+            #if node is unique --> no id selector --> find id
+            for i in range(len(self.df.index)):
+                node_id = self.df["identifier"][i]
+                node_title = self.df["title"][i]
+                node_type = self.df["type"][i]
+                if(type_selector == "All"):
+                    if(title_selector == node_title): node_2 = node_id
+                else:
+                    if(type_selector == node_type and title_selector == node_title): node_2 = node_id
+       
+        if(node_2!= None):
+            node_2 = np.int16(node_2).item()
+        datasetCreator.set_selected_node2(self, node_2)  
+        ## the relation itself: 
+        ## node 2 id is added to is part of field of node 1
+        add_relation = st.button("Add Relation", key="add_relation_ha")
+        if(add_relation):
+            for i in range(len(self.df.index)):
+                n_id = self.df["identifier"][i]
+                if(n_id == node_1): # find node 1
+                    self.df["isPartOf"][i] = node_2
+                    break
+        self.df.to_csv(self.file_name, index=False)
+
     def __add_relation_assesses(self, node_1):
         ## node 1 is rER and 2 nodes must be aER
         aER_list = []; node_2 = None
@@ -827,6 +897,7 @@ class datasetCreator:
                     if old_is_atomic and not new_is_atomic:
                         #if new type is not atomic --> remove ispartof this node
                         is_part_of = ""
+                        ## update requirement
                         pass
                     break
             node = [n_id ,new_node_title, new_node_des,new_node_url,new_node_type,is_part_of,assesses,ca,req,ac,ref,is_format_of,new_node_dur]
