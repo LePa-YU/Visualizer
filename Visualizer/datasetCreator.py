@@ -814,8 +814,15 @@ class datasetCreator:
                                     try: a = int(self.df["isPartOf"][j])
                                     except: a =None
                                     if a != None and a == n_id: self.df["isPartOf"][j] = ""
-                        # pass
-                        
+                    if old_type == "rER" and new_node_type != "rER":
+                        # if node type is changed from rER to something that is not rER --> remove assesses field from this node
+                        assesses = ""
+                        if new_node_type != "iER" and new_node_type !="aER": # new type is atomic --> remove isPArtOf references
+                            for j in range(len(self.df.index)):
+                                    try: a = int(self.df["isPartOf"][j])
+                                    except: a =None
+                                    if a != None and a == n_id: self.df["isPartOf"][j] = ""
+                      
                     break
             node = [n_id ,new_node_title, new_node_des,new_node_url,new_node_type,is_part_of,assesses,ca,req,ac,ref,is_format_of,new_node_dur]
             
