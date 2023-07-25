@@ -795,7 +795,26 @@ class datasetCreator:
                                     except: a =None
                                     if a != None and a == n_id: self.df["isPartOf"][j] = ""
                     if old_type == "iER" and new_node_type != "iER":
-                        pass
+                        # two relations: comesAfter, isPartof
+                        # if new node is aER nothing is affected
+                        # if new node is atomic or rER then we need to update comesAfter
+                        if new_node_type != "aER":
+                            try: c = int(self.df["comesAfter"][i])
+                            except: c = None
+                            if c != None: # technically this value should not be none
+                                for j in range(len(self.df.index)):
+                                    try: next_ca = int(self.df["comesAfter"][j])
+                                    except: next_ca = None
+                                    if next_ca == n_id:
+                                        # print(next_ca)
+                                        self.df["comesAfter"][j] = c
+                                        ca = ""
+                            if new_node_type != "rER": ## new node is atomic then remove any reference in ispart of other ndoes
+                                for j in range(len(self.df.index)):
+                                    try: a = int(self.df["isPartOf"][j])
+                                    except: a =None
+                                    if a != None and a == n_id: self.df["isPartOf"][j] = ""
+                        # pass
                         
                     break
             node = [n_id ,new_node_title, new_node_des,new_node_url,new_node_type,is_part_of,assesses,ca,req,ac,ref,is_format_of,new_node_dur]
