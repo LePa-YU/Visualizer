@@ -209,6 +209,12 @@ class datasetCreator:
         ## the node_1 is added to “assesses” field of node with id  node_2.
         add_relation = st.button("Add Relation", key="add_relation_ha")
         if(add_relation):
+            #one to one --> check if any other node refers to node_2 in assesses
+            for j in range(len(self.df.index)):
+                try: assess = int(self.df["assesses"][j] )
+                except: assess = None
+                if(assess != None and assess == node_2): 
+                    self.df["assesses"][j] = ""
             for i in range(len(self.df.index)):
                 n_id = self.df["identifier"][i]
                 if(n_id == node_1): # find node 1
