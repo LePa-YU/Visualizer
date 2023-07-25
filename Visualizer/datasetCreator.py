@@ -24,7 +24,7 @@ class datasetCreator:
             end_node_comesAfter = self.df["comesAfter"].iloc[-1]
             # print(end_node_comesAfter)
             self.df.loc[len(self.df.index)-1] = node
-            print(node[0])
+            # print(node[0])
             self.df.loc[len(self.df.index)] = [node[0]+1,'End','end','','end','','',end_node_comesAfter,'','','','','']
             self.df.to_csv(self.file_name, index=False)
         
@@ -38,7 +38,7 @@ class datasetCreator:
             st.divider()
             st.text("find the node you want to edit:")
             node = datasetCreator.__find_node_list(self)
-            print(node)
+            # print(node)
             if(node != None):
                 node = np.int16(node).item()
             datasetCreator.set_selected_node(self, node)
@@ -765,6 +765,26 @@ class datasetCreator:
                     is_part_of = self.df["isPartOf"][i]; assesses = self.df["assesses"][i]; ca = self.df["comesAfter"][i]
                     req = self.df["requires"][i]; ac= self.df["alternativeContent"][i]
                     ref= self.df["references"][i]; is_format_of= self.df["isFormatOf"][i]
+
+                    if old_type == "aER" and new_node_type != "aER":
+                        # the node is not aER anymore --> remove all references to this node in assess field
+                        for j in range(len(self.df.index)):
+                            try: a = int(self.df["assesses"][j])
+                            except: a =None
+                            if a != None and a == n_id: self.df["assesses"][j] = ""
+                        if new_node_type != "iER": # update comesAFter if new node is not ier ir aers
+                            try: c = int(self.df["comesAfter"][i])
+                            except: c = None
+                            if c != None: # technically this value should not be none
+                                for j in range(len(self.df.index)):
+                                    try: next_ca = int(self.df["comesAfter"][j])
+                                    except: next_ca = None
+                                    if next_ca == n_id:
+                                        # print(next_ca)
+                                        self.df["comesAfter"][j] = c
+                                        ca = ""
+                    
+                        
                     break
             node = [n_id ,new_node_title, new_node_des,new_node_url,new_node_type,is_part_of,assesses,ca,req,ac,ref,is_format_of,new_node_dur]
             
