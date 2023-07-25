@@ -783,7 +783,13 @@ class datasetCreator:
                                         # print(next_ca)
                                         self.df["comesAfter"][j] = c
                                         ca = ""
-                    
+                            if new_node_type != "rER": ## new node is atomic then remove any reference in ispart of other ndoes
+                                for j in range(len(self.df.index)):
+                                    try: a = int(self.df["isPartOf"][j])
+                                    except: a =None
+                                    if a != None and a == n_id: self.df["isPartOf"][j] = ""
+                    if old_type == "iER" and new_node_type != "iER":
+                        pass
                         
                     break
             node = [n_id ,new_node_title, new_node_des,new_node_url,new_node_type,is_part_of,assesses,ca,req,ac,ref,is_format_of,new_node_dur]
