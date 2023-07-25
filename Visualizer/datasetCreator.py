@@ -173,8 +173,68 @@ class datasetCreator:
             datasetCreator.__add_relation_assesses(self, node_1)
         if( relation == "Is Part Of"):
             datasetCreator.__add_relation_Is_Part_Of(self, node_1)
-        # print(relation)
-     
+        if( relation == "Requires"):
+            datasetCreator.__add_relation_requires(self, node_1)
+        print(relation)
+    
+    def __add_relation_requires(self, node_1):
+        ## Both node_1 and node_2 need to be atomic
+        atomic_title_list = []; node_2 = None
+        for i in range(len(self.df.index)):
+            node_title = self.df["title"][i]
+            node_type = self.df["type"][i]
+            node_id = self.df["identifier"][i]
+            if(node_id != node_1):
+                if(node_type != "start" and node_type != "end" and node_type != "iER" and node_type != "rER" and node_type != "aER"):
+                    atomic_title_list.append(node_title)
+        title_selector = st.selectbox("Select atomic ER", set(atomic_title_list), key="find_node2_ha_relation", disabled= False)
+        # find type or types based on title
+        title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, atomic_title_list)
+        node_has_duplicate = False
+        type_selector  = ""
+        if title_has_duplicate: 
+            type_list = []
+            for i in range(len(self.df.index)):
+                node_title = self.df["title"][i]
+                node_type = self.df["type"][i]
+                node_id = self.df["identifier"][i]
+                if(node_id != node_1):  
+                    if (node_title == title_selector):
+                        if(node_type != "start" and node_type != "end" and node_type != "iER" and node_type != "rER" and node_type != "aER"):
+                            type_list.append(node_type)
+            type_selector = st.selectbox("Select ER type", set(type_list), key = "find_node2_req_type")
+            node_has_duplicate = datasetCreator.__title_has_duplicate(type_selector, type_list)    
+        # if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find 
+        # the correct node
+        id_selector = ""
+        if( node_has_duplicate):
+            id_list = []
+            for i in range(len(self.df.index)):
+                node_id = self.df["identifier"][i]
+                node_title = self.df["title"][i]
+                node_type = self.df["type"][i]
+                if(node_id != node_1):  
+                    if(node_type == type_selector):
+                        if(title_selector == node_title): id_list.append(node_id)
+            id_selector = st.selectbox("Select ID: ", id_list, key="find_node2_id_relation", disabled= False)    
+        if(id_selector): node_2 = int(id_selector)
+        else:
+            #if node is unique --> no id selector --> find id
+            for i in range(len(self.df.index)):
+                node_id = self.df["identifier"][i]
+                node_title = self.df["title"][i]
+                node_type = self.df["type"][i]
+                if node_id != node_1:
+                    if type_selector == "":
+                        if title_selector == node_title: 
+                            if(node_type != "start" and node_type != "end" and node_type != "iER" and node_type != "rER" and node_type != "aER"):    
+                                node_2 = node_id
+                    else:
+                        if(node_type == type_selector and title_selector == node_title): node_2 = node_id
+        if(node_2!= None):
+            node_2 = np.int16(node_2).item()
+        datasetCreator.set_selected_node2(self, node_2)  
+        # pass 
     def __add_relation_Is_Part_Of(self, node_1):
         # Is part of is only possible if node 1 is atomic and node 2 is composite
         # so the option for node are all composite --> choose type, choose title, choose ID
@@ -618,18 +678,44 @@ class datasetCreator:
             title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, atomic_title_list)
         #if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find 
         # the corret node
-        id_selector = ""
-        if(title_has_duplicate):
-            id_list = []
-            for i in range(len(self.df.index)):
-                node_id = self.df["identifier"][i]
-                node_title = self.df["title"][i]
-                node_type = self.df["type"][i]
-                if(type_selector == "All" or type_selector == "atomic ER"):
-                    if(title_selector == node_title): id_list.append(node_id)
-                else:
-                    if(type_selector == node_type and title_selector == node_title): id_list.append(node_id)
-            id_selector = st.selectbox("Select ID: ", id_list, key="find_node1_id_relation", disabled= st.session_state.confirm_ER_1)    
+        id_selector = ""; atomic_type_selector  = ""
+        if(type_selector != "atomic ER"):
+            if(title_has_duplicate):
+                id_list = []
+                for i in range(len(self.df.index)):
+                    node_id = self.df["identifier"][i]
+                    node_title = self.df["title"][i]
+                    node_type = self.df["type"][i]
+                    if(type_selector == "All" or type_selector == "atomic ER"):
+                        if(title_selector == node_title): id_list.append(node_id)
+                    else:
+                        if(type_selector == node_type and title_selector == node_title): id_list.append(node_id)
+                id_selector = st.selectbox("Select ID: ", id_list, key="find_node1_id_relation", disabled= st.session_state.confirm_ER_1)    
+        else:
+            node_has_duplicate = False
+            if title_has_duplicate: 
+                type_list = []
+                for i in range(len(self.df.index)):
+                    node_title = self.df["title"][i]
+                    node_type = self.df["type"][i]
+                    node_id = self.df["identifier"][i]
+                    # if(node_id != node_1):  
+                    if (node_title == title_selector):
+                        if(node_type != "start" and node_type != "end" and node_type != "iER" and node_type != "rER" and node_type != "aER"):
+                            type_list.append(node_type)
+                atomic_type_selector = st.selectbox("Select ER type", set(type_list))
+                node_has_duplicate = datasetCreator.__title_has_duplicate(atomic_type_selector, type_list) 
+            if( node_has_duplicate):
+                id_list = []
+                for i in range(len(self.df.index)):
+                    node_id = self.df["identifier"][i]
+                    node_title = self.df["title"][i]
+                    node_type = self.df["type"][i]
+                    # if(node_id != node_1):  
+                    if(node_type == atomic_type_selector):
+                            if(title_selector == node_title): id_list.append(node_id)
+                id_selector = st.selectbox("Select ID: ", id_list, key="find_node2_id_relation", disabled= False) 
+        
         if(id_selector): return int(id_selector)
         else:
             #if node is unique --> no id selector --> find id
@@ -637,11 +723,18 @@ class datasetCreator:
                 node_id = self.df["identifier"][i]
                 node_title = self.df["title"][i]
                 node_type = self.df["type"][i]
-                if(type_selector == "All" or type_selector == "atomic ER"):
+                if(type_selector == "All"):
                     if(title_selector == node_title): return node_id
+                elif type_selector == "atomic ER":
+                    if atomic_type_selector == "":
+                        if title_selector == node_title: 
+                            if(node_type != "start" and node_type != "end" and node_type != "iER" and node_type != "rER" and node_type != "aER"):    
+                                return node_id
+                    else:
+                            if(node_type == atomic_type_selector and title_selector == node_title): return node_id
                 else:
                     if(type_selector == node_type and title_selector == node_title): return node_id
-
+                # print(type_selector)
     def __create_node_addition_fields(self):
         adder = st.container()
         node_title = ""
