@@ -373,8 +373,10 @@ class Views:
             for i in range(len(require_id_list)):
                 r = Views.__get_node_int_id(require_id_list[i])
                 required_node =  Views.__Find_node(self,r)
-                required_node_id = required_node.er_id
-                required_node_type = required_node.er_type
+                required_node_id = None; required_node_type = None
+                if required_node != None:
+                    required_node_id = required_node.er_id
+                    required_node_type = required_node.er_type
                 required_is_Atomic = Views.__isAtomic(required_node_type)
                     # G.add_edge(required_node_id, current_node_id , weight = 5, color= self.all_colors.requires_node_color)
                 if(required_node_id == comesAfter_id): # if the there is both comesAfter and requires between two nodes
@@ -384,12 +386,17 @@ class Views:
                     current_container = Views.__get_container_Node(self, node)
                     current_container_id = current_container.er_id
                     current_container_comesAfter = current_container.er_comesAfter
-                    required_container = Views.__get_container_Node(self, required_node)
-                    required_container_id = required_container.er_id
+                    required_container = None
+                    if required_node != None:
+                        required_container = Views.__get_container_Node(self, required_node)
+                    required_container_id = None
+                    if required_container != None:
+                        required_container_id = required_container.er_id
                     # print(current_container_type + " " +required_container_type)
                     if(current_container_id != required_container_id and required_container_id != current_container_comesAfter):
                         num_nodes_in_between = Views.__get_num_of_Node_in_between(self, current_container, required_container)
-                        G.add_edge(required_container_id, current_container_id, weight = 5, color= self.all_colors.requires_node_color, length=self.spacing*num_nodes_in_between*2)
+                        if required_container_id != None and current_container_id != None:
+                            G.add_edge(required_container_id, current_container_id, weight = 5, color= self.all_colors.requires_node_color, length=self.spacing*num_nodes_in_between*2)
 
     def __create_isPartOf_relationship(self, G):
         for node in self.nodeList: 
@@ -402,7 +409,7 @@ class Views:
         res = -1
         current_node = nodeA
         final_node= nodeB
-        while((current_node!= None)and(current_node.er_id != final_node.er_id)):
+        while((current_node!= None and final_node!= None)and(current_node.er_id != final_node.er_id)):
             res = res + 1
             current_node_comesAfter = Views.__get_node_int_id( current_node.er_comesAfter)
             current_node = Views.__Find_node(self, current_node_comesAfter)
