@@ -384,8 +384,10 @@ class Views:
                     G.add_edge(required_node_id, current_node_id, weight = 5, color= self.all_colors.requires_node_color)
                 elif(required_is_Atomic and current_is_Atomic):
                     current_container = Views.__get_container_Node(self, node)
-                    current_container_id = current_container.er_id
-                    current_container_comesAfter = current_container.er_comesAfter
+                    current_container_id = None; current_container_comesAfter = None
+                    if current_container != None:
+                        current_container_id = current_container.er_id
+                        current_container_comesAfter = current_container.er_comesAfter
                     required_container = None
                     if required_node != None:
                         required_container = Views.__get_container_Node(self, required_node)
