@@ -402,7 +402,7 @@ class Views:
         res = -1
         current_node = nodeA
         final_node= nodeB
-        while(current_node.er_id != final_node.er_id):
+        while((current_node!= None)and(current_node.er_id != final_node.er_id)):
             res = res + 1
             current_node_comesAfter = Views.__get_node_int_id( current_node.er_comesAfter)
             current_node = Views.__Find_node(self, current_node_comesAfter)
@@ -413,8 +413,12 @@ class Views:
 
     def __get_container_Node(self, node):
         current_isPartOf = Views.__get_node_int_id(node.er_isPartOf)
-        container_node = self.nodeList[current_isPartOf]
-        return container_node
+        container = None
+        for i in range(len(self.nodeList)):
+            n_id = self.nodeList[i].er_id
+            if n_id == current_isPartOf: 
+                container = self.nodeList[i]
+        return container
     def __isAtomic(node_type):
         return node_type!="aER" and node_type!="iER" and node_type!="rER" and node_type!="start" and node_type!="end"
 
