@@ -97,30 +97,24 @@ class datasetCreator:
                                 if(isb == node and isb != None):
                                     self.df["assesses"][j] = ""
                             
-                            # if a node is referred in requires of another node, clear the 2nd node's requires
-                            # for i in range(len(self.df.index)):
-                            #     try: r = int(self.df["requires"][i])
-                            #     except: r = None
-                            #     if(r == node and r != None):
-                            #         self.df["requires"][i] = ""
-                            # if node 1 has requires already, allow deleting the relation from node 1's requires field if node 2 is part of it
+                            # if node has requires already, allow deleting the relation from node 1's requires field if node 2 is part of it
                             for i in range(len(self.df.index)):
-                                # n_id = self.df["identifier"][i]
-                                # if(n_id == node_1): # find node 1
-                                    require_ids = self.df["requires"][i] # get requires of each node
-                                    require_id_list = []
-                                    if type(require_ids) == str and require_ids!="": 
-                                        require_id_list = require_ids.split(",") # convert requires field into list
-                                        for n in require_id_list: # loop through list to find node
-                                            n= int(n)
-                                            if n == node :  # node is referred here 
-                                                require_id_list.remove(str(n))
-                                                delimiter = ', '
-                                                res = delimiter.join(require_id_list)
-                                                self.df["requires"][i] = res
-                                                break
-                                    break
-
+                                require_ids = self.df["requires"][i]
+                                require_id_list = []
+                                if type(require_ids) != str: require_ids = str(require_ids)
+                                if type(require_ids) == str and require_ids!="":
+                                    require_id_list = require_ids.split(",") # convert node's requires to list
+                                    for n in require_id_list: 
+                                        try: n_int = int(n)
+                                        except: 
+                                            try: n_int = int(float(n))
+                                            except: n_int = None
+                                        if n_int == node :  # node exist in required field of this node 
+                                            require_id_list.remove(str(n))
+                                            delimiter = ','
+                                            res = delimiter.join(require_id_list)
+                                            self.df["requires"][i] = res
+                                            
                             self.df = self.df.drop(index) # remove the node itself
                             self.df.to_csv(self.file_name, index=False)
                             self.df = pd.read_csv(self.file_name)
@@ -358,7 +352,8 @@ class datasetCreator:
                 node_title = self.df["title"][i]
                 node_type = self.df["type"][i]
                 if(type_selector == "All"):
-                    if(title_selector == node_title): node_2 = node_id
+                    if(node_type == "aER" or node_type =="iER" or node_type =="rER"):
+                        if(title_selector == node_title): node_2 = node_id
                 else:
                     if(type_selector == node_type and title_selector == node_title): node_2 = node_id
        
@@ -424,6 +419,7 @@ class datasetCreator:
                     self.df["assesses"][i] = node_2
                     break
             self.df.to_csv(self.file_name, index=False)
+    
     def __add_relation_isAssessedBy(self, node_1):
         rER_list = []; node_2 = None
         for i in range(len(self.df.index)):
@@ -590,8 +586,9 @@ class datasetCreator:
                         node_id = self.df["identifier"][i]
                         node_title = self.df["title"][i]
                         node_type = self.df["type"][i]
-                        if(type_select == "All" or type_select == "atomic ER"):
-                            if(title_selector == node_title): node_2 = node_id
+                        if(type_select == "All"):
+                            if node_type == "aER" or node_type=="iER" or node_type =="start":
+                                if(title_selector == node_title): node_2 = node_id
                         else:
                             if(type_select == node_type and title_selector == node_title): node_2= node_id
             if(node_2!= None):

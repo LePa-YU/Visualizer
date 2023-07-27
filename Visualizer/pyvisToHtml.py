@@ -376,7 +376,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
             if(select_edit_node2_id == item.id)
             {
               if (item.title == "iER" ||item.title == "aER" || item.title == "rER" || item.title == "start"|| item.title == "end"){
-                nodeList.update([{id: select_edit_node2_id , color: {background: '#cde4f7'}}]);
+                nodeList.update([{id: select_edit_node2_id, color: {background: '#cde4f7'}}]);
               }
               else{
                 nodeList.update([{id: select_edit_node2_id, color: {"border": "black", background: '#cde4f7'}}]);
