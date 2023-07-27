@@ -96,6 +96,14 @@ class datasetCreator:
                                 except: isb = None
                                 if(isb == node and isb != None):
                                     self.df["assesses"][j] = ""
+                            
+                            # if a node is referred in requires of another node, clear the 2nd node's requires
+                            for i in range(len(self.df.index)):
+                                try: r = int(self.df["requires"][i])
+                                except: r = None
+                                if(r == node and r != None):
+                                    self.df["requires"][i] = ""
+
                             self.df = self.df.drop(index) # remove the node itself
                             self.df.to_csv(self.file_name, index=False)
                             self.df = pd.read_csv(self.file_name)
@@ -175,7 +183,7 @@ class datasetCreator:
             datasetCreator.__add_relation_Is_Part_Of(self, node_1)
         if( relation == "Requires"):
             datasetCreator.__add_relation_requires(self, node_1)
-        print(relation)
+        # print(relation)
     
     def __add_relation_requires(self, node_1):
         ## Both node_1 and node_2 need to be atomic
@@ -234,7 +242,31 @@ class datasetCreator:
         if(node_2!= None):
             node_2 = np.int16(node_2).item()
         datasetCreator.set_selected_node2(self, node_2)  
-        # pass 
+        
+        #Relation itself:
+        # node 1 requires node 2 --> node 2 id added to node 1's requires field
+        # requires field is a list so it must retrieve and add to the list
+        add_relation = st.button("Add Relation", key="add_relation_ha")
+        if(add_relation):
+            for i in range(len(self.df.index)):
+                n_id = self.df["identifier"][i]
+                if(n_id == node_1): # find node 1
+                    if(pd.isna(self.df["requires"][i])): # requires field is empty
+                        self.df["requires"][i] =  str(int(node_2))
+                    else:
+                        self.df["requires"][i] = str(self.df["requires"][i]) +", " + str(int(node_2))
+                    # self.df["requires"][i] =  node_2
+                    break
+        # if node 1 has requires already, allow deleting the relation from node 1's requires field
+        # for i in range(len(self.df.index)):
+        #     n_id = self.df["identifier"][i]
+        #     if(n_id == node_1): # find node 1
+        #         try: r = self.df["requires"][i]
+        #         except: r = None
+
+        #         break
+        self.df.to_csv(self.file_name, index=False)
+
     def __add_relation_Is_Part_Of(self, node_1):
         # Is part of is only possible if node 1 is atomic and node 2 is composite
         # so the option for node are all composite --> choose type, choose title, choose ID
@@ -991,6 +1023,7 @@ class datasetCreator:
                         #if new type is not atomic --> remove ispartof this node
                         is_part_of = ""
                         ## update requirement
+
                         pass
                     break
             node = [n_id ,new_node_title, new_node_des,new_node_url,new_node_type,is_part_of,assesses,ca,req,ac,ref,is_format_of,new_node_dur]
