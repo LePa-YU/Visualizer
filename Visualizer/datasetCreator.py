@@ -275,29 +275,33 @@ class datasetCreator:
                     # self.df["requires"][i] =  node_2
                     break
         # if node 1 has requires already, allow deleting the relation from node 1's requires field if node 2 is part of it
-        flag = False; node_1_requires = []; index = None
+        flag = False; node_1_requires = []; index = None; n2 = None
         for i in range(len(self.df.index)):
             n_id = self.df["identifier"][i]
             if(n_id == node_1): # find node 1
                 require_ids = self.df["requires"][i]
                 require_id_list = []
+                if type(require_ids) != str: require_ids = str(require_ids)
                 if type(require_ids) == str and require_ids!="":
                     require_id_list = require_ids.split(",")
                         # find node 2:
                     for n in require_id_list:
-                        # print(type(n))
-                        try: n= int(n)
-                        except: n = int(float(n))
-                        if n == node_2 :  # node exist in required field of node 1 
+                        # print(node_2)
+                        try: n_int = int(n)
+                        except: 
+                            try: n_int = int(float(n))
+                            except: n_int = None
+                        if n_int == node_2 :  # node exist in required field of node 1 
                             flag = True; node_1_requires = require_id_list.copy()
-                            index = i
+                            index = i; n2 = n
                             break
-        # print(node_1_requires)
+        # print(node_1_requires); print(n2)
         if flag:
             del_relation = st.button("Delete Relation", key="del_relation_r")
             if del_relation:
-                print(node_1_requires)
-                node_1_requires.remove(str(node_2))
+                # print(node_1_requires)
+                # print(str(node_2))
+                node_1_requires.remove(str(n2))
                 delimiter = ','
                 res = delimiter.join(node_1_requires)
                 if index != None: self.df["requires"][index] = res
