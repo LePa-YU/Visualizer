@@ -368,10 +368,11 @@ class Views:
                 
                 if(type(require_ids)==int):
                     require_id_list.append(require_ids)
-            
+            # print(require_id_list)
             # if(len(require_id_list) != 0 ):
             for i in range(len(require_id_list)):
                 r = Views.__get_node_int_id(require_id_list[i])
+                # print(r)
                 required_node =  Views.__Find_node(self,r)
                 required_node_id = None; required_node_type = None
                 if required_node != None:
@@ -379,7 +380,7 @@ class Views:
                     required_node_type = required_node.er_type
                 required_is_Atomic = Views.__isAtomic(required_node_type)
                     # G.add_edge(required_node_id, current_node_id , weight = 5, color= self.all_colors.requires_node_color)
-                if(required_node_id == comesAfter_id): # if the there is both comesAfter and requires between two nodes
+                if((required_node_id!=None and current_node_id!=None)and (required_node_id == comesAfter_id)): # if the there is both comesAfter and requires between two nodes
                         # G.remove_edge(comesAfter_id, node.er_id )
                     G.add_edge(required_node_id, current_node_id, weight = 5, color= self.all_colors.requires_node_color)
                 elif(required_is_Atomic and current_is_Atomic):
@@ -432,11 +433,12 @@ class Views:
         return node_type!="aER" and node_type!="iER" and node_type!="rER" and node_type!="start" and node_type!="end"
 
     def __get_node_int_id(node):
-        try: 
-            node_id_int = int(node)
+        try: node_id_int = int(node)
         except:
-             node_id_int = ""
+             try: node_id_int = int(float(node))
+             except: node_id_int  = None
         return  node_id_int
+
         
     def __get_tool_tip(self, node):
         text = ""
