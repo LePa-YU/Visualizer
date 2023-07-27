@@ -257,14 +257,26 @@ class datasetCreator:
                         self.df["requires"][i] = str(self.df["requires"][i]) +", " + str(int(node_2))
                     # self.df["requires"][i] =  node_2
                     break
-        # if node 1 has requires already, allow deleting the relation from node 1's requires field
-        # for i in range(len(self.df.index)):
-        #     n_id = self.df["identifier"][i]
-        #     if(n_id == node_1): # find node 1
-        #         try: r = self.df["requires"][i]
-        #         except: r = None
-
-        #         break
+        # if node 1 has requires already, allow deleting the relation from node 1's requires field if node 2 is part of it
+        for i in range(len(self.df.index)):
+            n_id = self.df["identifier"][i]
+            if(n_id == node_1): # find node 1
+                require_ids = self.df["requires"][i]
+                require_id_list = []
+                if type(require_ids) == str and require_ids!="":
+                    require_id_list = require_ids.split(",")
+                        # find node 2:
+                    for n in require_id_list:
+                        n= int(n)
+                        if n == node_2 :  # node exist in required field of node 1 
+                            del_relation = st.button("Delete Relation", key="del_relation_r")
+                            if del_relation: 
+                                require_id_list.remove(str(n))
+                                delimiter = ', '
+                                res = delimiter.join(require_id_list)
+                                self.df["requires"][i] = res
+                                break
+                break
         self.df.to_csv(self.file_name, index=False)
 
     def __add_relation_Is_Part_Of(self, node_1):
