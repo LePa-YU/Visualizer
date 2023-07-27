@@ -1063,9 +1063,26 @@ class datasetCreator:
                     if old_is_atomic and not new_is_atomic:
                         #if new type is not atomic --> remove ispartof this node
                         is_part_of = ""
-                        ## update requirement
-
-                        pass
+                        ## update requires
+                        # set req of node itself to empty
+                        req = ""
+                        # remove requires of any node that refers to this node in their req
+                        for i in range(len(self.df.index)):
+                            require_ids = self.df["requires"][i]
+                            require_id_list = []
+                            if type(require_ids) != str: require_ids = str(require_ids)
+                            if type(require_ids) == str and require_ids!="":
+                                require_id_list = require_ids.split(",") # convert node's requires to list
+                                for n in require_id_list: 
+                                    try: n_int = int(n)
+                                    except: 
+                                        try: n_int = int(float(n))
+                                        except: n_int = None
+                                    if n_int == n_id :  # node exist in required field of this node 
+                                        require_id_list.remove(str(n))
+                                        delimiter = ','
+                                        res = delimiter.join(require_id_list)
+                                        self.df["requires"][i] = res
                     break
             node = [n_id ,new_node_title, new_node_des,new_node_url,new_node_type,is_part_of,assesses,ca,req,ac,ref,is_format_of,new_node_dur]
             
