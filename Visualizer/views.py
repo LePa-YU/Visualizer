@@ -333,13 +333,14 @@ class Views:
                 current_type = node.er_type
                 if( current_type=="aER" or current_type=="end"):
                     limit = len(self.nodeList)
-                    while(last_node.er_type == "iER"):
-                        last_node_comesAfter = Views.__get_node_int_id(last_node.er_comesAfter)
-                        if(type(last_node_comesAfter)==int):
-                            last_node = Views.__Find_node(self,last_node_comesAfter)
-                        else:
-                            break  
-                    G.add_edge(last_node.er_id,node.er_id, weight = 5, color= self.all_colors.comesAfter_relationship_color)
+                    if last_node!=None:
+                        while(last_node.er_type == "iER"):
+                            last_node_comesAfter = Views.__get_node_int_id(last_node.er_comesAfter)
+                            if(type(last_node_comesAfter)==int):
+                                last_node = Views.__Find_node(self,last_node_comesAfter)
+                            else:
+                                break  
+                        G.add_edge(last_node.er_id,node.er_id, weight = 5, color= self.all_colors.comesAfter_relationship_color)
 
 
     def __create_comesAfter_relationship(self, G):
@@ -347,7 +348,8 @@ class Views:
             comesAfter_id = Views.__get_node_int_id(node.er_comesAfter)
             if(type(comesAfter_id) == int):
                 last_node = Views.__Find_node(self,comesAfter_id)
-                G.add_edge(last_node.er_id, node.er_id, weight = 5, color= self.all_colors.comesAfter_relationship_color)
+                if last_node != None:
+                    G.add_edge(last_node.er_id, node.er_id, weight = 5, color= self.all_colors.comesAfter_relationship_color)
     
     def __create_requires_relationshipAll(self, G):
         for node in self.nodeList:
