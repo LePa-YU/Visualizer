@@ -85,9 +85,8 @@ class datasetCreator:
             if(confirm_edit):
                 st.divider()
                 edited_node, edited_node_dict = datasetCreator.__edit_option(self, node)
-                # print(edited_node_dict)
                 if(edited_node):
-                    save_col, delete_col=st.columns([1, 3.5])
+                    save_col, delete_col =st.columns([1, 3.5])
                     with save_col:
                         save_node = st.button("Save Changes", key="save_change_btn", disabled=disable)
                         if(save_node):
@@ -99,8 +98,12 @@ class datasetCreator:
                                     self.df.to_csv(self.file_name, index=False)
                                     break
                     with delete_col:
-                        delete_node = st.button("Delete Node", key="delete_node", disabled=disable)
-                        if(delete_node):
+                        datasetCreator.__delete_node(self, node, disable)
+                else:
+                    datasetCreator.__delete_node(self, node, disable)
+    def __delete_node(self, node, disable):
+        delete_node = st.button("Delete Node", key="delete_node", disabled=disable)
+        if(delete_node):
                             # print(node)
                             index = 0
                             # find the index to be removed
@@ -155,8 +158,7 @@ class datasetCreator:
                                             
                             self.df = self.df.drop(index) # remove the node itself
                             self.df.to_csv(self.file_name, index=False)
-                            self.df = pd.read_csv(self.file_name)
-                     
+                            self.df = pd.read_csv(self.file_name)               
     def add_relation(self):
         # datasetCreator.set_selected_node(self, None)
         node_with_relation = datasetCreator.__add_relation_fields(self)
