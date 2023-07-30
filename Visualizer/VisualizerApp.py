@@ -12,6 +12,7 @@ import atexit
 import csv
 import os
 import datasetCreator
+import validity_checker
 
 #### this file contains code for streamlit deployment
 class _Customization_menu:
@@ -124,49 +125,38 @@ def __create_html_pages(label, view, bg, font_color, view1, physics, d_btn):
     view.All_ERs( bg, font_color, label, view3, physics, d_btn)
     view.Requirements(bg, font_color, label, view4, physics, d_btn)
     view.vertical_Requirements(bg, font_color, label, view5, physics, d_btn)
-def __disable_add_node_button():
-    if st.session_state.add_node_button:
-        st.session_state.add_node_button = False
 
-def  __find_node():
-    
-    type_col, title_col = st.columns(2)
-    # select type:
-    with type_col:
-        type_selector = st.selectbox("Select the ER type", ("All",'iER', 'aER', 'rER', "atomic ER"))
-    
-    #search by title
-    #get iER titles
-    with title_col:
-        ier_title_list = []; aer_title_list = []; rer_title_list = []; atomic_title_list = []; all_title_list = []
-        for i in range(len(df.index)):
-            node_title = df["title"][i]
-            node_type = df["type"][i]
-            if(node_type != "start" and node_type != "end"):
-                all_title_list.append(node_title)
-                if(node_type == "iER"): ier_title_list.append(node_title) 
-                elif(node_type == "aER"):aer_title_list.append(node_title)
-                elif(node_type =="rER"):rer_title_list.append(node_title)
-                else:atomic_title_list.append(node_title)
-        title_selector = ""
-        if(type_selector == "All"): title_selector = st.selectbox("Select ER", all_title_list)    
-        elif(type_selector == "iER"): title_selector = st.selectbox("Select ER", ier_title_list)
-        elif(type_selector == "aER"): title_selector = st.selectbox("Select ER", aer_title_list) 
-        elif(type_selector == "rER"): title_selector = st.selectbox("Select ER", rer_title_list)
-        elif(type_selector == "atomic ER"): title_selector = st.selectbox("Select ER", atomic_title_list)
-    for i in range(len(df.index)):
-        # this is not going to work --> the title and type are not unique and user cannot see the ids ( the only unique)
-        # needs somes sort of visual to ensure the correct node is being edited
-                node_id = df["identifier"][i]
-                node_title = df["title"][i]
-                node_type = df["type"][i]
-                if((node_type == type_selector or type_selector == "atomic ER")and node_title == title_selector):
-                    return node_id                     
 
-# def disable_file_name():
-#     st.session_state["disabled"] = True
-# def enable_file_name():
-#     st.session_state["disabled"] = False     
+def download_dataset(uploaded_file):
+    dow_container = st.container(); report  = ""
+    with dow_container:
+        validity_file_name = uploaded_file.replace(".csv", "_validity_report.txt")
+        validity = validity_checker.validity_checker(uploaded_file)
+        validity.check_validity() 
+        report_file = open(validity_file_name, "r")
+        report = report_file.read()
+        report_file.close()
+        validity_report = st.expander("Please fix the following issues:") 
+        with validity_report:
+            st.write(report)
+            if report == "": st.write("All issues are solved") 
+        if os.path.getsize(validity_file_name) == 0 and report == "":
+            save_file = st.checkbox("Download CSV File")
+            if(save_file):
+                f_name_col, down_btn_col = st.columns([2.5, 1])
+                with f_name_col:
+                    file_name= st.text_input("", value = uploaded_file , placeholder="What do you want to call this dataset?", label_visibility="collapsed")
+                    if(file_name !=""):
+                        with down_btn_col:
+                            if not file_name.endswith(".csv"):
+                                if "." in file_name:
+                                    st.text("please remove .")
+                                else:
+                                    file_name = file_name + ".csv"
+                            df_copy = pd.read_csv(file_name)
+                            csv_file = df_copy.to_csv(index=False).encode('utf-8')
+                            download_btn = st.download_button(label="Download", data=csv_file, file_name=file_name, mime='text/csv')
+        
     
 #global variables:
 uploaded_file = None
@@ -300,31 +290,16 @@ with container:
                     node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab")
                     if(node_option == "Add a new ER"):
                             dataset.add_node()
+                            download_dataset(uploaded_file)
                     elif(node_option == "Update a ER"):
                             dataset.edit_node()
+                            download_dataset(uploaded_file)
                     # df = pd.read_csv(f_name)
                     if(node_option == "Modify Relations"):
                             dataset.add_relation()
-                dow_container = st.container()
-                with dow_container:
-                    save_file = st.checkbox("Download CSV File")
-                    if(save_file):
-                        f_name_col, down_btn_col = st.columns([2.5, 1])
-                        with f_name_col:
-                            file_name= st.text_input("", value = uploaded_file , placeholder="What do you want to call this dataset?", label_visibility="collapsed")
-                            if(file_name !=""):
-                                with down_btn_col:
-                                    if not file_name.endswith(".csv"):
-                                        if "." in file_name:
-                                            st.text("please remove .")
-                                        else:
-                                            file_name = file_name + ".csv"
-                                    df_copy = pd.read_csv(file_name)
-                                    csv_file = df_copy.to_csv(index=False).encode('utf-8')
-                                    download_btn = st.download_button(label="Download", data=csv_file, file_name=file_name, mime='text/csv')
-        #new df_container
-            # file name
+                            download_dataset(uploaded_file)
                 
+                    
                 # if "disabled" not in st.session_state:
                 #     st.session_state["disabled"] = False
                 # f_name = ""

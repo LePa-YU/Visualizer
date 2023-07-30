@@ -4,10 +4,12 @@ import pandas as pd
 import numpy as np
 import time
 
+
 class datasetCreator:
     def __init__(self, file_name):
         self.file_name = file_name
         col_list = ['identifier','title','description','url','type','isPartOf','assesses','comesAfter','requires','alternativeContent','references','isFormatOf','duration', "x values", "y values"]
+        
         if(not os.path.isfile(file_name)): 
             self.df = pd.DataFrame(columns=col_list)
             # add start and end node
@@ -40,6 +42,7 @@ class datasetCreator:
             self.df.to_csv(self.file_name, index=False)
             self.df = pd.read_csv(self.file_name)
         # print(self.df)
+        # self.validity.check_validity()
         
     def __add_node_from_dict(self, node_dict, index):
         try: n_id = int(node_dict["identifier"])
