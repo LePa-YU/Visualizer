@@ -257,15 +257,15 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
     //Focus 
     network.once("beforeDrawing", function () {
       
-      if (fileLabel == 'temp.csv'){
-        if (select_edit_node2_id == null){
+      //if (fileLabel == 'temp.csv'){
+      if (select_edit_node2_id == null){
             network.focus(select_edit_node_id , {
             scale: 0.5,
             offset: {x:0, y:-300}
           });
         }
-      }
-      else{
+      //}
+     /* else{
         if(isHorizontal){
         network.focus(0, {
           scale: 0.5,
@@ -277,8 +277,8 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
           scale: 0.5,
           offset: {x:0, y:-300}
         });
-      }
-      }
+      }*/
+      //}
     }); 
     // node collapse. if only one node is selected if the node is clustred (collapsed) then the cluster is open
     // else the node is collapsed if if they have the isPartOf relation corresponding to this node's id (var v)
@@ -360,7 +360,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
         flag = true; 
       }
       // select given nodes for creating dataset
-    if (fileLabel == 'temp.csv'){
+   // if (fileLabel == 'temp.csv'){
       nodeList.forEach(function(item) 
       {
         if(view == "View 4: Requirements" || view == "View 5: Requirements - Vertical"){
@@ -395,7 +395,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
         }
         
       }); 
-    }
+    //}
     });  
 
     function exportToCsv(filename, rows) {
