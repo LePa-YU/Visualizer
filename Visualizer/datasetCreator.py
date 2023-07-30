@@ -7,30 +7,63 @@ import time
 class datasetCreator:
     def __init__(self, file_name):
         self.file_name = file_name
+        col_list = ['identifier','title','description','url','type','isPartOf','assesses','comesAfter','requires','alternativeContent','references','isFormatOf','duration', "x values", "y values"]
         if(not os.path.isfile(file_name)): 
-            self.df = pd.DataFrame(columns=['identifier','title','description','url','type','isPartOf','assesses','comesAfter','requires','alternativeContent','references','isFormatOf','duration'])
+            self.df = pd.DataFrame(columns=col_list)
             # add start and end node
             if(len(self.df.index)==0):
-                self.df.loc[len(self.df.index)] = [0,'Start','start','','start','','','','','','','','']
-                self.df.loc[len(self.df.index)] = [len(self.df.index),'End','end','','end','','',len(self.df.index)-1,'','','','','']
+                self.df.loc[len(self.df.index)] = [0,'Start','start','','start','','','','','','','','','','']
+                self.df.loc[len(self.df.index)] = [len(self.df.index),'End','end','','end','','',len(self.df.index)-1,'','','','','','','']
                 self.df.to_csv(file_name, index=False)
         else:
             self.df = pd.read_csv(file_name)
-   
+            for col in col_list:
+                if not col in self.df.columns:
+                    self.df[col] = ""
+            self.df.to_csv(file_name, index=False)
+
     def add_node(self):
         datasetCreator.set_selected_node(self, None)
-        node = datasetCreator.__create_node_addition_fields(self)
-        if(node):
-            end_node_comesAfter = self.df["comesAfter"].iloc[-1]
-            # print(end_node_comesAfter)
-            self.df.loc[len(self.df.index)-1] = node
-            # print(node[0])
-            self.df.loc[len(self.df.index)] = [node[0]+1,'End','end','','end','','',end_node_comesAfter,'','','','','']
+        node_dict = datasetCreator.__create_node_addition_fields(self)
+        # print(node_dict)
+        if(node_dict):
+            # print(len(self.df.index))
+            end_node_comesAfter = self.df["comesAfter"].iloc[-1] # keep end node connected to its comesAfter
+            datasetCreator.__add_node_from_dict(self, node_dict, len(self.df.index)-1)
+            # self.df.loc[len(self.df.index)-1] = node
+            # end node dict:
+            end_dict = {"identifier": node_dict["identifier"]+1, "title": "End", "description": "end", "url":"", "type":"end"
+                    ,"isPartOf": '', "assesses":'','comesAfter':end_node_comesAfter,"requires":'', "alternativeContent":'', "references":'',
+                    "isFormatOf": "", "duration": "", "x values":'', "y values":""}
+            datasetCreator.__add_node_from_dict(self, end_dict, len(self.df.index))
+            # self.df.loc[len(self.df.index)] = [node_dict["identifier"]+1,'End','end','','end','','',end_node_comesAfter,'','','','','','','']
             self.df.to_csv(self.file_name, index=False)
+            self.df = pd.read_csv(self.file_name)
+        # print(self.df)
         
+    def __add_node_from_dict(self, node_dict, index):
+        try: n_id = int(node_dict["identifier"])
+        except: n_id = int(float(node_dict["identifier"]))
+        # print(type(n_id))
+        self.df.loc[index, "identifier"] = str(n_id)
+        self.df.loc[index, "title"] = node_dict["title"]
+        self.df.loc[index, "description"] = node_dict["description"]
+        self.df.loc[index, "url"] = node_dict["url"]
+        self.df.loc[index, "type"] = node_dict["type"]
+        self.df.loc[index, "isPartOf"] = node_dict["isPartOf"]
+        self.df.loc[index, "assesses"] = node_dict["assesses"]
+        self.df.loc[index, "comesAfter"] = node_dict["comesAfter"]
+        self.df.loc[index, "requires"] = node_dict["requires"]
+        self.df.loc[index, "alternativeContent"] = node_dict["alternativeContent"]
+        self.df.loc[index, "references"] = node_dict["references"]
+        self.df.loc[index, "isFormatOf"] = node_dict["isFormatOf"]
+        self.df.loc[index, "duration"] = node_dict["duration"]
+        self.df.loc[index, "x values"] = node_dict["x values"]
+        self.df.loc[index, "y values"] = node_dict["y values"]
+        # self.df.to_csv(self.file_name, index=False)
         
-    
     def edit_node(self):
+        self.df = pd.read_csv(self.file_name)
         datasetCreator.set_selected_node(self, None)
         if(len(self.df.index) <= 2):
             st.text("Dataset is empty please add a node")
@@ -48,7 +81,8 @@ class datasetCreator:
             confirm_edit = st.checkbox("Confirm selection", key="confirm_edit")
             if(confirm_edit):
                 st.divider()
-                edited_node = datasetCreator.__edit_option(self, node)
+                edited_node, edited_node_dict = datasetCreator.__edit_option(self, node)
+                # print(edited_node_dict)
                 if(edited_node):
                     save_col, delete_col=st.columns([1, 3.5])
                     with save_col:
@@ -57,7 +91,8 @@ class datasetCreator:
                             for i in range(len(self.df.index)):
                                 n_id = self.df["identifier"][i]
                                 if n_id == node:
-                                    self.df.loc[i] = edited_node
+                                    # self.df.loc[i] = edited_node # add edited node
+                                    datasetCreator.__add_node_from_dict(self, edited_node_dict, i)
                                     self.df.to_csv(self.file_name, index=False)
                                     break
                     with delete_col:
@@ -193,10 +228,12 @@ class datasetCreator:
         if( relation == "Is Part Of"):
             datasetCreator.__add_relation_Is_Part_Of(self, node_1)
         if( relation == "Requires"):
-            datasetCreator.__add_relation_requires(self, node_1)
-        # print(relation)
+            datasetCreator.__add_relation_requires(self, node_1, True)
+        if( relation == "Is Required By"):
+            datasetCreator.__add_relation_requires(self, node_1, False)
+        print(relation)
     
-    def __add_relation_requires(self, node_1):
+    def __add_relation_requires(self, node_1, is_requires):
         ## Both node_1 and node_2 need to be atomic
         atomic_title_list = []; node_2 = None
         for i in range(len(self.df.index)):
@@ -235,7 +272,7 @@ class datasetCreator:
                 if(node_id != node_1):  
                     if(node_type == type_selector):
                         if(title_selector == node_title): id_list.append(node_id)
-            id_selector = st.selectbox("Select ID: ", id_list, key="find_node2_id_relation", disabled= False)    
+            id_selector = st.selectbox("Select ID: ", id_list, key="find_node2_id_relation_req", disabled= False)    
         if(id_selector): node_2 = int(id_selector)
         else:
             #if node is unique --> no id selector --> find id
@@ -261,13 +298,22 @@ class datasetCreator:
         if(add_relation):
             for i in range(len(self.df.index)):
                 n_id = self.df["identifier"][i]
-                if(n_id == node_1): # find node 1
-                    if(pd.isna(self.df["requires"][i])): # requires field is empty
-                        self.df["requires"][i] =  str(int(node_2))
-                    else:
-                        self.df["requires"][i] = str(self.df["requires"][i]) +"," + str(int(node_2))
-                    # self.df["requires"][i] =  node_2
-                    break
+                if(is_requires):
+                    if(n_id == node_1): # find node 1
+                        if(pd.isna(self.df["requires"][i])): # requires field is empty
+                            self.df["requires"][i] =  str(int(node_2))
+                        else:
+                            self.df["requires"][i] = str(self.df["requires"][i]) +"," + str(int(node_2))
+                        # self.df["requires"][i] =  node_2
+                        break
+                else:
+                    if(n_id == node_2): # find node 2
+                        if(pd.isna(self.df["requires"][i])): # requires field is empty
+                            self.df["requires"][i] =  str(int(node_1))
+                        else:
+                            self.df["requires"][i] = str(self.df["requires"][i]) +"," + str(int(node_1))
+                        # self.df["requires"][i] =  node_2
+                        break
         # if node 1 has requires already, allow deleting the relation from node 1's requires field if node 2 is part of it
         flag = False; node_1_requires = []; index = None; n2 = None
         for i in range(len(self.df.index)):
@@ -806,14 +852,8 @@ class datasetCreator:
                     if(type_selector == node_type and title_selector == node_title): return node_id
                 # print(type_selector)
     def __create_node_addition_fields(self):
-        adder = st.container()
-        node_title = ""
-        node_type = ""
-        node_des = ""
-        node_url = ""
-        node_dur = 0
-        node_type_select = ""
-        node = []
+        adder = st.container(); node_title = ""; node_type = ""; node_des = ""
+        node_url = ""; node_dur = 0; node_type_select = ""; node = []; node_dict = {}
         with adder:
             # title
             st.subheader("Add a New Node")
@@ -861,11 +901,14 @@ class datasetCreator:
                     if(new_id != None):
                         new_id = np.int16(new_id).item()
                     node = [new_id,node_title,node_des,node_url,node_type,'','','','','','','',node_dur]
+                    node_dict={"identifier": new_id, "title": node_title, "description": node_des, "url":node_url, "type":node_type
+                    ,"isPartOf": '', "assesses":'','comesAfter':'',"requires":'', "alternativeContent":'', "references":'',
+                    "isFormatOf": "", "duration": node_dur, "x values":'', "y values":""}
                     datasetCreator.set_selected_node(self, new_id)
                 with col2:
                     if(disable):
                         add_new_node = st.button("Add another node", key="add_next")
-        return node                  
+        return node_dict                  
     def __reset_field_after_node_saved(self):
        print( st.session_state.add_node_title)
     # this function return id of node for editing purposes
@@ -945,15 +988,17 @@ class datasetCreator:
         if(old_des == "nan"): old_des =""
         old_url = str(node["url"])
         if( old_url  == "nan"):  old_url  =""
-        old_dur = int(node["dur"])
-
+        try: old_dur = int(node["dur"])
+        except: 
+            try: old_dur = int(float(node["dur"]))
+            except: old_dur = 2
         new_node_title = ""
         new_node_type = ""
         new_node_des = ""
         new_node_url = ""
         new_node_dur = 0
         node_type_select = ""
-        node = []
+        node = []; node_dict={}
         must_input = False
         title_col, ER_col, atomic_col = st.columns([1.75,0.875,0.875])
         disable = False
@@ -1085,8 +1130,10 @@ class datasetCreator:
                                         self.df["requires"][i] = res
                     break
             node = [n_id ,new_node_title, new_node_des,new_node_url,new_node_type,is_part_of,assesses,ca,req,ac,ref,is_format_of,new_node_dur]
-            
-        return node
+            node_dict={"identifier": n_id, "title": new_node_title, "description": new_node_des, "url":new_node_url, "type":new_node_type
+                    ,"isPartOf": is_part_of, "assesses":assesses,'comesAfter':ca,"requires":req, "alternativeContent":ac, "references":ref,
+                    "isFormatOf": is_format_of, "duration": new_node_dur, "x values":'', "y values":""}
+        return node, node_dict
 
    
     def __get_atomic_ER_list_for_edit(self, old_type):
