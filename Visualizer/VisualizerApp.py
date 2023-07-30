@@ -305,6 +305,24 @@ with container:
                     # df = pd.read_csv(f_name)
                     if(node_option == "Modify Relations"):
                             dataset.add_relation()
+                dow_container = st.container()
+                with dow_container:
+                    save_file = st.checkbox("Download CSV File")
+                    if(save_file):
+                        f_name_col, down_btn_col = st.columns([2.5, 1])
+                        with f_name_col:
+                            file_name= st.text_input("", value = uploaded_file , placeholder="What do you want to call this dataset?", label_visibility="collapsed")
+                            if(file_name !=""):
+                                with down_btn_col:
+                                    if not file_name.endswith(".csv"):
+                                        if "." in file_name:
+                                            st.text("please remove .")
+                                        else:
+                                            file_name = file_name + ".csv"
+                                    df_copy = pd.read_csv(file_name)
+                                    csv_file = df_copy.to_csv(index=False).encode('utf-8')
+                                    download_btn = st.download_button(label="Download", data=csv_file, file_name=file_name, mime='text/csv')
+        #new df_container
             # file name
                 
                 # if "disabled" not in st.session_state:
