@@ -261,7 +261,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
       if (select_edit_node2_id == null){
             network.focus(select_edit_node_id , {
             scale: 0.5,
-            offset: {x:0, y:-300}
+            offset: {x:-300, y:0}
           });
         }
       //}
