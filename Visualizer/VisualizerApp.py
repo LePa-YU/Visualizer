@@ -153,7 +153,7 @@ def download_dataset(uploaded_file):
                                     st.text("please remove .")
                                 else:
                                     file_name = file_name + ".csv"
-                            df_copy = pd.read_csv(file_name)
+                            df_copy = pd.read_csv(uploaded_file)
                             csv_file = df_copy.to_csv(index=False).encode('utf-8')
                             download_btn = st.download_button(label="Download", data=csv_file, file_name=file_name, mime='text/csv')
         
