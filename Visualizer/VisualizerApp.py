@@ -169,7 +169,7 @@ def  __find_node():
 #     st.session_state["disabled"] = False     
     
 #global variables:
-global uploaded_file
+uploaded_file = None
 global df
 # initial settings:
     # the "wide" layout allows the elements to be stretched to the size of the screen 
@@ -255,6 +255,7 @@ with container:
             new_dataset = "Create a new Dataset"
             existing_dataset = "Upload your dataset"
             select_options=st.selectbox('',(existing_dataset, new_dataset), label_visibility="collapsed")
+            dataset = None
             if (select_options == existing_dataset):
                 st.markdown(
                         """
@@ -266,41 +267,19 @@ with container:
                         """
                 , unsafe_allow_html=True)
                 # user enters csv file in the file_uplader with the following properties
-                uploaded_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
-                if uploaded_file is not None:
-                    with open(uploaded_file.name,"wb") as f:
-                        f.write(uploaded_file.getbuffer())
+                u_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
+                if u_file is not None:
+                    if(not os.path.isfile(u_file.name)):
+                        with open(u_file.name,"wb") as f:
+                            f.write(u_file.getbuffer())
+                        # print(uploaded_file.name)
+                    uploaded_file = u_file.name
+                    dataset = datasetCreator.datasetCreator(u_file.name)
+                   
             elif(select_options == new_dataset):
-                #new df_container
-                new_df_container = st.container()
-                with new_df_container:
-                    # create a temp csv
-                    f_name = "temp.csv"
-                    uploaded_file = f_name
-                    dataset = datasetCreator.datasetCreator(f_name)
-                    # create tabs
-                    # node_tab, relation_tab = st.tabs(["    Educational Resource", "    ER Relations"])   
-                    #Node tab
-                    # with node_tab:
-                    st.divider()
-                    node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab")
-                        # df = pd.read_csv(f_name)
-                    if(node_option == "Add a new ER"):
-                            dataset.add_node()
-                    elif(node_option == "Update a ER"):
-                            # dataset.set_selected_node(None)
-                            dataset.edit_node()
-                            # pass
-                    #Relations tab
-                    # with relation_tab:
-                    # node_option = st.radio("What do you want to do?", ("Add a new Relation", "Edit a Relation"), key="relation_tab")
-                    df = pd.read_csv(f_name)
-                    if(node_option == "Modify Relations"):
-                            dataset.add_relation()
-                            # pass
-                    # elif(node_option == "Edit a Relation"):
-                    #         # dataset.edit_node()
-                    #         pass
+                f_name = "temp.csv"
+                uploaded_file = f_name
+                dataset = datasetCreator.datasetCreator(f_name)
                     # dow_container = st.container()
                     # with dow_container:
                     #     save_file = st.checkbox("Download CSV File")
@@ -313,10 +292,20 @@ with container:
                     #                     file_name = file_name + ".csv"
                     #                     csv_file = df.to_csv(index=False).encode('utf-8')
                     #                     download_btn = st.download_button(label="Download", data=csv_file, file_name=file_name, mime='text/csv')
-
-
-
-                # file name
+        #new df_container
+            new_df_container = st.container()
+            with new_df_container:
+                if dataset!=None:
+                    st.divider()
+                    node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab")
+                    if(node_option == "Add a new ER"):
+                            dataset.add_node()
+                    elif(node_option == "Update a ER"):
+                            dataset.edit_node()
+                    # df = pd.read_csv(f_name)
+                    if(node_option == "Modify Relations"):
+                            dataset.add_relation()
+            # file name
                 
                 # if "disabled" not in st.session_state:
                 #     st.session_state["disabled"] = False
@@ -338,6 +327,8 @@ with container:
                     # os.remove("temp.csv_Course_Overview.html"); os.remove("temp.csv_requirements.html"); 
                     # os.remove("temp.csv_Summative_assessment_only.html");os.remove("temp.csv_All_ERs.html"); 
                     # os.remove("temp.csv_vertical_requirements.html")
+
+              
                     
                     
                     
