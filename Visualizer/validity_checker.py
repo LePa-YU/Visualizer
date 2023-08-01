@@ -125,7 +125,32 @@ class validity_checker:
                         self.num = self.num + 1
                         report_file.write(str(self.num)+". Multiple ERs come after `" + str(title)+ "` | ID: "+ str(n_id)+ "| type: " + str(node_type) + ": "+problematic_nodes +"| Please fix some of these relation by removing node in `update a node` or updating comesAFter relation in `modify relation` option!\n")
                         break
+        # check for broken comesAfter
+        ca_is_broken = True
+        # check that start is referred at least once
+        for i in range(len(self.df.index)):
+            node_type = self.df["type"][i]
+            if node_type == "aER" or node_type == "iER" or node_type == "end":
+                try: ca = int(self.df["comesAfter"][i])
+                except: ca = None
+                if ca == 0:
+                    ca_is_broken = False
+                    break
+        for i in range(len(self.df.index)):
+            node_type = self.df["type"][i]
+            if node_type == "aER" or node_type == "iER" or node_type == "end":
+                try: ca = int(self.df["comesAfter"][i])
+                except: ca = None
+                if ca == None:
+                    ca_is_broken = True
+        
+        if ca_is_broken:
+            self.num = self.num + 1
+            report_file.write(str(self.num)+". The Learning Path is broken! please fix comesAfter relations so we have a learning path! \n")
+                       
 
+    def __ca_isBroken(self, last_ca):
+                          pass
     def clear_report(self):
         open(self.validity_file_name, 'w').close()
         self.num = 0
