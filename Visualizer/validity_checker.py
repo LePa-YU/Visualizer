@@ -46,9 +46,54 @@ class validity_checker:
                         if pd.isna(self.df.loc[i,'isPartOf']):
                             self.num = self.num + 1
                             validity_file.write(str(self.num)+". ER: `" + str(node_title)+ "` | ID: "+ str(node_id)+ "| type: " + str(node_type) + "|  Must be part of a composite ER! Please create an `is Part of` relation using `Modify Relation`\n")
+        validity_checker.__check_comesAfter_validity(self, validity_file)
         validity_file.close()
     
-                
+    def __check_comesAfter_validity(self, report_file):
+        # all aER, iER, end must have ca field --> list must be a set
+        # aER, iER missing comesAfter is already being validates -- this function validates the existing 
+        # one so there is no duplicate referrals
+        all_ca_field = []; 
+        for i in range(len(self.df.index)):
+            try: ca = int(self.df["comesAfter"][i])
+            except: ca = None
+            if ca != None: all_ca_field.append(ca)
+        if len(all_ca_field) != len(set(all_ca_field)):
+            # find duplicates
+            duplicateList = []; uniqueList = []
+            for ca in all_ca_field:
+                if ca not in uniqueList:
+                    uniqueList.append(ca)
+                elif ca not in duplicateList:
+                    duplicateList.append(ca)
+            # for each duplicate find the nodes they are referring to 
+            for dup in duplicateList:
+                node_referred = []
+                for i in range(len(self.df.index)):
+                    try: ca = int(self.df["comesAfter"][i])
+                    except: ca = None
+                    if (ca == dup):
+                        title = self.df["title"][i]
+                        n_id = self.df["identifier"][i]
+                        n_type = self.df["type"][i]
+                        res = {"id": n_id, "title": title, "type": n_type}
+                        node_referred.append(res)
+                problematic_nodes = ""
+                for node in node_referred:
+                    problematic_nodes = problematic_nodes + "|" +str(node["title"])+", ID: "+str(node["id"]) + ", type: " + str(node["type"])
+                for i in range(len(self.df.index)):
+                    try: n_id = int(self.df["identifier"][i])
+                    except: n_id = None
+                    if (n_id == dup):
+                        title = self.df["title"][i]
+                        node_type = self.df["type"][i]
+                        self.num = self.num + 1
+                        report_file.write(str(self.num)+". Multiple ERs come after `" + str(title)+ "` | ID: "+ str(n_id)+ "| type: " + str(node_type) + ": "+problematic_nodes +"| Please fix some of these relation by removing node in `update a node` or updating comesAFter relation in `modify relation` option!\n")
+                        break
+            # print duplicate + referred node in report
+            # print(duplicateList)
+
+
     def clear_report(self):
         open(self.validity_file_name, 'w').close()
         self.num = 0
