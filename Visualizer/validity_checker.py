@@ -47,8 +47,43 @@ class validity_checker:
                             self.num = self.num + 1
                             validity_file.write(str(self.num)+". ER: `" + str(node_title)+ "` | ID: "+ str(node_id)+ "| type: " + str(node_type) + "|  Must be part of a composite ER! Please create an `is Part of` relation using `Modify Relation`\n")
         validity_checker.__check_comesAfter_validity(self, validity_file)
+        validity_checker.__check_assesses_validity(self, validity_file)
         validity_file.close()
-    
+
+    def __check_assesses_validity(self, report_file):
+        # make sure the assesses relation is only between rER and aER
+        # all rER must assess one aER
+
+        # first check that only rERs have assesses relations:
+        for i in range(len(self.df.index)):
+            node_type = self.df["type"][i]; title = self.df["title"][i]; n_id = self.df["identifier"][i]
+            try: assess = int(self.df["assesses"][i])
+            except: assess = None
+            if assess != None:
+                if node_type != "rER":
+                    self.num = self.num + 1
+                    report_file.write(str(self.num)+". Er `" + str(title)+ "` | ID: "+ str(n_id)+ "| type: " + str(node_type) + " cannot assess another ER"+ "| Please use `update a node` or `modify relation` option to fix this relation!\n")
+
+        # 2nd check that all rERs are assessing an aER
+        for i in range(len(self.df.index)):
+            node_type = self.df["type"][i]; title = self.df["title"][i]; n_id = self.df["identifier"][i]
+            if node_type == "rER":
+                try: assess = int(self.df["assesses"][i])
+                except: assess = None
+                if assess != None:
+                    for j in range(len(self.df.index)):
+                        aER_id = self.df["identifier"][j]; 
+                        if assess == aER_id:
+                            aER_type = self.df["type"][j]; aER_title = self.df["title"][j]
+                            if(aER_type != "aER"):
+                                self.num = self.num + 1
+                                report_file.write(str(self.num)+". Er `" + str(title)+ "` | ID: "+ str(n_id)+ "| type: " + str(node_type) + " cannot assess: "+ str(aER_title)+ ", ID: "+str(aER_id)+" of type "+str(aER_type)+ "| Please use `update a node` or `modify relation` option to fix this relation!\n")
+                            break
+
+        # 3rd check that assesses value of rERs are a set and report for duplicates
+        # already checked by visualizer --> datasetcreator set multiple relations for ca, assesses, isPart of to empty
+        
+
     def __check_comesAfter_validity(self, report_file):
         # all aER, iER, end must have ca field --> list must be a set
         # aER, iER missing comesAfter is already being validates -- this function validates the existing 
@@ -90,9 +125,6 @@ class validity_checker:
                         self.num = self.num + 1
                         report_file.write(str(self.num)+". Multiple ERs come after `" + str(title)+ "` | ID: "+ str(n_id)+ "| type: " + str(node_type) + ": "+problematic_nodes +"| Please fix some of these relation by removing node in `update a node` or updating comesAFter relation in `modify relation` option!\n")
                         break
-            # print duplicate + referred node in report
-            # print(duplicateList)
-
 
     def clear_report(self):
         open(self.validity_file_name, 'w').close()
