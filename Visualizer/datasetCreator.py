@@ -23,6 +23,20 @@ class datasetCreator:
                 if not col in self.df.columns:
                     self.df[col] = ""
             self.df.to_csv(file_name, index=False)
+        # assess, isPartOf, comesAfter must contain one value if not the case then set to empty
+        for i in range(len(self.df.index)):
+            try: assesses = int(self.df["assesses"][i])
+            except: assesses = None
+            if assesses == None: self.df["assesses"][i] = ""
+            
+            try: ca = int(self.df["comesAfter"][i])
+            except:
+                try: ca = int(float(self.df["comesAfter"][i]))
+                except:ca = None
+            if ca == None: 
+                self.df["comesAfter"][i] = ""
+       
+        self.df.to_csv(file_name, index=False)
 
     def add_node(self):
         datasetCreator.set_selected_node(self, None)
