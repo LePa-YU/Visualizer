@@ -668,6 +668,8 @@ class datasetCreator:
                                     if(ca != None and ca == node_1): # found the node that comesAFter node1
                                         # change this node's ca to node1's ca
                                         self.df["comesAfter"][j] = node1_ca
+                                        # in case they are not null already -- e.g. bad dataset is entered
+                                        self.df["assesses"][j] = ""; self.df["isPartOf"][j] = ""; self.df["requires"][j] = ""
                                         self.df.to_csv(self.file_name, index=False)
                                         break 
                                 break
@@ -679,6 +681,8 @@ class datasetCreator:
                         if(ca != None and ca == node_2): # found the node that comesAFter node1
                             # change this node's ca to node1's ca
                             self.df["comesAfter"][i] = node_1
+                            # in case they are not null already -- e.g. bad dataset is entered
+                            self.df["assesses"][i] = ""; self.df["isPartOf"][i] = ""; self.df["requires"][i] = ""
                             self.df.to_csv(self.file_name, index=False)
                             break             
                 else:
@@ -693,6 +697,8 @@ class datasetCreator:
                             if(ca != None and ca == node_2): # found the node that comesAFter node1
                                 # change this node's ca to node1's ca
                                 self.df["comesAfter"][i] = y
+                                # in case they are not null already -- e.g. bad dataset is entered
+                                self.df["assesses"][i] = ""; self.df["isPartOf"][i] = ""; self.df["requires"][i] = ""
                                 self.df.to_csv(self.file_name, index=False)
                                 break 
                         pass
@@ -705,6 +711,8 @@ class datasetCreator:
                             if(ca != None and ca == node_2): # found the node that comesAFter node1
                                 # change this node's ca to node1's ca
                                 self.df["comesAfter"][i] = node_1
+                                # in case they are not null already -- e.g. bad dataset is entered
+                                self.df["assesses"][i] = ""; self.df["isPartOf"][i] = ""; self.df["requires"][i] = ""
                                 self.df.to_csv(self.file_name, index=False)
                                 break 
 
@@ -715,6 +723,8 @@ class datasetCreator:
                     node_id= self.df["identifier"][i]
                     if(node_id == node_1): #find node 1 in df
                         self.df["comesAfter"][i] = node_2 # set node1's ca to node 2
+                        # in case they are not null already -- e.g. bad dataset is entered
+                        self.df["assesses"][i] = ""; self.df["isPartOf"][i] = ""; self.df["requires"][i] = ""
                         self.df.to_csv(self.file_name, index=False) # save the df
                         # if node 2's CA == node 1 --> remove it
                         for j in range(len(self.df.index)):
@@ -724,10 +734,12 @@ class datasetCreator:
                                 except: ca = None
                                 if(ca != None and ca == node_1):
                                     self.df["comesAfter"][j] = None
+                                    # in case they are not null already -- e.g. bad dataset is entered
+                                    self.df["assesses"][j] = ""; self.df["isPartOf"][j] = ""; self.df["requires"][j] = ""
                                     self.df.to_csv(self.file_name, index=False) # save the df
                                     break
                         break
-    
+                # if a node 1 has comesAfter then it is either aER or iER --> set assess and isPart and requires of to null for node 1
     # given a node id this function returns true if there is another node with id of this node in its comesAfter field
     def __node_is_referred_by_other_ca(self, node_1):
         res = False
