@@ -408,7 +408,8 @@ class Views:
             isPartOf_id = Views.__get_node_int_id(node.er_isPartOf)
             if(type(isPartOf_id) == int):
                 container_node = Views.__Find_node(self,isPartOf_id)
-                G.add_edge(container_node.er_id, node.er_id, color= self.all_colors.isPartOf_relationship_color)
+                if container_node != None:
+                    G.add_edge(container_node.er_id, node.er_id, color= self.all_colors.isPartOf_relationship_color)
     
     def __get_num_of_Node_in_between(self, nodeA, nodeB):
         res = -1
