@@ -401,10 +401,13 @@ with container:
         with st.expander("Legend"):
             # the legend is created using `create_legend` method of views.py which creates a temp html file called 
             # index.legend.html
+            there_is_icon = False
+            if option == view4 or option == view5: there_is_icon = True
+            # print(there_is_icon)
             legend = Legend.Legend()
             colors = view.getColors()
             legend.setColors(colors)
-            legend.create_legend(bg, font_color)
+            legend.create_legend(bg, font_color, there_is_icon)
             HtmlFile = open("index_Legend.html", 'r', encoding='utf-8')
             source_code = HtmlFile.read() 
             # the Static html file is added to the streamlit using the components

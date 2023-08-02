@@ -511,18 +511,36 @@ def convertToHtml_Legend(data, bg):
     <div id="mynetwork"></div>
     <div id="demo"></div>
     <!-- <script type="text/javascript" src="network.js"></script> -->
-    <script type="text/javascript"> \n''')
+    <script type="text/javascript"> 
+      var nodeList = new vis.DataSet();
+      var edgeList = new vis.DataSet();
+    \n''')
     
+    # nodes_data = data[0]
+    # jsonOb_node = json.dumps(nodes_data)
+    # jsonOb_node_format = format(jsonOb_node)
+    # file_html.write("\t var nodes = "+str(jsonOb_node_format) +";"+"\n")
+
+    # edges_data = data[1]
+    # jsonOb_edges = json.dumps(edges_data)
+    # jsonOb_edges_format = format(jsonOb_edges)
+    # file_html.write("\t var edges = "+str(jsonOb_edges_format) +";"+"\n")
+    # nodes data from network
     nodes_data = data[0]
-    jsonOb_node = json.dumps(nodes_data)
-    jsonOb_node_format = format(jsonOb_node)
-    file_html.write("\t var nodes = "+str(jsonOb_node_format) +";"+"\n")
-
+    for n in nodes_data:
+        jsonOb_node = json.dumps(n)
+        jsonOb_node_format = format(jsonOb_node)
+        file_html.write("\t\t nodeList.add("+str(jsonOb_node_format) +");"+"\n")
+    file_html.write('''
+     ''')
+    
+    #edge data from network
     edges_data = data[1]
-    jsonOb_edges = json.dumps(edges_data)
-    jsonOb_edges_format = format(jsonOb_edges)
-    file_html.write("\t var edges = "+str(jsonOb_edges_format) +";"+"\n")
-
+    for e in edges_data:
+        jsonOb_edges = json.dumps(e)
+        jsonOb_edges_format = format(jsonOb_edges)
+        file_html.write("\t\t edgeList.add("+str(jsonOb_edges_format) +");"+"\n")
+    
     heading_data = data[2]
     jsonOb_heading = json.dumps(heading_data)
     jsonOb_heading_format = format(jsonOb_heading)
@@ -554,7 +572,7 @@ def convertToHtml_Legend(data, bg):
     # add rest of the html
     file_html.write('''
     
-    var nodeList = new vis.DataSet();
+   /* var nodeList = new vis.DataSet();
     var x = 0; 
     var y = 0; 
     var step = 5; 
@@ -588,7 +606,7 @@ def convertToHtml_Legend(data, bg):
         };
          edgeList.add(e_info);
     }
-    
+    */
     var container = document.getElementById('mynetwork');
     var data = {
         nodes: nodeList,

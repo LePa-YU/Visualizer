@@ -7,9 +7,9 @@ class Legend:
   def setColors(self, colors):
     self.colors = colors
 
-  def create_legend(self, bg, font_color):
+  def create_legend(self, bg, font_color, has_icon):
     G = nx.DiGraph()
-    Legend.__addNodes(self, G)
+    Legend.__addNodes(self, G, has_icon)
     G2 = Network(height="800px", width="100%", font_color= font_color, notebook=True,heading='', directed=True)
     G2.from_nx(G)
     Legend.__setOptions(self, G2)
@@ -50,7 +50,21 @@ class Legend:
     G2.options.nodes = nodes
     G2.options.interaction = interaction
 
-  def __addNodes(self, G):
+  def __get_atomic_node_color_property(color):
+        res={
+            "border":"white", 
+            "background":"white",
+            "highlight":{
+                "border":color,
+                "background": color
+            },
+            "hover":{
+                "border": color ,
+                "background": color
+            },
+        }
+        return res
+  def __addNodes(self, G, has_icon):
     #col1
     G.add_node(1, label = "Activity ER      ", shape = "text", title="legend", color= self.colors.aER_node_color, x = 0, y = 0)
     G.add_node(2, label = "       ", shape="box", title="legend", color= self.colors.aER_node_color, x = 190, y = 0)
@@ -82,26 +96,49 @@ class Legend:
     G.add_edge(18, 19, weight = 5, color = self.colors.requires_node_color)
 
 
-   
+    if(has_icon):
     #col2
-    G.add_node(20, label = "Atomic ER: images", title="legend", shape = "text", color= self.colors.atomic_node_color_img, x = 400, y = 0)
-    G.add_node(21, label = "", title="legend", color= self.colors.atomic_node_color_img, x = 520, y = 0)
+            
+      G.add_node(20, label = "Atomic ER: images", title="legend", shape = "text", color= self.colors.atomic_node_color_img, x = 400, y = 0)
+      G.add_node(21, label = "", title="legend", shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/image.svg", color=Legend.__get_atomic_node_color_property(self.colors.atomic_node_color_img), x = 520, y = 0)
 
-    G.add_node(22, label = "Atomic ER: Videos", title="legend", shape = "text", color= self.colors.atomic_node_color_mov, x = 400, y = 50)
-    G.add_node(23, label = "", title="legend", color= self.colors.atomic_node_color_mov, x = 520, y = 50)
+      G.add_node(22, label = "Atomic ER: Videos", title="legend", shape = "text", color= self.colors.atomic_node_color_mov, x = 400, y = 50)
+      G.add_node(23, label = "", title="legend", shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", color=Legend.__get_atomic_node_color_property(self.colors.atomic_node_color_mov), x = 520, y = 50)
 
-    G.add_node(24, label = "  Atomic ER: Software", title="legend", shape = "text", color= self.colors.atomic_node_color_software, x = 400, y = 100)
-    G.add_node(25, label = "", title="legend", color= self.colors.atomic_node_color_software, x = 520, y = 100)
+      G.add_node(24, label = "  Atomic ER: Software", title="legend", shape = "text", color= self.colors.atomic_node_color_software, x = 400, y = 100)
+      G.add_node(25, label = "", title="legend", shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/software.svg", color=Legend.__get_atomic_node_color_property(self.colors.atomic_node_color_software), x = 520, y = 100)
 
-    G.add_node(26, label = "Atomic ER: Audio ", title="legend", shape = "text", color= self.colors.atomic_node_color_audio, x = 400, y = 150)
-    G.add_node(27, label = "", title="legend", color= self.colors.atomic_node_color_audio, x = 520, y = 150)
+      G.add_node(26, label = "Atomic ER: Audio ", title="legend", shape = "text", color= self.colors.atomic_node_color_audio, x = 400, y = 150)
+      G.add_node(27, label = "", title="legend", shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", color=Legend.__get_atomic_node_color_property(self.colors.atomic_node_color_audio), x = 520, y = 150)
 
-    G.add_node(7, label = "    Atomic ER: collection", title="legend", shape = "text", color= self.colors.atomic_node_color_coll, x = 400, y = 200)
-    G.add_node(0, label = "", title="legend", color= self.colors.atomic_node_color_coll, x = 520, y = 200)
+      G.add_node(7, label = "    Atomic ER: collection", title="legend", shape = "text", color= self.colors.atomic_node_color_coll, x = 400, y = 200)
+      G.add_node(0, label = "", title="legend", shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/zip.svg", color=Legend.__get_atomic_node_color_property(self.colors.atomic_node_color_coll), x = 520, y = 200)
 
-    G.add_node(28, label = "Atomic ER: Text  ", title="legend", shape = "text", color= self.colors.atomic_node_color_text, x = 400, y = 250)
-    G.add_node(29, label = "", title="legend", color= self.colors.atomic_node_color_text, x = 520, y = 250)
-    
-    G.add_node(30, label = "Atomic ER: Dataset", title="legend", shape = "text", color= self.colors.atomic_node_color_dataset, x = 400, y = 300)
-    G.add_node(31, label = "", title="legend", color= self.colors.atomic_node_color_dataset, x = 520, y = 300)
+      G.add_node(28, label = "Atomic ER: Text  ", title="legend", shape = "text", color= self.colors.atomic_node_color_text, x = 400, y = 250)
+      G.add_node(29, label = "", title="legend", shape="circularImage", image = "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", color=Legend.__get_atomic_node_color_property(self.colors.atomic_node_color_text), x = 520, y = 250)
+      
+      G.add_node(30, label = "Atomic ER: Dataset", title="legend", shape = "text", color= self.colors.atomic_node_color_dataset, x = 400, y = 300)
+      G.add_node(31, label = "", title="legend", shape="circularImage", image="https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/data.svg", color=Legend.__get_atomic_node_color_property(self.colors.atomic_node_color_dataset), x = 520, y = 300)
+    else:
+      #col2
+      G.add_node(20, label = "Atomic ER: images", title="legend", shape = "text", color= self.colors.atomic_node_color_img, x = 400, y = 0)
+      G.add_node(21, label = "", title="legend", color= self.colors.atomic_node_color_img, x = 520, y = 0)
+
+      G.add_node(22, label = "Atomic ER: Videos", title="legend", shape = "text", color= self.colors.atomic_node_color_mov, x = 400, y = 50)
+      G.add_node(23, label = "", title="legend", color= self.colors.atomic_node_color_mov, x = 520, y = 50)
+
+      G.add_node(24, label = "  Atomic ER: Software", title="legend", shape = "text", color= self.colors.atomic_node_color_software, x = 400, y = 100)
+      G.add_node(25, label = "", title="legend", color= self.colors.atomic_node_color_software, x = 520, y = 100)
+
+      G.add_node(26, label = "Atomic ER: Audio ", title="legend", shape = "text", color= self.colors.atomic_node_color_audio, x = 400, y = 150)
+      G.add_node(27, label = "", title="legend", color= self.colors.atomic_node_color_audio, x = 520, y = 150)
+
+      G.add_node(7, label = "    Atomic ER: collection", title="legend", shape = "text", color= self.colors.atomic_node_color_coll, x = 400, y = 200)
+      G.add_node(0, label = "", title="legend", color= self.colors.atomic_node_color_coll, x = 520, y = 200)
+
+      G.add_node(28, label = "Atomic ER: Text  ", title="legend", shape = "text", color= self.colors.atomic_node_color_text, x = 400, y = 250)
+      G.add_node(29, label = "", title="legend", color= self.colors.atomic_node_color_text, x = 520, y = 250)
+      
+      G.add_node(30, label = "Atomic ER: Dataset", title="legend", shape = "text", color= self.colors.atomic_node_color_dataset, x = 400, y = 300)
+      G.add_node(31, label = "", title="legend", color= self.colors.atomic_node_color_dataset, x = 520, y = 300)
     
