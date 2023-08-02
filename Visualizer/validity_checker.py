@@ -36,7 +36,7 @@ class validity_checker:
                         assesses = self.df["assesses"][i]
                         if pd.isna(self.df.loc[i,'assesses']):
                             self.num = self.num + 1
-                            validity_file.write(str(self.num)+". ER: '" + str(node_title)+ "' | ID: "+ str(node_id)+ "| type: " + str(node_type) + "| Must assess an aER! Please create an `assesses` relation using `Modify Relation`\n")
+                            validity_file.write(str(self.num)+". ER: `" + str(node_title)+ "` | ID: "+ str(node_id)+ "| type: " + str(node_type) + "| Must assess an aER! Please create an `assesses` relation using `Modify Relation`\n")
                     elif node_type == "iER" or node_type == "aER": 
                         # ca = self.df["comesAfter"][i]
                         if pd.isna(self.df.loc[i,'comesAfter']):
@@ -48,7 +48,13 @@ class validity_checker:
                             validity_file.write(str(self.num)+". ER: `" + str(node_title)+ "` | ID: "+ str(node_id)+ "| type: " + str(node_type) + "|  Must be part of a composite ER! Please create an `is Part of` relation using `Modify Relation`\n")
         validity_checker.__check_comesAfter_validity(self, validity_file)
         validity_checker.__check_assesses_validity(self, validity_file)
+        validity_checker.__check_isPartOf_validity(self, validity_file)
         validity_file.close()
+
+    def __check_isPartOf_validity(self, report_file):
+        # only atomic ERs must have isPartOf
+        # atomics can have requires or isPartOf (or both) but cannot have assesses or comesAfter --> taken care of by datasetCreator
+        pass
 
     def __check_assesses_validity(self, report_file):
         # make sure the assesses relation is only between rER and aER
@@ -148,9 +154,6 @@ class validity_checker:
             self.num = self.num + 1
             report_file.write(str(self.num)+". The Learning Path is broken! please fix comesAfter relations so we have a learning path! \n")
                        
-
-    def __ca_isBroken(self, last_ca):
-                          pass
     def clear_report(self):
         open(self.validity_file_name, 'w').close()
         self.num = 0
