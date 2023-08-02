@@ -202,7 +202,7 @@ class datasetCreator:
         node1_confirm = False; node2_confirm = False
         node1_is_composite = False; node1_type =""; relation_select=""
         with col1: 
-            st.text("select node 1")
+            st.text("select ER 1")
             node1_id = datasetCreator.__find_node1_for_relations(self)
             if(node1_id != None):
                 node1_id = np.int16(node1_id).item()
@@ -243,7 +243,7 @@ class datasetCreator:
                 relation_list = ["Requires", "Is Required By", "Is Part Of"]
             relation_select = st.selectbox("", relation_list, key="relation select")
         with col3:
-            st.text("select node 2")
+            st.text("select ER 2")
             # the avaiable nodes are changed based oon in col 2
             datasetCreator.__find_node2_for_relations(self, node1_id, relation_select)
         
