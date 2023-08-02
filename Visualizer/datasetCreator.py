@@ -25,16 +25,33 @@ class datasetCreator:
             self.df.to_csv(file_name, index=False)
         # assess, isPartOf, comesAfter must contain one value if not the case then set to empty
         for i in range(len(self.df.index)):
-            try: assesses = int(self.df["assesses"][i])
-            except: assesses = None
-            if assesses == None: self.df["assesses"][i] = ""
+            node_type = self.df["type"][i]
+            if node_type != "start" and node_type != "end":
+                if node_type != "rER": self.df["assesses"][i] = "" # if node is not rER then it should not have assess field
+                else: # if node is rER then it must not have comesAfter, requires, and isPartOf
+                    self.df["comesAfter"][i] = ""; self.df["isPartOf"][i] = ""
+                    self.df["requires"][i] = ""
+                
+                # if a node is aER or iER --> might have comesAfter but no assesses, isPartof, requires
+                if node_type != "aER" and node_type!="iER": self.df["comesAfter"][i] = "" # if node is not aER or rER then doesnt have comesAfter
+                else:
+                    self.df["assesses"][i] = ""; self.df["isPartOf"][i] = ""
+                    self.df["requires"][i] = ""
             
-            try: ca = int(self.df["comesAfter"][i])
-            except:
+            ## only requires can have multi values for the rest of relation they are set to "" if they have more than one value
+            a = self.df["assesses"][i]; ca = self.df["comesAfter"][i]; ipo = self.df["isPartOf"][i]
+            if type(a) != int:
+                try: a = int(float(self.df["assesses"][i]))
+                except: a = None
+                if a == None: self.df["assesses"][i] = ""
+            if type(ca) != int:
                 try: ca = int(float(self.df["comesAfter"][i]))
-                except:ca = None
-            if ca == None: 
-                self.df["comesAfter"][i] = ""
+                except: ca = None
+                if ca == None: self.df["comesAfter"][i] = ""
+            if type(ipo) != int:
+                try: ipo = int(float(self.df["isPartOf"][i]))
+                except: ipo = None
+                if ipo == None: self.df["isPartOf"][i] = ""
        
         self.df.to_csv(file_name, index=False)
 
