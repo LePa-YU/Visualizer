@@ -156,7 +156,18 @@ def download_dataset(uploaded_file):
                             df_copy = pd.read_csv(uploaded_file)
                             csv_file = df_copy.to_csv(index=False).encode('utf-8')
                             download_btn = st.download_button(label="Download", data=csv_file, file_name=file_name, mime='text/csv')
-        
+def reset_dataset(uploaded_file, delete_file_rec):
+    if os.path.exists(uploaded_file):
+        os.remove(uploaded_file); 
+        os.remove(str(uploaded_file) + "_Course_Overview.html"); os.remove(str(uploaded_file) +"_requirements.html"); 
+        os.remove(str(uploaded_file) + "_Summative_assessment_only.html");os.remove(str(uploaded_file) + "_All_ERs.html"); 
+        os.remove(str(uploaded_file) + "_vertical_requirements.html"); 
+        validity_file = uploaded_file.replace(".csv", "_validity_report.txt")
+        if os.path.exists(validity_file):
+            os.remove(validity_file) 
+        if delete_file_rec:
+            if os.path.exists("file_name_record.txt"): 
+                os.remove("file_name_record.txt")      
     
 #global variables:
 uploaded_file = None
@@ -242,12 +253,16 @@ with container:
     elif dataset_options == enter_own:
         # to write on the file browser itself
         with upload_col:
-            new_dataset = "Create a new Dataset"
-            existing_dataset = "Upload your dataset"
-            select_options=st.selectbox('',(existing_dataset, new_dataset), label_visibility="collapsed")
-            dataset = None
-            if (select_options == existing_dataset):
-                st.markdown(
+            # new_dataset = "Create a new Dataset"
+            # existing_dataset = "Upload your dataset"
+            # select_options=st.selectbox('',(existing_dataset, new_dataset), label_visibility="collapsed")
+            dataset = None; 
+            # if (select_options == existing_dataset):
+                # file_name_recorder = "file_name_record"
+                # if not os.path.exists(file_name_recorder):
+                #     os.mkdir(file_name_recorder)
+                # file_rec = open(file_name_recorder)
+            st.markdown(
                         """
                         <style>
                             .css-9ycgxx::before {
@@ -257,37 +272,42 @@ with container:
                         """
                 , unsafe_allow_html=True)
                 # user enters csv file in the file_uplader with the following properties
-                u_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
-                if u_file is not None:
-                    if(not os.path.isfile(u_file.name)):
-                        with open(u_file.name,"wb") as f:
-                            f.write(u_file.getbuffer())
-                        # print(uploaded_file.name)
-                    uploaded_file = u_file.name
-                    dataset = datasetCreator.datasetCreator(u_file.name)
-                   
-            elif(select_options == new_dataset):
-                f_name = "temp.csv"
+                # uploaded_file = f_name
+                # f_name = ""
+            f_name = "New Dataset.csv"
+            with st.form("my-form", clear_on_submit=True):
+                    u_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
+                    submitted = st.form_submit_button("UPLOAD!")
+                    if submitted and u_file is not None:
+                        # delete all existing csv and html files:\
+                        if os.path.exists("file_name_record.txt"):
+                             with open("file_name_record.txt","r") as f:
+                                pre_file = (f.read())
+                                reset_dataset(pre_file, False)  
+                        if(not os.path.isfile(u_file.name)):
+                            with open(u_file.name,"wb") as f:
+                                f.write(u_file.getbuffer())
+                            with open("file_name_record.txt","w") as f:
+                                f.write(u_file.name)
+                            # f_name = u_file.name
+            if os.path.exists("file_name_record.txt"):
+                reset_dataset(f_name, False)    
+                with open("file_name_record.txt","r") as f:
+                    uploaded_file = f.read()
+            else:
                 uploaded_file = f_name
-                dataset = datasetCreator.datasetCreator(f_name)
-                    # dow_container = st.container()
-                    # with dow_container:
-                    #     save_file = st.checkbox("Download CSV File")
-                    #     if(save_file):
-                    #         f_name_col, down_btn_col = st.columns([2.5, 1])
-                    #         with f_name_col:
-                    #             file_name= st.text_input("", placeholder="What do you want to call this dataset?", label_visibility="collapsed")
-                    #             if(file_name !=""):
-                    #                 with down_btn_col:
-                    #                     file_name = file_name + ".csv"
-                    #                     csv_file = df.to_csv(index=False).encode('utf-8')
-                    #                     download_btn = st.download_button(label="Download", data=csv_file, file_name=file_name, mime='text/csv')
-        #new df_container
+            dataset = datasetCreator.datasetCreator(uploaded_file)
+                   
+            # elif(select_options == new_dataset):
+            #     f_name = "New Dataset.csv"
+            #     uploaded_file = f_name
+            #     dataset = datasetCreator.datasetCreator(uploaded_file)
+            
             new_df_container = st.container()
             with new_df_container:
                 if dataset!=None:
                     st.divider()
-                    node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab")
+                    node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations", "Delete Current Dataset"), key="node_tab")
                     if(node_option == "Add a new ER"):
                             dataset.add_node()
                             download_dataset(uploaded_file)
@@ -298,33 +318,30 @@ with container:
                     if(node_option == "Modify Relations"):
                             dataset.add_relation()
                             download_dataset(uploaded_file)
-                
-                    
-                # if "disabled" not in st.session_state:
-                #     st.session_state["disabled"] = False
-                # f_name = ""
-                # f_name_col, change_f_name_col = st.columns([2.5, 1])
-
-                # with f_name_col:
-                #     f_name= st.text_input("Enter file name:", disabled=st.session_state.disabled, on_change=disable_file_name, placeholder="What do you want to call this dataset?", label_visibility="collapsed")
-                # if(f_name != ""):
-                #     # create change file name
-                #     with  change_f_name_col:                        
-                #         change_f_name = st.button ("Change file name", on_click=enable_file_name)
-
-                #     f_name = f_name + ".csv"
-                #     df.to_csv(f_name, index=False)
-                #     uploaded_file = f_name 
-                    # remove temp files
-                    # os.remove("temp.csv"); 
-                    # os.remove("temp.csv_Course_Overview.html"); os.remove("temp.csv_requirements.html"); 
-                    # os.remove("temp.csv_Summative_assessment_only.html");os.remove("temp.csv_All_ERs.html"); 
-                    # os.remove("temp.csv_vertical_requirements.html")
-
-              
-                    
-                    
-                    
+                    if(node_option == "Delete Current Dataset"):
+                        del_btn = st.button("Delete Dataset?")
+                        if del_btn: 
+                            reset_dataset(uploaded_file, True)
+                            # create new file
+                            f_name = "New Dataset.csv"
+                            uploaded_file = f_name
+                            dataset = datasetCreator.datasetCreator(f_name)  
+                            # print(uploaded_file)
+                             # remove temp files
+                            # os.remove(uploaded_file); 
+                            # os.remove(str(uploaded_file) + "_Course_Overview.html"); os.remove(str(uploaded_file) +"_requirements.html"); 
+                            # os.remove(str(uploaded_file) + "_Summative_assessment_only.html");os.remove(str(uploaded_file) + "_All_ERs.html"); 
+                            # os.remove(str(uploaded_file) + "_vertical_requirements.html"); 
+                            # validity_file = uploaded_file.replace(".csv", "_validity_report.txt")
+                            # if os.path.exists(validity_file):
+                            #     os.remove(validity_file) 
+                            # if os.path.exists("file_name_record.txt"): 
+                            #     os.remove("file_name_record.txt")
+                            # # create new file
+                            # f_name = "New Dataset.csv"
+                            # uploaded_file = f_name
+                            # dataset = datasetCreator.datasetCreator(f_name)
+                                
     if (uploaded_file is not None):
         # store file in a dataframe 
         dataframe = pd.read_csv(uploaded_file)
