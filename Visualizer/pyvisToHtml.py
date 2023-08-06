@@ -256,12 +256,48 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
     network.setSize(width, height);
     //Focus 
     network.once("beforeDrawing", function () {
+      /*Highlightling select node automatically*/
+      nodeList.forEach(function(item) 
+      {
+        if(view == "View 4: Requirements" || view == "View 5: Requirements - Vertical"){
+            if(select_edit_node_id == item.id)
+            {
+              if (item.title == "iER" ||item.title == "aER" || item.title == "rER" || item.title == "start"|| item.title == "end"){
+                nodeList.update([{id: select_edit_node_id, color: {background: '#cde4f7'}}]);
+              }
+              else{
+                nodeList.update([{id: select_edit_node_id, color: {"border": "black", background: '#cde4f7'}}]);
+              }
+            }
+            if(select_edit_node2_id == item.id)
+            {
+              if (item.title == "iER" ||item.title == "aER" || item.title == "rER" || item.title == "start"|| item.title == "end"){
+                nodeList.update([{id: select_edit_node2_id, color: {background: '#cde4f7'}}]);
+              }
+              else{
+                nodeList.update([{id: select_edit_node2_id, color: {"border": "black", background: '#cde4f7'}}]);
+              }
+            }
+        }
+        else{
+            if(select_edit_node_id == item.id)
+            {
+              nodeList.update([{id: select_edit_node_id, color: {background: '#cde4f7'}}]);
+            }
+            if(select_edit_node2_id == item.id)
+            {
+              nodeList.update([{id: select_edit_node2_id, color: {background: '#cde4f7'}}]);
+            }
+        }
+        
+      }); 
+
       
       //if (fileLabel == 'temp.csv'){
-      if (select_edit_node2_id == null){
+      if (select_edit_node2_id == null && select_edit_node_id !=null ){
             network.focus(select_edit_node_id , {
             scale: 0.5,
-            offset: {x:-300, y:0}
+            offset: {x:100, y:0}
           });
         }
       //}
@@ -361,7 +397,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
       }
       // select given nodes for creating dataset
    // if (fileLabel == 'temp.csv'){
-      nodeList.forEach(function(item) 
+     /* nodeList.forEach(function(item) 
       {
         if(view == "View 4: Requirements" || view == "View 5: Requirements - Vertical"){
             if(select_edit_node_id == item.id)
@@ -394,7 +430,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
             }
         }
         
-      }); 
+      }); */
     //}
     });  
 
