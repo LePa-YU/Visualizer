@@ -289,14 +289,20 @@ with container:
             with st.form("my-form", clear_on_submit=True):
                     u_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
                     submitted = st.form_submit_button("UPLOAD!")
+                    # print("submitted")
                     if submitted and u_file is not None:
-                        # delete all existing csv and html files:\
+                        
+                        # check for file record if it exists remove the previous open files
                         if os.path.exists("file_name_record.txt"):
                              with open("file_name_record.txt","r") as f:
                                 pre_file = (f.read())
                                 reset_dataset(pre_file, False)  
                         ## bug with opening file that exists: opening Fake1001 when Fake1001 already is in the server
-                        if(not os.path.isfile(u_file.name)):
+                        # print(u_file)
+                        if(os.path.isfile(u_file.name)):
+                            reset_dataset(u_file.name, False)
+                             
+                        if(not os.path.isfile(u_file.name)): # if the csv file doesnt exist
                             with open(u_file.name,"wb") as f:
                                 f.write(u_file.getbuffer())
                             with open("file_name_record.txt","w") as f:
@@ -354,7 +360,7 @@ with container:
                             # uploaded_file = f_name
                             # dataset = datasetCreator.datasetCreator(f_name)
                     d_btn = download_dataset(uploaded_file)           
-    print(d_btn)
+    # print(d_btn)
     if (uploaded_file is not None):
         # store file in a dataframe 
         dataframe = pd.read_csv(uploaded_file)
