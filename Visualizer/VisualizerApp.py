@@ -117,16 +117,18 @@ class _Customization_menu:
         else:
             self.view.setColors("#FF7273", "#FF7273", "#F69159", "#ECD19A", "#FF7273", "#C0CB6B", "#ECD19A", "#C0CB6B", "#C0CB6B", "#BF87F2", "#A24052", "#FBF495", "#93C539", "#437C6C", "#20C18B", "#5FC7D3")
         return bg
-
-
+##############################################################################################
+# function to create html pages
 def __create_html_pages(label, view, bg, font_color, view1, physics, download_dataset_only):
     view.Summative_assessment_only( bg, font_color, label, view1, physics, download_dataset_only)
     view.Course_Overview( bg, font_color, label, view2, physics, download_dataset_only)
     view.All_ERs( bg, font_color, label, view3, physics, download_dataset_only)
     view.Requirements(bg, font_color, label, view4, physics, download_dataset_only)
     view.vertical_Requirements(bg, font_color, label, view5, physics, download_dataset_only)
-
-
+##############################################################################################
+# function that allows downloading:
+# 1. dataset only 
+# 2. downloading session (coming soon)
 def download_dataset(uploaded_file):
     c_down = False
     dow_container = st.container(); report  = ""
@@ -163,7 +165,8 @@ def download_dataset(uploaded_file):
         else:
             c_down = True
     return c_down
-
+##############################################################################################
+# function that removes existing dataset and corresponding html and validity files. 
 def reset_dataset(uploaded_file, delete_file_rec):
     if os.path.exists(uploaded_file):
         os.remove(uploaded_file)
@@ -184,7 +187,6 @@ def reset_dataset(uploaded_file, delete_file_rec):
     if delete_file_rec:
             if os.path.exists("file_name_record.txt"): 
                 os.remove("file_name_record.txt")      
-
 ##########################################################################################################
 # Start:    
 #global variables:
