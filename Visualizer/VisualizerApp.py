@@ -318,19 +318,23 @@ with container:
                 if os.path.exists("file_name_record.txt"):
                     with open("file_name_record.txt","r") as f:
                         pre_file = (f.read())
-                        reset_dataset(pre_file, False)  
-                with open(u_file.name,"wb") as f:
-                    f.write(u_file.getbuffer())
+                        if pre_file != u_file.name:
+                            reset_dataset(pre_file, False)  
                 with open("file_name_record.txt","w") as f:
                     f.write(u_file.name)
-                    uploaded_file = u_file.name
+                uploaded_file = u_file.name
+                if not os.path.exists(u_file.name):
+                    with open(u_file.name,"wb") as f:
+                        f.write(u_file.getbuffer())
+                
             # user is starting from scratch
             else:
+                f_name = "New Dataset.csv"
                 if os.path.exists("file_name_record.txt"):
                     with open("file_name_record.txt","r") as f:
                         pre_file = (f.read())
-                        reset_dataset(pre_file, False)
-                f_name = "New Dataset.csv"
+                        if pre_file != f_name:
+                            reset_dataset(pre_file, False)
                 with open("file_name_record.txt","w") as f:
                     f.write(f_name)
                 uploaded_file = f_name
