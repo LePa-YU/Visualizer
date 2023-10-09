@@ -166,36 +166,42 @@ def download_dataset(uploaded_file):
 
 def reset_dataset(uploaded_file, delete_file_rec):
     if os.path.exists(uploaded_file):
-        os.remove(uploaded_file); 
-        os.remove(str(uploaded_file) + "_Course_Overview.html"); os.remove(str(uploaded_file) +"_requirements.html"); 
-        os.remove(str(uploaded_file) + "_Summative_assessment_only.html");os.remove(str(uploaded_file) + "_All_ERs.html"); 
-        os.remove(str(uploaded_file) + "_vertical_requirements.html"); 
+        os.remove(uploaded_file)
         validity_file = uploaded_file.replace(".csv", "_validity_report.txt")
         if os.path.exists(validity_file):
-            os.remove(validity_file) 
-        if delete_file_rec:
+            os.remove(validity_file)  
+    if os.path.exists(str(uploaded_file) + "_Course_Overview.html"):    
+        os.remove(str(uploaded_file) + "_Course_Overview.html") 
+    if os.path.exists(str(uploaded_file) +"_requirements.html"): 
+        os.remove(str(uploaded_file) +"_requirements.html") 
+    if os.path.exists(str(uploaded_file) + "_Summative_assessment_only.html"):    
+        os.remove(str(uploaded_file) + "_Summative_assessment_only.html")
+    if os.path.exists(str(uploaded_file) + "_All_ERs.html"):      
+        os.remove(str(uploaded_file) + "_All_ERs.html"); 
+    if os.path.exists(str(uploaded_file) + "_vertical_requirements.html"):    
+        os.remove(str(uploaded_file) + "_vertical_requirements.html"); 
+        
+    if delete_file_rec:
             if os.path.exists("file_name_record.txt"): 
                 os.remove("file_name_record.txt")      
 
 ##########################################################################################################
 # Start:    
 #global variables:
-uploaded_file = None
-global df
+uploaded_file = None # file that contains the csv file used for visualization/ customization
+global df # dataframe of the csv file
 d_btn = False
-# initial settings:
-    # the "wide" layout allows the elements to be stretched to the size of the screen 
+# initial settings for the streamlit app:
+# the "wide" layout allows the elements to be stretched to the size of the screen 
 st.set_page_config(page_title = "LePa Visualizer", layout="wide", initial_sidebar_state="collapsed")
 st.title('LePa: Learning Path Project')
-
-# container that contains menus + visualizer --> helps with responsive attribute
+# container that contains menus + visualizer --> helps with responsiveness
 container = st.container()
-
 with container:
     # link to other dataset
     st.write("[Other datasets](https://github.com/LePa-YU/Datasets)")
-    
-    col1, col2, col3= st.columns([3.5, 3.5, 1])
+    #col1: existing dataset linked to `Dataset` repo
+    col1, col2= st.columns(2)
     with col1:
         fake_ds = "FAKE1001"
         ds_2311 = "EECS 2311"
@@ -204,6 +210,7 @@ with container:
         ds_4462 = "EECS 4462"
         enter_own = "Custom dataset"
         dataset_options=st.selectbox('',(fake_ds, ds_2311, ds_3461, ds_1530, ds_4462, enter_own), label_visibility="collapsed")
+    #col2: current views, view 3-5 are same with different layouts
     with col2:
         view1 = 'View 1: Summative assessment only'
         view2 = 'View 2: Course Overview'
@@ -211,33 +218,34 @@ with container:
         view4 = "View 4: Requirements"
         view5 = "View 5: Requirements - Vertical"
         option=st.selectbox('',(view1, view2, view3, view4, view5), label_visibility="collapsed")
-    
-    #create layout for enter/modify data
+    #create layout for custom dataset --> change the screen real state for better viewing
+    # basically giving different size container to hold the static html
     if dataset_options == enter_own:
         upload_col, edit_col = st.columns([3.5, 4.5])
         with edit_col:
             container_html = st.container()
     else:    
         container_html = st.container()
-
-
+    # ToDo: this section could use some refactoring
+    # getting data for the existing datasets from Dataset repo's main branch:
+    # Fake1001.csv
     if dataset_options == fake_ds:
-        # get demo file from github in the Dataset repo (main) 
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/FAKE1001/FAKE1001.csv"
         res = requests.get(url, allow_redirects=True)
-        #checking/creating file_name_record which contains the latest csv file used
+        #if record of this file exists in the system (duplicate names)--> remove it
         if os.path.exists("file_name_record.txt"):
             with open("file_name_record.txt","r") as f:
                 pre_file = (f.read())
                 reset_dataset(pre_file, False) 
+        # add this dataset to the record
         with open("file_name_record.txt","w") as f:
             f.write('FAKE1001.csv')
-        # create a temp csv file (added to .gitignore) and copy the material from the link to this file
+        # create a temp csv file (added to .gitignore) and copy csv data into this file
         with open('FAKE1001.csv','wb') as file:
             file.write(res.content)
         uploaded_file = "FAKE1001.csv"
+    # EECS 2311
     elif dataset_options == ds_2311:
-        # get EECS 2311 file from github in the Dataset repo (main) 
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS2311/2311_dataset_overview.csv"
         res = requests.get(url, allow_redirects=True)
         if os.path.exists("file_name_record.txt"):
@@ -246,12 +254,11 @@ with container:
                 reset_dataset(pre_file, False) 
         with open("file_name_record.txt","w") as f:
             f.write("2311_dataset_overview.csv")
-        # create a temp csv file (added to .gitignore) and copy the material from the link to this file
         with open('2311_dataset_overview.csv','wb') as file:
             file.write(res.content)
         uploaded_file = "2311_dataset_overview.csv"
+    # EECS3461
     elif dataset_options == ds_3461:
-        # get EECS 3461 file from github in the Dataset repo (main) 
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS3461/3461_dataset_overview.csv"
         res = requests.get(url, allow_redirects=True)
         if os.path.exists("file_name_record.txt"):
@@ -260,15 +267,13 @@ with container:
                 reset_dataset(pre_file, False) 
         with open("file_name_record.txt","w") as f:
             f.write("3461_dataset_overview.csv")
-        # create a temp csv file (added to .gitignore) and copy the material from the link to this file
         with open('3461_dataset_overview.csv','wb') as file:
             file.write(res.content)
         uploaded_file = "3461_dataset_overview.csv"
+    #EECS 1530
     elif dataset_options == ds_1530:
-        # get EECS 1530 file from github in the Dataset repo (main) 
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS1530/1530_dataset_overview.csv"
         res = requests.get(url, allow_redirects=True)
-        # create a temp csv file (added to .gitignore) and copy the material from the link to this file
         if os.path.exists("file_name_record.txt"):
             with open("file_name_record.txt","r") as f:
                 pre_file = (f.read())
@@ -278,8 +283,8 @@ with container:
         with open('1530_dataset_overview.csv','wb') as file:
             file.write(res.content)
         uploaded_file = "1530_dataset_overview.csv"
-    elif dataset_options == ds_4462:
-        # get EECS 4462 file from github in the Dataset repo (main) 
+    # EECS4462
+    elif dataset_options == ds_4462: 
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS4462/4462_dataset_overview.csv"
         res = requests.get(url, allow_redirects=True)
         if os.path.exists("file_name_record.txt"):
@@ -288,14 +293,14 @@ with container:
                 reset_dataset(pre_file, False) 
         with open("file_name_record.txt","w") as f:
             f.write("4462_dataset_overview.csv")
-        # create a temp csv file (added to .gitignore) and copy the material from the link to this file
         with open('4462_dataset_overview.csv','wb') as file:
             file.write(res.content)
         uploaded_file = "4462_dataset_overview.csv"
+    # custom dataset
     elif dataset_options == enter_own:
-        # to write on the file browser itself
         with upload_col:
             dataset = None
+             # to write on the file browser itself on streamlit
             st.markdown(
                         """
                         <style>
@@ -305,62 +310,58 @@ with container:
                         <style>
                         """
                 , unsafe_allow_html=True)
-            # with st.form("my-form", clear_on_submit=True):
+            # file browser    
             u_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
-                    # submitted = st.form_submit_button("UPLOAD!")
-            #if submitted and u_file is not None:
+            # user has entered a file
             if u_file is not None:
-                        # check for file record if it exists remove the previous open files
-                        if os.path.exists("file_name_record.txt"):
-                             with open("file_name_record.txt","r") as f:
-                                pre_file = (f.read())
-                                reset_dataset(pre_file, False)  
-                        with open(u_file.name,"wb") as f:
-                                f.write(u_file.getbuffer())
-                        with open("file_name_record.txt","w") as f:
-                                f.write(u_file.name)
-                            # f_name = u_file.name
-                        uploaded_file = u_file.name
+                # check for file record if it exists remove the previous open files
+                if os.path.exists("file_name_record.txt"):
+                    with open("file_name_record.txt","r") as f:
+                        pre_file = (f.read())
+                        reset_dataset(pre_file, False)  
+                with open(u_file.name,"wb") as f:
+                    f.write(u_file.getbuffer())
+                with open("file_name_record.txt","w") as f:
+                    f.write(u_file.name)
+                    uploaded_file = u_file.name
+            # user is starting from scratch
             else:
-                        # remove the dataset and html files based on file_name_record
-                        if os.path.exists("file_name_record.txt"):
-                            with open("file_name_record.txt","r") as f:
-                                pre_file = (f.read())
-                                reset_dataset(pre_file, False)
-                        f_name = "New Dataset.csv"
-                        # add the new dataset name to the file name record
-                        with open("file_name_record.txt","w") as f:
-                                f.write(f_name)
-                        uploaded_file = f_name
-            # if os.path.exists("file_name_record.txt"):
-            #     reset_dataset(f_name, False)    
-            #     with open("file_name_record.txt","r") as f:
-            #         uploaded_file = f.read()
-            # else:
-            #     uploaded_file = f_name
+                if os.path.exists("file_name_record.txt"):
+                    with open("file_name_record.txt","r") as f:
+                        pre_file = (f.read())
+                        reset_dataset(pre_file, False)
+                f_name = "New Dataset.csv"
+                with open("file_name_record.txt","w") as f:
+                    f.write(f_name)
+                uploaded_file = f_name
+            # instantiating dataset creator to allow customization of new/ entered dataset
             dataset = datasetCreator.datasetCreator(uploaded_file) 
-            new_df_container = st.container()
+            new_df_container = st.container() # container containing the options for editing dataset
             with new_df_container:
                 if dataset!=None:
-                    st.divider()
-                    node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations", "Delete Current Dataset"), key="node_tab")
+                    st.divider() # creating a line
+                    node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab")
                     if(node_option == "Add a new ER"):
-                            dataset.add_node()
+                        dataset.add_node()
                     elif(node_option == "Update a ER"):
-                            dataset.edit_node()
-                            # download_dataset(uploaded_file)
-                    # df = pd.read_csv(f_name)
-                    if(node_option == "Modify Relations"):
-                            dataset.add_relation()
-                            # download_dataset(uploaded_file)
-                    if(node_option == "Delete Current Dataset"):
-                        del_btn = st.button("Delete Dataset?")
-                        if del_btn: 
-                            reset_dataset(uploaded_file, True)
-                            # create new file
-                            f_name = "New Dataset.csv"
-                            uploaded_file = f_name
-                            dataset = datasetCreator.datasetCreator(f_name)  
+                        dataset.edit_node()
+                    elif(node_option == "Modify Relations"):
+                        dataset.add_relation()
+                    # if(node_option == "Delete Current Dataset"):
+                    #     del_btn = st.button("Delete Dataset?")
+                    #     if del_btn: 
+                    #         # reset_dataset(uploaded_file, False)
+                    #         # create new file
+                    #         # f_name = "New Dataset.csv"
+                    #         if os.path.exists("file_name_record.txt"):
+                    #             with open("file_name_record.txt","r") as f:
+                    #                 pre_file = (f.read())
+                    #                 reset_dataset(pre_file, False)
+                    #         f_name = "New Dataset.csv"
+                    #         with open("file_name_record.txt","w") as f:
+                    #             f.write(f_name)
+                    #         uploaded_file = f_name
+                    #         dataset = datasetCreator.datasetCreator(f_name)  
                     d_btn = download_dataset(uploaded_file)           
     # print(d_btn)
     if (uploaded_file is not None):
@@ -390,10 +391,7 @@ with container:
             select_node_edit2 = None
         
         view.set_select_edit_node(select_node_edit, select_node_edit2)
-         #download csv file
-        # with col3:
-        #     d_btn = st.button("Download CSV File")
-        # d_btn=False
+         
 
         # another container for the html components of the actual visualization
        
