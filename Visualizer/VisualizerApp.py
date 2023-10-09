@@ -119,12 +119,12 @@ class _Customization_menu:
         return bg
 
 
-def __create_html_pages(label, view, bg, font_color, view1, physics, d_btn):
-    view.Summative_assessment_only( bg, font_color, label, view1, physics, d_btn)
-    view.Course_Overview( bg, font_color, label, view2, physics, d_btn)
-    view.All_ERs( bg, font_color, label, view3, physics, d_btn)
-    view.Requirements(bg, font_color, label, view4, physics, d_btn)
-    view.vertical_Requirements(bg, font_color, label, view5, physics, d_btn)
+def __create_html_pages(label, view, bg, font_color, view1, physics, download_dataset_only):
+    view.Summative_assessment_only( bg, font_color, label, view1, physics, download_dataset_only)
+    view.Course_Overview( bg, font_color, label, view2, physics, download_dataset_only)
+    view.All_ERs( bg, font_color, label, view3, physics, download_dataset_only)
+    view.Requirements(bg, font_color, label, view4, physics, download_dataset_only)
+    view.vertical_Requirements(bg, font_color, label, view5, physics, download_dataset_only)
 
 
 def download_dataset(uploaded_file):
@@ -190,7 +190,7 @@ def reset_dataset(uploaded_file, delete_file_rec):
 #global variables:
 uploaded_file = None # file that contains the csv file used for visualization/ customization
 global df # dataframe of the csv file
-d_btn = False
+download_dataset_only = False
 # initial settings for the streamlit app:
 # the "wide" layout allows the elements to be stretched to the size of the screen 
 st.set_page_config(page_title = "LePa Visualizer", layout="wide", initial_sidebar_state="collapsed")
@@ -326,7 +326,6 @@ with container:
                 if not os.path.exists(u_file.name):
                     with open(u_file.name,"wb") as f:
                         f.write(u_file.getbuffer())
-                
             # user is starting from scratch
             else:
                 f_name = "New Dataset.csv"
@@ -344,6 +343,8 @@ with container:
             with new_df_container:
                 if dataset!=None:
                     st.divider() # creating a line
+                    # if the user is uploading a dataset then they remove it by removing it from the file uploader
+                    # else a delete option avaiable for them
                     if uploaded_file == "New Dataset.csv":
                         node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations", "Delete Dataset"), key="node_tab")
                     else:
@@ -366,9 +367,10 @@ with container:
                                 f.write(f_name)
                             uploaded_file = f_name
                             dataset = datasetCreator.datasetCreator(f_name)  
-                    d_btn = download_dataset(uploaded_file)           
+                    #flag that indicates user want to download the dataset
+                    download_dataset_only = download_dataset(uploaded_file)           
     if (uploaded_file is not None):
-        # store file in a dataframe 
+        # store file in a dataframe  used for views --> Visualization file
         dataframe = pd.read_csv(uploaded_file)
 
         #get file labe:
@@ -377,13 +379,15 @@ with container:
         else:
             label = uploaded_file.name
         
-        # get the csv file as array
+        # get the csv file as array -
         csvRows = []
-        with open(label, encoding='utf_8_sig') as csvfile:
-            reader = csv.reader(csvfile) # change contents to floats
-            for row in reader: # each row is a list
-                csvRows.append(row)
+        # with open(label, encoding='utf_8_sig') as csvfile:
+        #     reader = csv.reader(csvfile) # change contents to floats
+        #     for row in reader: # each row is a list
+        #         csvRows.append(row)
         view = views.Views(dataframe, csvRows)
+        
+        # for the custom dataset we retrive a selected node if they exists
         try:
             select_node_edit = dataset.get_selected_node()
         except:
@@ -392,14 +396,11 @@ with container:
             select_node_edit2 = dataset.get_selected_node2()
         except:
             select_node_edit2 = None
-        
+        # pass selected nodes to views so they can be visualized 
         view.set_select_edit_node(select_node_edit, select_node_edit2)
-         
 
-        # another container for the html components of the actual visualization
-       
-
-        # get the backgrounf color of the canvas. if true creates customization menu and if false set the colors to the pumpkin color palette
+        # Customization menu -- color, size, physics, etc. 
+        # get the background color of the canvas. if true creates customization menu and if false set the colors to the pumpkin color palette
         custom_menu = _Customization_menu(True, view)
         bg = custom_menu.create_menu()
         physics = custom_menu.physics
@@ -413,7 +414,9 @@ with container:
         rer_size = custom_menu.rER_size
         view.set_atomic_size_limit(atomic_max_size, atomic_min_size, start_end_size, ier_size, aer_size, rer_size)
         
-        __create_html_pages(label, view, bg, font_color, view1, physics, d_btn); 
+        # create 5 htmls containing different layout of datasets
+        # view1 is used for mobile warning when creating the html -- cannot have warning in streamlit
+        __create_html_pages(label, view, bg, font_color, view1, physics, download_dataset_only); 
 
          # adding html file to the container based on the selction made by user
         with container_html:

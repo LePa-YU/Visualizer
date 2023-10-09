@@ -1,6 +1,6 @@
 import json
 
-def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, csvRows,  needsStabilization, physics, select_edit_node_id, select_edit_node2_id):
+def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_dataset_only, csvRows,  needsStabilization, physics, select_edit_node_id, select_edit_node2_id):
     file_html = open(file_name , "w")
     # Adding the input data to the HTML file
     file_html.write('''
@@ -93,10 +93,10 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
     jsonOb_isHorizontal_format = format(jsonOb_isHorizontal)  
     file_html.write("\t\t var isHorizontal = "+str(jsonOb_isHorizontal_format) +";"+"\n\n")
 
-    #d_btn
-    jsonOb_d_btn = json.dumps(d_btn)
-    jsonOb_d_btn_format = format(jsonOb_d_btn)  
-    file_html.write("\t\t var download_button_clicked = "+str(jsonOb_d_btn_format) +";"+"\n\n")
+    #download_dataset_only
+    jsonOb_download_dataset_only = json.dumps(download_dataset_only)
+    jsonOb_download_dataset_only_format = format(jsonOb_download_dataset_only)  
+    file_html.write("\t\t var download_button_clicked = "+str(jsonOb_download_dataset_only_format) +";"+"\n\n")
 
     # needsStabilization
     jsonOb_needsStabilization = json.dumps(needsStabilization)
