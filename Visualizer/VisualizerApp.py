@@ -340,30 +340,29 @@ with container:
             with new_df_container:
                 if dataset!=None:
                     st.divider() # creating a line
-                    node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab")
+                    if uploaded_file == "New Dataset.csv":
+                        node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations", "Delete Dataset"), key="node_tab")
+                    else:
+                        node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab") 
                     if(node_option == "Add a new ER"):
                         dataset.add_node()
                     elif(node_option == "Update a ER"):
                         dataset.edit_node()
                     elif(node_option == "Modify Relations"):
                         dataset.add_relation()
-                    # if(node_option == "Delete Current Dataset"):
-                    #     del_btn = st.button("Delete Dataset?")
-                    #     if del_btn: 
-                    #         # reset_dataset(uploaded_file, False)
-                    #         # create new file
-                    #         # f_name = "New Dataset.csv"
-                    #         if os.path.exists("file_name_record.txt"):
-                    #             with open("file_name_record.txt","r") as f:
-                    #                 pre_file = (f.read())
-                    #                 reset_dataset(pre_file, False)
-                    #         f_name = "New Dataset.csv"
-                    #         with open("file_name_record.txt","w") as f:
-                    #             f.write(f_name)
-                    #         uploaded_file = f_name
-                    #         dataset = datasetCreator.datasetCreator(f_name)  
+                    elif(node_option == "Delete Dataset"):
+                        del_btn = st.button("Delete Dataset?")
+                        if del_btn: 
+                            if os.path.exists("file_name_record.txt"):
+                                with open("file_name_record.txt","r") as f:
+                                    pre_file = (f.read())
+                                    reset_dataset(pre_file, False)
+                            f_name = "New Dataset.csv"
+                            with open("file_name_record.txt","w") as f:
+                                f.write(f_name)
+                            uploaded_file = f_name
+                            dataset = datasetCreator.datasetCreator(f_name)  
                     d_btn = download_dataset(uploaded_file)           
-    # print(d_btn)
     if (uploaded_file is not None):
         # store file in a dataframe 
         dataframe = pd.read_csv(uploaded_file)
