@@ -128,6 +128,7 @@ def __create_html_pages(label, view, bg, font_color, view1, physics, d_btn):
 
 
 def download_dataset(uploaded_file):
+    c_down = False
     dow_container = st.container(); report  = ""
     with dow_container:
         validity_file_name = uploaded_file.replace(".csv", "_validity_report.txt")
@@ -141,8 +142,9 @@ def download_dataset(uploaded_file):
             st.write(report)
             if report == "": st.write("All issues are solved") 
         # if os.path.getsize(validity_file_name) == 0 and report == "":
-        save_file = st.checkbox("Download CSV File")
-        if(save_file):
+        dow_options = st.radio("", ("Download Dataset File (.CSV)", "Download Coordinate File (.JSON)"))
+        # save_file = st.checkbox("Download CSV File")
+        if(dow_options == "Download Dataset File (.CSV)"):
                 if os.path.getsize(validity_file_name) != 0 and report != "":
                     st.write("Note that there are some issues with the dataset you are about to download. Check the report above.")
                 f_name_col, down_btn_col = st.columns([2.5, 1])
@@ -158,6 +160,10 @@ def download_dataset(uploaded_file):
                             df_copy = pd.read_csv(uploaded_file)
                             csv_file = df_copy.to_csv(index=False).encode('utf-8')
                             download_btn = st.download_button(label="Download", data=csv_file, file_name=file_name, mime='text/csv')
+        else:
+            c_down = True
+    return c_down
+
 def reset_dataset(uploaded_file, delete_file_rec):
     if os.path.exists(uploaded_file):
         os.remove(uploaded_file); 
@@ -170,10 +176,13 @@ def reset_dataset(uploaded_file, delete_file_rec):
         if delete_file_rec:
             if os.path.exists("file_name_record.txt"): 
                 os.remove("file_name_record.txt")      
-    
+
+##########################################################################################################
+# Start:    
 #global variables:
 uploaded_file = None
 global df
+d_btn = False
 # initial settings:
     # the "wide" layout allows the elements to be stretched to the size of the screen 
 st.set_page_config(page_title = "LePa Visualizer", layout="wide", initial_sidebar_state="collapsed")
@@ -286,6 +295,7 @@ with container:
                              with open("file_name_record.txt","r") as f:
                                 pre_file = (f.read())
                                 reset_dataset(pre_file, False)  
+                        ## bug with opening file that exists: opening Fake1001 when Fake1001 already is in the server
                         if(not os.path.isfile(u_file.name)):
                             with open(u_file.name,"wb") as f:
                                 f.write(u_file.getbuffer())
@@ -312,14 +322,14 @@ with container:
                     node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations", "Delete Current Dataset"), key="node_tab")
                     if(node_option == "Add a new ER"):
                             dataset.add_node()
-                            download_dataset(uploaded_file)
+                            # download_dataset(uploaded_file)
                     elif(node_option == "Update a ER"):
                             dataset.edit_node()
-                            download_dataset(uploaded_file)
+                            # download_dataset(uploaded_file)
                     # df = pd.read_csv(f_name)
                     if(node_option == "Modify Relations"):
                             dataset.add_relation()
-                            download_dataset(uploaded_file)
+                            # download_dataset(uploaded_file)
                     if(node_option == "Delete Current Dataset"):
                         del_btn = st.button("Delete Dataset?")
                         if del_btn: 
@@ -343,7 +353,8 @@ with container:
                             # f_name = "New Dataset.csv"
                             # uploaded_file = f_name
                             # dataset = datasetCreator.datasetCreator(f_name)
-                                
+                    d_btn = download_dataset(uploaded_file)           
+    print(d_btn)
     if (uploaded_file is not None):
         # store file in a dataframe 
         dataframe = pd.read_csv(uploaded_file)
@@ -372,8 +383,9 @@ with container:
         
         view.set_select_edit_node(select_node_edit, select_node_edit2)
          #download csv file
-        with col3:
-            d_btn = st.button("Download CSV File")
+        # with col3:
+        #     d_btn = st.button("Download CSV File")
+        # d_btn=False
 
         # another container for the html components of the actual visualization
        

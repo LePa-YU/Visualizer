@@ -367,9 +367,21 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
 
 
      if(flag == false){
-      if(view =="View 4: Requirements")
-      {
+        const jsonData = {}; 
+        if(view =="View 4: Requirements")
+        {
           network.storePositions(); // causes some visual bugs 
+          //define coordinate in json
+          //assumption the ID match with csv file
+          nodeList.forEach(function(item) 
+            {
+              jsonData.id = item.id;
+              jsonData.x = item.x;
+              jsonData.y = item.y;
+            }); 
+
+
+          //csv format 
           //adding x values to headers
           csvRows[0].push("x values");
           csvRows[0].push("y values");
@@ -391,7 +403,27 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, d_btn, cs
         }
         if (download_button_clicked == true)
         {
-          exportToCsv(fileLabel, csvRows) ; 
+          	/*const jsonData = {
+              name: "Jonth",
+              email: "jobtd@mail.com",
+              website: "www.4codev.com"
+            };*/
+            //download(JSON.stringify(jsonData), "yourfile.json", "text/plain");
+            //function download(content, fileName, contentType)
+            
+
+            //download json
+            const a = document.createElement("a");
+            const content = JSON.stringify(jsonData); 
+            const contentType = "text/plain"; 
+            const file = new Blob([content], { type: contentType });
+            a.href = URL.createObjectURL(file);
+            a.download = "coordinates.json";
+            a.click();
+        
+
+          //download csv file
+         //exportToCsv(fileLabel, csvRows) ; 
         }
         flag = true; 
       }
