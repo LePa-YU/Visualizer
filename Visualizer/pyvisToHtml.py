@@ -212,7 +212,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
      		navigationButtons: true
 		},
 		manipulation: {
-			enabled: true
+			enabled: false
 		},
 		layout: {
     		randomSeed:10, 
