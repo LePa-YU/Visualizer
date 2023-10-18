@@ -259,6 +259,7 @@ class datasetCreator:
             datasetCreator.__add_relation_HasPart(self, node_1)
         if(relation == "Is Assessed By"):
             datasetCreator.__add_relation_isAssessedBy(self, node_1)
+        # check if relation exists for the following:
         if( relation == "Assesses"):
             datasetCreator.__add_relation_assesses(self, node_1)
         if( relation == "Is Part Of"):
