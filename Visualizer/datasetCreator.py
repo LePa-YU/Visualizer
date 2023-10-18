@@ -691,7 +691,15 @@ class datasetCreator:
             add_relation = False
             if not relation_exist: 
                 add_relation = st.button("Add Relation", key="add_relation")
-           
+            if relation_exist:
+                del_relation = st.button("Delete Relation", key="delete_CA_relation")
+                if del_relation:
+                    for i in range(len(self.df.index)):
+                        node1_CA =  self.df["comesAfter"][i]
+                        if node1_CA == node_2:
+                            self.df["comesAfter"][i] = None
+                            self.df.to_csv(self.file_name, index=False)
+                            break
             if(add_relation):
                 node1_has_CA = datasetCreator.__node_has_CA(self, node_1)
                 # print(node1_has_CA)
