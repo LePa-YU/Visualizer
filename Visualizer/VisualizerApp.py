@@ -139,16 +139,17 @@ def download_dataset(uploaded_file):
         report_file = open(validity_file_name, "r")
         report = report_file.read()
         report_file.close()
-        validity_report = st.expander("Please fix the following issues:") 
-        with validity_report:
-            st.write(report)
-            if report == "": st.write("All issues are solved") 
+        
+        #    if report == "": st.write("All issues are solved") 
         # if os.path.getsize(validity_file_name) == 0 and report == "":
         dow_options = st.radio("", ("Download Dataset File (.CSV)", "Download Coordinate File (.JSON)"))
         # save_file = st.checkbox("Download CSV File")
         if(dow_options == "Download Dataset File (.CSV)"):
                 if os.path.getsize(validity_file_name) != 0 and report != "":
-                    st.write("Note that there are some issues with the dataset you are about to download. Check the report above.")
+                    validity_report = st.expander("Please fix the following issues:") 
+                    with validity_report:
+                        st.write(report)
+                        st.write("Note that there are some issues with the dataset you are about to download. Check the report above.")
                 f_name_col, down_btn_col = st.columns([2.5, 1])
                 with f_name_col:
                     file_name= st.text_input("", value = uploaded_file , placeholder="What do you want to call this dataset?", label_visibility="collapsed")
