@@ -691,6 +691,7 @@ class datasetCreator:
             add_relation = False
             if not relation_exist: 
                 add_relation = st.button("Add Relation", key="add_relation")
+            # allow deletign comesAFter if it exists
             if relation_exist:
                 del_relation = st.button("Delete Relation", key="delete_CA_relation")
                 if del_relation:
