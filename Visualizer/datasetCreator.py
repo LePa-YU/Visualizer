@@ -677,8 +677,21 @@ class datasetCreator:
                 node_2 = np.int16(node_2).item()
             datasetCreator.set_selected_node2(self, node_2)
 
-            # find the node with `comesAfter` == node2 --> change this field to node1
-            add_relation = st.button("Add Relation", key="add_relation")
+            # check if the relationship exist:
+            relation_exist = False
+            for i in range(len(self.df.index)):
+                node1_id = node_id = self.df["identifier"][i]
+                if node1_id ==node_1:
+                    node1_CA =  self.df["comesAfter"][i]
+                    if node1_CA == node_2:
+                        relation_exist = True
+                        break
+
+            # find the node with `comesAfter` == node2 --> change this field to node1, if relation does not exists
+            add_relation = False
+            if not relation_exist: 
+                add_relation = st.button("Add Relation", key="add_relation")
+           
             if(add_relation):
                 node1_has_CA = datasetCreator.__node_has_CA(self, node_1)
                 # print(node1_has_CA)
