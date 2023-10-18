@@ -535,7 +535,31 @@ class datasetCreator:
         datasetCreator.set_selected_node2(self, node_2) 
          ## the relation itself: 
         ## the node_1 is added to “assesses” field of node with id  node_2.
-        add_relation = st.button("Add Relation", key="add_relation_ha")
+        # check if the relationship exist:
+        relation_exist = False
+        for i in range(len(self.df.index)):
+            node2_id = node_id = self.df["identifier"][i]
+            if node2_id ==node_2:
+                node2_assesses =  self.df["assesses"][i]
+                if node2_assesses == node_1:
+                    relation_exist = True
+                    break
+        add_relation = False
+        if not relation_exist: 
+                add_relation = st.button("Add Relation", key="add_relation_ha")
+        # allow deletion of relation if it exists
+        if relation_exist:
+                del_relation = st.button("Delete Relation", key="delete_CA_relation")
+                if del_relation:
+                    for i in range(len(self.df.index)):
+                        node2_id = node_id = self.df["identifier"][i]
+                        if node2_id ==node_2:
+                            node2_assesses =  self.df["assesses"][i]
+                            if node2_assesses  == node_1:
+                                self.df["assesses"][i] = None
+                                self.df.to_csv(self.file_name, index=False)
+                                break
+        # add_relation = st.button("Add Relation", key="add_relation_ha")
         if(add_relation):
              ## is Assessed by is one to one --> check if any other node refers to node_1 in assesses
                 ## and if it does then set this field to empty
@@ -614,12 +638,10 @@ class datasetCreator:
                 if node2_ipo == node_1:
                     relation_exist = True
                     break
-
-        # find the node with `comesAfter` == node2 --> change this field to node1, if relation does not exists
         add_relation = False
         if not relation_exist: 
                 add_relation = st.button("Add Relation", key="add_relation_ha")
-            # allow deletign comesAFter if it exists
+        # allow deletion of relation if it exists
         if relation_exist:
                 del_relation = st.button("Delete Relation", key="delete_CA_relation")
                 if del_relation:
