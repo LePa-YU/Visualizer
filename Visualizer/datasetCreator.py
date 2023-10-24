@@ -259,7 +259,7 @@ class datasetCreator:
             datasetCreator.__add_relation_HasPart(self, node_1)
         if(relation == "Is Assessed By"):
             datasetCreator.__add_relation_isAssessedBy(self, node_1)
-        # check if relation exists for the following:
+        
         if( relation == "Assesses"):
             datasetCreator.__add_relation_assesses(self, node_1)
         if( relation == "Is Part Of"):
@@ -445,7 +445,31 @@ class datasetCreator:
         datasetCreator.set_selected_node2(self, node_2)  
         ## the relation itself: 
         ## node 2 id is added to is part of field of node 1
-        add_relation = st.button("Add Relation", key="add_relation_ha")
+         # check if the relationship exist:
+        relation_exist = False
+        for i in range(len(self.df.index)):
+            node1_id = node_id = self.df["identifier"][i]
+            if node1_id ==node_1:
+                node1_ipo =  self.df["isPartOf"][i]
+                if node1_ipo == node_2:
+                    relation_exist = True
+                    break
+        add_relation = False
+        if not relation_exist: 
+                add_relation = st.button("Add Relation", key="add_relation_ha")
+        # allow deletion of relation if it exists
+        if relation_exist:
+                del_relation = st.button("Delete Relation", key="delete_CA_relation")
+                if del_relation:
+                    for i in range(len(self.df.index)):
+                        node1_id = self.df["identifier"][i]
+                        if node1_id ==node_1:
+                            node1_ipo =  self.df["isPartOf"][i]
+                            if node1_ipo == node_2:
+                                self.df["isPartOf"][i] = None
+                                self.df.to_csv(self.file_name, index=False)
+                                break
+        # add_relation = st.button("Add Relation", key="add_relation_ha")
         if(add_relation):
             for i in range(len(self.df.index)):
                 n_id = self.df["identifier"][i]
@@ -512,7 +536,6 @@ class datasetCreator:
                                 self.df["assesses"][i] = None
                                 self.df.to_csv(self.file_name, index=False)
                                 break
-        # add_relation = st.button("Add Relation", key="add_relation_ha")
         if(add_relation):
             #one to one --> check if any other node refers to node_2 in assesses
             for j in range(len(self.df.index)):
