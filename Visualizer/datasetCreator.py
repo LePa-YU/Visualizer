@@ -207,7 +207,9 @@ class datasetCreator:
             if(node1_id != None):
                 node1_id = np.int16(node1_id).item()
             datasetCreator.set_selected_node(self, node1_id)
-            node1_confirm = True 
+            node1_confirm = True; node_type_end=False
+            if node1_id == len(self.df)-1:
+                node_type_end = True
             if(node1_confirm):
                 # datasetCreator.set_selected_node(self, None)
                 for i in range(len(self.df.index)):
@@ -218,29 +220,32 @@ class datasetCreator:
                         break        
         with col2:
             st.text("select relation")
-            if node1_is_composite:
-                # if first node is composite we can have: 
-                # composite-composite relation: 
-                #   1. comesAfter, comesBefore: assumption --> between aER, rER, start and end
-                #       a. node1 comesAfter nodeB (add to node A)
-                #       b. node1 comesBefore node B (add to node B)
-                #   2. if node1_type is rER --> assess else is assessedBy
-                # composite-atomic relation: hasPart --> node 1 has node 2 (for now only atomic)
-                relation_list = []
-                if node1_type == "rER": relation_list = ["Has Part", "Assesses"] #done
-                elif node1_type == "aER":
-                    # possiblity of adding ComesBefore
-                    relation_list  = ["Comes After", "Has Part", "Is Assessed By"] #done
-                else: 
-                    # possiblity of adding ComesBefore
-                    relation_list = ["Comes After", "Has Part"] #done
-            else:
-                # if a node a not a composite then it is atomic ER. the only atomic-atomic relation:
-                #   1. Requires if node 1 requires node 2 --> add to node 1
-                #   2. is required by: if node 1 is required by node 2 --> add to node 2
-                # atomic_composite relations:
-                # 1. is Part of: atomic ER can be part of any composite ER --> add to node 1
-                relation_list = ["Requires", "Is Required By", "Is Part Of"]
+            if node_type_end:
+                 relation_list = ["Comes After"]
+            else:    
+                if node1_is_composite:
+                    # if first node is composite we can have: 
+                    # composite-composite relation: 
+                    #   1. comesAfter, comesBefore: assumption --> between aER, rER, start and end
+                    #       a. node1 comesAfter nodeB (add to node A)
+                    #       b. node1 comesBefore node B (add to node B)
+                    #   2. if node1_type is rER --> assess else is assessedBy
+                    # composite-atomic relation: hasPart --> node 1 has node 2 (for now only atomic)
+                    relation_list = []
+                    if node1_type == "rER": relation_list = ["Has Part", "Assesses"] #done
+                    elif node1_type == "aER":
+                        # possiblity of adding ComesBefore
+                        relation_list  = ["Comes After", "Has Part", "Is Assessed By"] #done
+                    else: 
+                        # possiblity of adding ComesBefore
+                        relation_list = ["Comes After", "Has Part"] #done
+                else:
+                    # if a node a not a composite then it is atomic ER. the only atomic-atomic relation:
+                    #   1. Requires if node 1 requires node 2 --> add to node 1
+                    #   2. is required by: if node 1 is required by node 2 --> add to node 2
+                    # atomic_composite relations:
+                    # 1. is Part of: atomic ER can be part of any composite ER --> add to node 1
+                    relation_list = ["Requires", "Is Required By", "Is Part Of"]
             relation_select = st.selectbox("", relation_list, key="relation select")
         with col3:
             st.text("select ER 2")
@@ -930,13 +935,13 @@ class datasetCreator:
         # # select type: there are 4 type: iER, aER, rER, atomic ER or all --> default = All
         if "confirm_ER_1" not in st.session_state:
                 st.session_state.confirm_ER_1 = False
-        type_selector = st.selectbox("Select the ER type", ("All",'iER', 'aER', 'rER', "atomic ER"), key="find_node1_type_relation", disabled= st.session_state.confirm_ER_1)
+        type_selector = st.selectbox("Select the ER type", ("All",'iER', 'aER', 'rER', "atomic ER", "End"), key="find_node1_type_relation", disabled= st.session_state.confirm_ER_1)
         # after choosing type and selectbox of unique titles is created based on the type (ordered alphabetically)
         ier_title_list = []; aer_title_list = []; rer_title_list = []; atomic_title_list = []; all_title_list = []
         for i in range(len(self.df.index)):
             node_title = self.df["title"][i]
             node_type = self.df["type"][i]
-            if(node_type != "start" and node_type != "end"):
+            if(node_type != "start"):
                 all_title_list.append(node_title)
                 if(node_type == "iER"): ier_title_list.append(node_title) 
                 elif(node_type == "aER"):aer_title_list.append(node_title)
@@ -958,6 +963,8 @@ class datasetCreator:
         elif(type_selector == "atomic ER"): 
             title_selector = st.selectbox("Select ER", set(atomic_title_list), key="find_node1_title_relation", disabled= st.session_state.confirm_ER_1)
             title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, atomic_title_list)
+        elif(type_selector ==  "End" ):
+            return len(self.df)-1
         #if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find 
         # the corret node
         id_selector = ""; atomic_type_selector  = ""
