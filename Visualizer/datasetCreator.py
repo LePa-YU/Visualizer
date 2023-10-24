@@ -488,7 +488,31 @@ class datasetCreator:
         datasetCreator.set_selected_node2(self, node_2) 
         ## the relation itself: 
         ## the node_1 is added to “assesses” field of node with id  node_2.
-        add_relation = st.button("Add Relation", key="add_relation_ha")
+         # check if the relationship exist:
+        relation_exist = False
+        for i in range(len(self.df.index)):
+            node_id = self.df["identifier"][i]
+            if node_id ==node_1:
+                node1_assesses =  self.df["assesses"][i]
+                if node1_assesses == node_2:
+                    relation_exist = True
+                    break
+        add_relation = False
+        if not relation_exist: 
+            add_relation = st.button("Add Relation", key="add_relation_ha")
+        # allow deletion of relation if it exists
+        if relation_exist:
+                del_relation = st.button("Delete Relation", key="delete_CA_relation")
+                if del_relation:
+                    for i in range(len(self.df.index)):
+                        node_id = self.df["identifier"][i]
+                        if node_id ==node_1:
+                            node1_assesses =  self.df["assesses"][i]
+                            if node1_assesses  == node_2:
+                                self.df["assesses"][i] = None
+                                self.df.to_csv(self.file_name, index=False)
+                                break
+        # add_relation = st.button("Add Relation", key="add_relation_ha")
         if(add_relation):
             #one to one --> check if any other node refers to node_2 in assesses
             for j in range(len(self.df.index)):
