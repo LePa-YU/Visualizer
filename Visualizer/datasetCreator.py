@@ -717,14 +717,36 @@ class datasetCreator:
 
     def __add_relation_comesAfter(self, node_1):
             type_list = []; node_2 = None
-            type_list = ["All",'start','iER', 'aER']
+            # check if node 1 comes after end
+            node1_ca_end = False
+            for i in range(len(self.df)):
+                node1_id = self.df["identifier"][i]
+                if node1_id == node_1:
+                    node_1_ca = self.df["comesAfter"][i]
+                    for j in range(len(self.df)):
+                        node2_id = self.df["identifier"][j]
+                        if node2_id == node_1_ca:
+                        #     node2_type = self.df["type"][i]
+                        #     if node2_type == "end":
+                            if node2_id == len(self.df)-1:
+                                print("ok")
+                                node1_ca_end = True
+                    break
+            if node1_ca_end:
+                type_list = ["All",'start','iER', 'aER', 'End']
+            else:
+                type_list = ["All",'start','iER', 'aER']
             type_select = st.selectbox("Select the ER type", type_list, key="find_node2_type_relation", disabled=False)
             ier_title_list = []; aer_title_list = []; all_title_list = []
             if(type_select == "start"):
                 node_2 = 0
+            elif type_select == "End":
+                node_2 = len(self.df)-1
             else:
                 #add start node to all:
                 all_title_list.append(self.df["title"][0])
+                if node1_ca_end:
+                    all_title_list.append(self.df["title"][len(self.df)-1])
                 # adding aer and ier to their respective lists excluding the node 1   
                 for i in range(len(self.df.index)):
                     node_id = self.df["identifier"][i]
@@ -770,7 +792,7 @@ class datasetCreator:
                         node_title = self.df["title"][i]
                         node_type = self.df["type"][i]
                         if(type_select == "All"):
-                            if node_type == "aER" or node_type=="iER" or node_type =="start":
+                            if node_type == "aER" or node_type=="iER" or node_type =="start" or node_type =="end":
                                 if(title_selector == node_title): node_2 = node_id
                         else:
                             if(type_select == node_type and title_selector == node_title): node_2= node_id
