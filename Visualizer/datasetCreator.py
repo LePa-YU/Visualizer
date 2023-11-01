@@ -959,7 +959,8 @@ class datasetCreator:
         for i in range(len(self.df.index)):
             node_title = self.df["title"][i]
             node_type = self.df["type"][i]
-            if(node_type != "start"):
+            if node_type == "end":all_title_list.append(node_title)
+            if(node_type != "start" and node_type != "end"):
                 all_title_list.append(node_title)
                 if(node_type == "iER"): ier_title_list.append(node_title) 
                 elif(node_type == "aER"):aer_title_list.append(node_title)
