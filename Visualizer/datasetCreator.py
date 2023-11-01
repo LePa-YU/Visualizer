@@ -332,11 +332,41 @@ class datasetCreator:
         if(node_2!= None):
             node_2 = np.int16(node_2).item()
         datasetCreator.set_selected_node2(self, node_2)  
-        
+        # if node 1 has requires already, allow deleting the relation from node 1's requires field if node 2 is part of it
+        relation_exist = False; node_1_requires = []; index = None; n2 = None
+        for i in range(len(self.df.index)):
+            n_id = self.df["identifier"][i]
+            if(n_id == node_1): # find node 1
+                require_ids = self.df["requires"][i]
+                require_id_list = []
+                if type(require_ids) != str: require_ids = str(require_ids)
+                if type(require_ids) == str and require_ids!="":
+                    require_id_list = require_ids.split(",")
+                        # find node 2:
+                    for n in require_id_list:
+                        # print(node_2)
+                        try: n_int = int(n)
+                        except: 
+                            try: n_int = int(float(n))
+                            except: n_int = None
+                        if n_int == node_2 :  # node exist in required field of node 1 
+                            relation_exist = True; node_1_requires = require_id_list.copy()
+                            index = i; n2 = n
+                            break
+        # print(node_1_requires); print(n2)
+        add_relation = st.button("Add Relation", key="add_relation_req", disabled = relation_exist)
+        del_relation = st.button("Delete Relation", key="delete_req_relation",  disabled = not relation_exist)
         #Relation itself:
         # node 1 requires node 2 --> node 2 id added to node 1's requires field
         # requires field is a list so it must retrieve and add to the list
-        add_relation = st.button("Add Relation", key="add_relation_ha")
+        # add_relation = st.button("Add Relation", key="add_relation_ha")
+        if del_relation:
+                # print(node_1_requires)
+                # print(str(node_2))
+                node_1_requires.remove(str(n2))
+                delimiter = ','
+                res = delimiter.join(node_1_requires)
+                if index != None: self.df["requires"][index] = res
         if(add_relation):
             for i in range(len(self.df.index)):
                 n_id = self.df["identifier"][i]
@@ -356,37 +386,7 @@ class datasetCreator:
                             self.df["requires"][i] = str(self.df["requires"][i]) +"," + str(int(node_1))
                         # self.df["requires"][i] =  node_2
                         break
-        # if node 1 has requires already, allow deleting the relation from node 1's requires field if node 2 is part of it
-        flag = False; node_1_requires = []; index = None; n2 = None
-        for i in range(len(self.df.index)):
-            n_id = self.df["identifier"][i]
-            if(n_id == node_1): # find node 1
-                require_ids = self.df["requires"][i]
-                require_id_list = []
-                if type(require_ids) != str: require_ids = str(require_ids)
-                if type(require_ids) == str and require_ids!="":
-                    require_id_list = require_ids.split(",")
-                        # find node 2:
-                    for n in require_id_list:
-                        # print(node_2)
-                        try: n_int = int(n)
-                        except: 
-                            try: n_int = int(float(n))
-                            except: n_int = None
-                        if n_int == node_2 :  # node exist in required field of node 1 
-                            flag = True; node_1_requires = require_id_list.copy()
-                            index = i; n2 = n
-                            break
-        # print(node_1_requires); print(n2)
-        if flag:
-            del_relation = st.button("Delete Relation", key="del_relation_r")
-            if del_relation:
-                # print(node_1_requires)
-                # print(str(node_2))
-                node_1_requires.remove(str(n2))
-                delimiter = ','
-                res = delimiter.join(node_1_requires)
-                if index != None: self.df["requires"][index] = res
+        
                               
         self.df.to_csv(self.file_name, index=False)
 
@@ -459,13 +459,9 @@ class datasetCreator:
                 if node1_ipo == node_2:
                     relation_exist = True
                     break
-        add_relation = False
-        if not relation_exist: 
-                add_relation = st.button("Add Relation", key="add_relation_ha")
-        # allow deletion of relation if it exists
-        if relation_exist:
-                del_relation = st.button("Delete Relation", key="delete_CA_relation")
-                if del_relation:
+        add_relation = st.button("Add Relation", key="add_relation_ipo", disabled = relation_exist)
+        del_relation = st.button("Delete Relation", key="delete_ipo_relation",  disabled = not relation_exist)
+        if del_relation:
                     for i in range(len(self.df.index)):
                         node1_id = self.df["identifier"][i]
                         if node1_id ==node_1:
@@ -526,13 +522,9 @@ class datasetCreator:
                 if node1_assesses == node_2:
                     relation_exist = True
                     break
-        add_relation = False
-        if not relation_exist: 
-            add_relation = st.button("Add Relation", key="add_relation_ha")
-        # allow deletion of relation if it exists
-        if relation_exist:
-                del_relation = st.button("Delete Relation", key="delete_CA_relation")
-                if del_relation:
+        add_relation = st.button("Add Relation", key="add_relation_a", disabled = relation_exist)
+        del_relation = st.button("Delete Relation", key="delete_a_relation",  disabled = not relation_exist)
+        if del_relation:
                     for i in range(len(self.df.index)):
                         node_id = self.df["identifier"][i]
                         if node_id ==node_1:
@@ -597,13 +589,11 @@ class datasetCreator:
                 if node2_assesses == node_1:
                     relation_exist = True
                     break
-        add_relation = False
-        if not relation_exist: 
-                add_relation = st.button("Add Relation", key="add_relation_ha")
+        add_relation = st.button("Add Relation", key="add_relation_isb", disabled = relation_exist)
+        del_relation = st.button("Delete Relation", key="delete_isb_relation",  disabled = not relation_exist)
         # allow deletion of relation if it exists
-        if relation_exist:
-                del_relation = st.button("Delete Relation", key="delete_CA_relation")
-                if del_relation:
+       
+        if del_relation:
                     for i in range(len(self.df.index)):
                         node2_id = node_id = self.df["identifier"][i]
                         if node2_id ==node_2:
@@ -691,13 +681,13 @@ class datasetCreator:
                 if node2_ipo == node_1:
                     relation_exist = True
                     break
-        add_relation = False
-        if not relation_exist: 
-                add_relation = st.button("Add Relation", key="add_relation_ha")
+        # add_relation = False
+        # if not relation_exist: 
+        add_relation = st.button("Add Relation", key="add_relation_ha", disabled = relation_exist)
+        del_relation = st.button("Delete Relation", key="delete_ha_relation", disabled = not relation_exist)
+
         # allow deletion of relation if it exists
-        if relation_exist:
-                del_relation = st.button("Delete Relation", key="delete_CA_relation")
-                if del_relation:
+        if del_relation:
                     for i in range(len(self.df.index)):
                         node2_id = node_id = self.df["identifier"][i]
                         if node2_id ==node_2:
@@ -811,13 +801,12 @@ class datasetCreator:
                         break
 
             # find the node with `comesAfter` == node2 --> change this field to node1, if relation does not exists
-            add_relation = False
-            if not relation_exist: 
-                add_relation = st.button("Add Relation", key="add_relation")
+            # add_relation = False
+            # if not relation_exist: 
+            add_relation = st.button("Add Relation", key="add_relation", disabled = relation_exist)
+            del_relation = st.button("Delete Relation", key="delete_CA_relation",  disabled = not relation_exist)
             # allow deletign comesAFter if it exists
-            if relation_exist:
-                del_relation = st.button("Delete Relation", key="delete_CA_relation")
-                if del_relation:
+            if del_relation:
                     for i in range(len(self.df.index)):
                         node1_CA =  self.df["comesAfter"][i]
                         if node1_CA == node_2:
