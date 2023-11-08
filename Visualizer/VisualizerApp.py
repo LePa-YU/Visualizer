@@ -316,13 +316,14 @@ with container:
             # file browser    
             u_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
             # user has entered a file
-            if u_file is not None:
+            if u_file is not None:    
                 # check for file record if it exists remove the previous open files
                 if os.path.exists("file_name_record.txt"):
                     with open("file_name_record.txt","r") as f:
                         pre_file = (f.read())
                         if pre_file != u_file.name:
                             reset_dataset(pre_file, False)  
+
                 with open("file_name_record.txt","w") as f:
                     f.write(u_file.name)
                 uploaded_file = u_file.name
@@ -342,6 +343,15 @@ with container:
                 uploaded_file = f_name
             # instantiating dataset creator to allow customization of new/ entered dataset
             dataset = datasetCreator.datasetCreator(uploaded_file) 
+            #cleaning report
+            cleaning_file = open("cleaning_report.txt", "r+")            
+            clean = cleaning_file.read()
+            if clean != "":
+                cleaning_report = st.expander("The following issues have been fixed") 
+                with cleaning_report:
+                    st.write(clean)
+            cleaning_file.close()
+              
             new_df_container = st.container() # container containing the options for editing dataset
             with new_df_container:
                 if dataset!=None:

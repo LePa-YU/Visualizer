@@ -24,16 +24,37 @@ class datasetCreator:
                     self.df[col] = ""
             self.df.to_csv(file_name, index=False)
         # assess, isPartOf, comesAfter must contain one value if not the case then set to empty
+        
+        fi = open("cleaning_report.txt", "w") 
+        
         for i in range(len(self.df.index)):
             node_type = self.df["type"][i]
             if node_type != "start" and node_type != "end":
-                if node_type != "rER": self.df["assesses"][i] = "" # if node is not rER then it should not have assess field
+                if node_type != "rER":
+                    if (pd.isna(self.df["assesses"][i]) == False):
+                        fi.write("Removed the assesses relation for ER with ID: " + str(i)+ "\n")
+                        fi.write('\n')
+                    self.df["assesses"][i] = "" # if node is not rER then it should not have assess field
                 else: # if node is rER then it must not have comesAfter, requires, and isPartOf
+                    if (pd.isna(self.df["comesAfter"][i]) == False):
+                        fi.write("Removed the comesAfter relation for ER with ID: " + str(i)+ " \n")
+                        fi.write('\n')
+                    
+                    if (pd.isna(self.df["isPartOf"][i]) == False):
+                        fi.write("Removed the isPartOf relation for ER with ID: " + str(i)+ " \n")
+                        fi.write('\n')
+
+                    if(pd.isna(self.df["requires"][i]) == False):
+                        fi.write("Removed the requires relation for ER with ID: " + str(i)+ " \n")
+                        fi.write('\n')
+                
                     self.df["comesAfter"][i] = ""; self.df["isPartOf"][i] = ""
                     self.df["requires"][i] = ""
                 
                 # if a node is aER or iER --> might have comesAfter but no assesses, isPartof, requires
-                if node_type != "aER" and node_type!="iER": self.df["comesAfter"][i] = "" # if node is not aER or rER then doesnt have comesAfter
+                if node_type != "aER" and node_type!="iER": 
+                
+                    self.df["comesAfter"][i] = "" # if node is not aER or rER then doesnt have comesAfter
                 else:
                     self.df["assesses"][i] = ""; self.df["isPartOf"][i] = ""
                     self.df["requires"][i] = ""
@@ -54,6 +75,7 @@ class datasetCreator:
                 if ipo == None: self.df["isPartOf"][i] = ""
        
         self.df.to_csv(file_name, index=False)
+        fi.close()
 
     def add_node(self):
         datasetCreator.set_selected_node(self, None)
