@@ -1084,7 +1084,8 @@ class datasetCreator:
                         node_url = st.text_input("URL", disabled=disable)
                     with dur_col:
                         node_dur = st.number_input('Duration', value = 2, disabled=disable)
-            if(node_des!="" or node_url!=""):
+            # if(node_des!="" or node_url!=""):
+            if (True):
                 col1, col2 = st.columns([1, 8])
                 with col1:
                     add_node = st.button("Save", key="Save_node", disabled=disable)
