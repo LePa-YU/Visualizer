@@ -176,15 +176,22 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
       document.getElementById("label").click();
     });
     
-    console.log(is_custom); 
+    /*console.log(is_custom); 
     window.addEventListener('beforeunload', function (e) {
       if (is_custom == true){  
         // Cancel the event
         e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
         // Chrome requires returnValue to be set
         e.returnValue = '';
+        is_custom == false
       }
-    }); 
+    });
+    if (is_custom == true){  
+        // Cancel the event
+        e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
+        // Chrome requires returnValue to be set
+        e.returnValue = '';
+      } */
 
     var container = document.getElementById('canvas');
     // creating the data to be used for visuaization
