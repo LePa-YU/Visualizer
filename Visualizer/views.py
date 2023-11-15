@@ -27,6 +27,10 @@ class Views:
     def set_select_edit_node(self, node_id, node2_id):
         self.select_edit_node_id = node_id
         self.select_edit_node2_id =node2_id
+
+    # function to set the selected nodes
+    def set_is_custom(self, is_custom):
+        self.is_custom = is_custom
     
     # function that creates summative assessment only view
     def Summative_assessment_only(self, bg, font_color, file_label, view, physics, download_dataset_only):
@@ -39,7 +43,7 @@ class Views:
         # assign a file name
         file_name = file_label+"_Summative_assessment_only.html"
         #convert the networkx to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, download_dataset_only, self.csvRows, False, self.select_edit_node_id, self.select_edit_node2_id)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, download_dataset_only, self.csvRows, False, self.select_edit_node_id, self.select_edit_node2_id, self.is_custom)
     
     def Course_Overview(self, bg,font_color, file_label, view, physics, download_dataset_only):
         # create networkx graph
@@ -51,7 +55,7 @@ class Views:
         # assign a file name
         file_name = file_label+"_Course_Overview.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, download_dataset_only, self.csvRows, False, self.select_edit_node_id, self.select_edit_node2_id)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, download_dataset_only, self.csvRows, False, self.select_edit_node_id, self.select_edit_node2_id, self.is_custom)
 
     def  All_ERs(self, bg,font_color, file_label, view, physics, download_dataset_only):
         # create networkx graph
@@ -64,7 +68,7 @@ class Views:
         # assign a file name
         file_name = file_label+"_All_ERs.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, download_dataset_only, self.csvRows, False, self.select_edit_node_id, self.select_edit_node2_id)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, download_dataset_only, self.csvRows, False, self.select_edit_node_id, self.select_edit_node2_id, self.is_custom)
     
     # the session info (x and y coordinates) are used for this view only if they exists
     # same view as All_ERs. using icons for atomic ERs instead of color + icon size to show duration
@@ -86,7 +90,7 @@ class Views:
                 all_has_coordinate = False
                 break
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, download_dataset_only, self.csvRows, all_has_coordinate, self.select_edit_node_id, self.select_edit_node2_id)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, True, download_dataset_only, self.csvRows, all_has_coordinate, self.select_edit_node_id, self.select_edit_node2_id, self.is_custom)
     
     # similar view as requirements view in a vertical layout
     def vertical_Requirements(self, bg,font_color, file_label, view, physics, download_dataset_only):
@@ -101,7 +105,7 @@ class Views:
         # assign a file name
         file_name = file_label+"_vertical_requirements.html"
         #convert the network to pyvis
-        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, False, download_dataset_only, self.csvRows, False, self.select_edit_node_id, self.select_edit_node2_id)
+        nxToPyvis.convert_to_pyvis(G, file_name, bg, font_color ,file_label, view, physics, False, download_dataset_only, self.csvRows, False, self.select_edit_node_id, self.select_edit_node2_id, self.is_custom)
     
     # used by customization menu for setting limits to the size. specially important when atomics have duration
     # and cannot be larger than the size of their composite

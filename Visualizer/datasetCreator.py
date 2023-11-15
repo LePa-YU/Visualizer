@@ -1059,7 +1059,8 @@ class datasetCreator:
             must_input  = False
             title_col, ER_col, atomic_col = st.columns([1.75,0.875,0.875])
             with title_col:
-                node_title = st.text_input("Title", key="add_node_title", disabled=disable)
+                t = "Add a Title"
+                node_title = st.text_input("Title", key="add_node_title", disabled=disable, placeholder = t)
             with ER_col:
                 if(node_title !=""):
                     must_input = True
@@ -1070,21 +1071,24 @@ class datasetCreator:
                             atomic_type = st.selectbox("atomic type", ('.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip' ), disabled=disable)
                             node_type = atomic_type
             if(must_input):
+                d = "Add a Description"
+                u = "Add an URL"
                 if(node_type=="iER" or node_type=="aER" or node_type=="rER"):
                     des_col, url_col= st.columns(2)
                     with des_col:
-                        node_des = st.text_input("Description", disabled=disable)
+                        node_des = st.text_input("Description", disabled=disable, placeholder = d)
                     with url_col:
-                        node_url = st.text_input("URL", disabled=disable)
+                        node_url = st.text_input("URL", disabled=disable, placeholder = u)
                 else:
                     des_col, url_col, dur_col = st.columns(3)
                     with des_col:
-                        node_des = st.text_input("Description", disabled=disable)
+                        node_des = st.text_input("Description", disabled=disable, placeholder = d)
                     with url_col:
-                        node_url = st.text_input("URL", disabled=disable)
+                        node_url = st.text_input("URL", disabled=disable,  placeholder = u)
                     with dur_col:
                         node_dur = st.number_input('Duration', value = 2, disabled=disable)
-            if(node_des!="" or node_url!=""):
+            # if(node_des!="" or node_url!=""):
+            if (True):
                 col1, col2 = st.columns([1, 8])
                 with col1:
                     add_node = st.button("Save", key="Save_node", disabled=disable)
