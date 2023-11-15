@@ -1,6 +1,6 @@
 import json
 
-def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_dataset_only, csvRows,  needsStabilization, physics, select_edit_node_id, select_edit_node2_id):
+def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_dataset_only, csvRows,  needsStabilization, physics, select_edit_node_id, select_edit_node2_id, is_custom):
     file_html = open(file_name , "w")
     # Adding the input data to the HTML file
     file_html.write('''
@@ -130,6 +130,11 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
     jsonOb_csvRows_format = format(jsonOb_csvRows)
     file_html.write("\t\t var csvRows= "+str(jsonOb_csvRows_format) +";"+"\n")
 
+    #is_custom
+    jsonOb_is_custom = json.dumps(is_custom)
+    jsonOb_is_custom_format = format(jsonOb_is_custom)
+    file_html.write("\t\t var is_custom= "+str(jsonOb_is_custom_format) +";"+"\n")
+    
     # nodes data from network
     nodes_data = data[0]
     for n in nodes_data:
@@ -166,6 +171,21 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
         alert("For the best viewing experience, please use a PC");           
       } 
     }
+
+    window.addEventListener("load", (event) => {
+      document.getElementById("label").click();
+    });
+    
+    console.log(is_custom); 
+    window.addEventListener('beforeunload', function (e) {
+      if (is_custom == true){  
+        // Cancel the event
+        e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
+        // Chrome requires returnValue to be set
+        e.returnValue = '';
+      }
+    }); 
+
     var container = document.getElementById('canvas');
     // creating the data to be used for visuaization
     var data = {

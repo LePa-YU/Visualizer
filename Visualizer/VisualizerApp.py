@@ -236,6 +236,7 @@ with container:
     # ToDo: this section could use some refactoring
     # getting data for the existing datasets from Dataset repo's main branch:
     # Fake1001.csv
+    is_custom = False
     if dataset_options == fake_ds:
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/FAKE1001/FAKE1001.csv"
         res = requests.get(url, allow_redirects=True)
@@ -305,6 +306,7 @@ with container:
         uploaded_file = "4462_dataset_overview.csv"
     # custom dataset
     elif dataset_options == enter_own:
+        is_custom = True
         is_Custom_view = True
         with upload_col:
             dataset = None
@@ -421,7 +423,7 @@ with container:
         aer_size = custom_menu.aER_size
         rer_size = custom_menu.rER_size
         view.set_atomic_size_limit(atomic_max_size, atomic_min_size, start_end_size, ier_size, aer_size, rer_size)
-        
+        view.set_is_custom(is_custom)
         # create 5 htmls containing different layout of datasets
         # view1 is used for mobile warning when creating the html -- cannot have warning in streamlit
         __create_html_pages(label, view, bg, font_color, view1, physics, download_dataset_only); 
