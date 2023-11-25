@@ -99,6 +99,7 @@ class validity_checker:
             validity_file.write("\n")
 
         if(len(missingAssesses) != 0):
+            
             self.num = self.num + 1
             validity_file.write(str(self.num)+". The following ERs are missing an Assesses Relationship : " )
             for i in range(len(missingAssesses)):
