@@ -60,7 +60,6 @@ class validity_checker:
                             missingAssessesTitle.append(node_title)
                             missingAssessType.append(node_type)
 
-
                     elif node_type == "iER" or node_type == "aER": 
                         # ca = self.df["comesAfter"][i]
                         if pd.isna(self.df.loc[i,'comesAfter']):
