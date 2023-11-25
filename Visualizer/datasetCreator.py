@@ -7,6 +7,8 @@ import time
 
 class datasetCreator:
     def __init__(self, file_name):
+
+        #pass col2 and initial and current option
         self.file_name = file_name
         col_list = ['identifier','title','description','url','type','isPartOf','assesses','comesAfter','requires','alternativeContent','references','isFormatOf','duration', "x values", "y values"]
         
@@ -24,28 +26,44 @@ class datasetCreator:
                     self.df[col] = ""
             self.df.to_csv(file_name, index=False)
         # assess, isPartOf, comesAfter must contain one value if not the case then set to empty
-        
-        fi = open("cleaning_report.txt", "w") 
-        
+        cleaning_file_name = file_name.replace(".csv", "_cleaning_report.txt")
+        fi = open(cleaning_file_name, "a") 
+
         for i in range(len(self.df.index)):
             node_type = self.df["type"][i]
+            title = self.df["title"][i]
+
             if node_type != "start" and node_type != "end":
                 if node_type != "rER":
+                    
                     if (pd.isna(self.df["assesses"][i]) == False):
-                        fi.write("Removed the assesses relation for ER with ID: " + str(i)+ "\n")
+                        value = int(self.df["assesses"][i])
+                        node_type2 = self.df["type"][value]
+                        title2 = self.df["title"][value]
+                        fi.write("Removed the assesses relation between " + title + " | ID:" +" "+ str(i) + " | " +" ( "+ node_type +" )" + " and " + title2 + " | ID:" +" "+ str(value) + " | " + " (" + node_type +")"+ "\n")
                         fi.write('\n')
                     self.df["assesses"][i] = "" # if node is not rER then it should not have assess field
                 else: # if node is rER then it must not have comesAfter, requires, and isPartOf
                     if (pd.isna(self.df["comesAfter"][i]) == False):
-                        fi.write("Removed the comesAfter relation for ER with ID: " + str(i)+ " \n")
+                        value = int(self.df["comesAfter"][i])
+                        node_type2 = self.df["type"][value]
+                        title2 = self.df["title"][value]
+                        fi.write("Removed the comesAfter relation between " + title + " | ID:" +" "+ str(i) + " | " +" ( "+ node_type +" )" + " and " + title2 + " | ID:" +" "+ str(value) + " | " + " ( " + node_type +" )"+ "\n")
                         fi.write('\n')
                     
                     if (pd.isna(self.df["isPartOf"][i]) == False):
-                        fi.write("Removed the isPartOf relation for ER with ID: " + str(i)+ " \n")
+                        value = int(self.df["isPartOf"][i])
+                        node_type2 = self.df["type"][value]
+                        title2 = self.df["title"][value]
+                        fi.write("Removed the isPartOf relation between " + title + " | ID:" +" "+ str(i) + " | " +" ( "+ node_type +" )" + " and " + title2 + " | ID:" +" "+ str(value) + " | " + " ( " + node_type +" )"+ "\n")
                         fi.write('\n')
 
                     if(pd.isna(self.df["requires"][i]) == False):
-                        fi.write("Removed the requires relation for ER with ID: " + str(i)+ " \n")
+                        value = int(self.df["requires"][i])
+                        node_type2 = self.df["type"][value]
+                        title2 = self.df["title"][value]
+
+                        fi.write("Removed the requires relation between " + title + " | ID:" +" "+ str(i) + " | " +" ( "+ node_type +" )" + " and " + title2 + " | ID:" +" "+ str(value) + " | " + " ( " + node_type +" )"+ "\n")
                         fi.write('\n')
                 
                     self.df["comesAfter"][i] = ""; self.df["isPartOf"][i] = ""
@@ -54,7 +72,7 @@ class datasetCreator:
                 # if a node is aER or iER --> might have comesAfter but no assesses, isPartof, requires
                 if node_type != "aER" and node_type!="iER": 
                 
-                    self.df["comesAfter"][i] = "" # if node is not aER or rER then doesnt have comesAfter
+                    self.df["comesAfter"][i] = "" # if node is not aER or iER then doesnt have comesAfter
                 else:
                     self.df["assesses"][i] = ""; self.df["isPartOf"][i] = ""
                     self.df["requires"][i] = ""
@@ -947,21 +965,22 @@ class datasetCreator:
                         with atomic_col:
                             atomic_type = st.selectbox("atomic type", ('.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip' ), disabled=disable)
                             node_type = atomic_type
-            if(must_input):
-                if(node_type=="iER" or node_type=="aER" or node_type=="rER"):
-                    des_col, url_col= st.columns(2)
-                    with des_col:
-                        node_des = st.text_input("Description", disabled=disable)
-                    with url_col:
-                        node_url = st.text_input("URL", disabled=disable)
-                else:
-                    des_col, url_col, dur_col = st.columns(3)
-                    with des_col:
-                        node_des = st.text_input("Description", disabled=disable)
-                    with url_col:
-                        node_url = st.text_input("URL", disabled=disable)
-                    with dur_col:
-                        node_dur = st.number_input('Duration', value = 2, disabled=disable)
+            if(node_type_select != ""):
+                if(must_input):
+                    if(node_type=="iER" or node_type=="aER" or node_type=="rER"):
+                        des_col, url_col= st.columns(2)
+                        with des_col:
+                            node_des = st.text_input("Description", disabled=disable)
+                        with url_col:
+                            node_url = st.text_input("URL", disabled=disable)
+                    else:
+                        des_col, url_col, dur_col = st.columns(3)
+                        with des_col:
+                            node_des = st.text_input("Description", disabled=disable)
+                        with url_col:
+                            node_url = st.text_input("URL", disabled=disable)
+                        with dur_col:
+                            node_dur = st.number_input('Duration', value = 2, disabled=disable)
             if(node_des!="" or node_url!=""):
                 col1, col2 = st.columns([1, 8])
                 with col1:
