@@ -131,7 +131,7 @@ class validity_checker:
         # only atomic ERs must have isPartOf
         # atomics can have requires or isPartOf (or both) but cannot have assesses or comesAfter --> taken care of by datasetCreator
         pass
-
+    
     def __check_assesses_validity(self, report_file):
         # make sure the assesses relation is only between rER and aER
         # all rER must assess one aER

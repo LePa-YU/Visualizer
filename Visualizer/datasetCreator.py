@@ -68,7 +68,7 @@ class datasetCreator:
                 
                     self.df["comesAfter"][i] = ""; self.df["isPartOf"][i] = ""
                     self.df["requires"][i] = ""
-                
+             
                 # if a node is aER or iER --> might have comesAfter but no assesses, isPartof, requires
                 if node_type != "aER" and node_type!="iER": 
                 
