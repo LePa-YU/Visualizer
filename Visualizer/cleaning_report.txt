@@ -1,8 +1,0 @@
-Removed the assesses relation for ER with ID: 5
-
-Removed the requires relation for ER with ID: 18 
-
-Removed the comesAfter relation for ER with ID: 35 
-
-Removed the isPartOf relation for ER with ID: 52 
-
