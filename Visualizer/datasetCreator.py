@@ -76,7 +76,7 @@ class datasetCreator:
                 else:
                     self.df["assesses"][i] = ""; self.df["isPartOf"][i] = ""
                     self.df["requires"][i] = ""
-            
+     
             ## only requires can have multi values for the rest of relation they are set to "" if they have more than one value
             a = self.df["assesses"][i]; ca = self.df["comesAfter"][i]; ipo = self.df["isPartOf"][i]
             if type(a) != int:

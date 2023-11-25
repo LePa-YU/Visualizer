@@ -415,8 +415,7 @@ with container:
                             st.write(y) 
                             st.write('\n')
                     
-            cleaning_file.close()
-              
+            cleaning_file.close()      
             new_df_container = st.container() # container containing the options for editing dataset
             with new_df_container:
                 if dataset!=None:
