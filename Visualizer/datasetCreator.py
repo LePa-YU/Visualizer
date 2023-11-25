@@ -57,7 +57,7 @@ class datasetCreator:
                         title2 = self.df["title"][value]
                         fi.write("Removed the isPartOf relation between " + title + " | ID:" +" "+ str(i) + " | " +" ( "+ node_type +" )" + " and " + title2 + " | ID:" +" "+ str(value) + " | " + " ( " + node_type +" )"+ "\n")
                         fi.write('\n')
-                        
+
                     if(pd.isna(self.df["requires"][i]) == False):
                         value = int(self.df["requires"][i])
                         node_type2 = self.df["type"][value]
@@ -65,7 +65,7 @@ class datasetCreator:
 
                         fi.write("Removed the requires relation between " + title + " | ID:" +" "+ str(i) + " | " +" ( "+ node_type +" )" + " and " + title2 + " | ID:" +" "+ str(value) + " | " + " ( " + node_type +" )"+ "\n")
                         fi.write('\n')
-                
+            
                     self.df["comesAfter"][i] = ""; self.df["isPartOf"][i] = ""
                     self.df["requires"][i] = ""
              

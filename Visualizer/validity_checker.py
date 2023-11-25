@@ -113,7 +113,7 @@ class validity_checker:
                 validity_file.write(f"**{str(missingCATitle[i])}**"  + " ( Type: " + str(missingCAType[i]) + ", ID: " + str(missingComesAfter[i]) + "), " )
             validity_file.write("Please create an `comes After` relation using `Modify Relation")
             validity_file.write("\n")
-            
+        
         if(len(missingIsPartOf) != 0 ):
             self.num = self.num + 1
             validity_file.write(str(self.num)+". The following ERs are missing a IsPartOf Relationship : " )
