@@ -1,0 +1,823 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+        <script src = "https://d3js.org/d3.v4.min.js"></script>
+
+        <style type="text/css">
+             #mynetwork {
+                width: 100%;
+                height: 800px;
+                border: 1px solid lightgray;
+            }
+            #container{
+               display: flex;
+               height: 800px;
+            }
+            #canvas {
+                width: 100%;
+                height: 700px;
+            }
+            #labelContainer {
+                width: 100%; 
+                height: 20px; 
+                text-align: right; 
+            }
+            #label {
+                padding-right: 1%; 
+            }
+        </style>
+        <script type="text/javascript" src="network.js"></script>
+    </head>
+    <body>
+    <div id="container">
+        <div id="mynetwork">
+          <div id="labelContainer"><p id="label"></p></div> 
+          <div id="canvas"></div>
+	      </div> 
+     </div>   
+   
+    <script type="text/javascript"> 
+     var nodeList = new vis.DataSet();
+     var edgeList = new vis.DataSet();
+     var csvRows = []; 
+		 var fileLabel = "test1.csv";
+		 var physics = false;
+		 var view = "View 4: Requirements";
+		 var heading = "";
+		 var height = "750px";
+		 var width = "100%";
+		 var options = "{\n    \"configure\": {\n        \"enabled\": false\n    },\n    \"edges\": {\n        \"color\": {\n            \"inherit\": true\n        },\n        \"smooth\": {\n            \"enabled\": true,\n            \"type\": \"dynamic\"\n        }\n    },\n    \"interaction\": {\n        \"dragNodes\": true,\n        \"hideEdgesOnDrag\": false,\n        \"hideNodesOnDrag\": false\n    },\n    \"physics\": {\n        \"enabled\": true,\n        \"stabilization\": {\n            \"enabled\": true,\n            \"fit\": true,\n            \"iterations\": 1000,\n            \"onlyDynamicEdges\": false,\n            \"updateInterval\": 50\n        }\n    }\n}";
+
+		 var isHorizontal = true;
+
+		 var download_button_clicked = false;
+
+		 var needsStabilization = false;
+
+		 var select_edit_node_id = null;
+
+		 var select_edit_node2_id = null;
+
+		 var bg = "white";
+
+        document.getElementById('mynetwork').style.background = bg; 
+     		 var csvRows= [];
+		 nodeList.add({"color": "#C0CB6B", "title": "start", "size": 20, "x": -7500.0, "y": 0, "fixed": true, "url": "d", "id": 0, "label": "Start", "shape": "diamond", "font": {"color": "black"}});
+		 nodeList.add({"color": "#F69159", "title": "iER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "nan", "size": 10, "id": 7, "label": "Week 1:\nInstructions", "shape": "circle", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "aER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "nan", "size": 10, "id": 5, "label": "Week 1:\nActivity", "shape": "box", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "aER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "g", "size": 10, "id": 20, "label": "Week 2:\nActivity", "shape": "box", "font": {"color": "black"}});
+		 nodeList.add({"color": "#F69159", "title": "iER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "size": 10, "id": 166, "label": "Project", "shape": "circle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Activity ER \n\nName: Lab task\nAssumes: NA\nAvailable link: NA \nID: aER6\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 5.0, "url": "nan", "id": 6, "label": "Lab task", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#97c2fc", "size": 10, "id": 1, "label": 1, "shape": "dot", "font": {"color": "black"}});
+		 nodeList.add({"color": "#97c2fc", "size": 10, "id": 2, "label": 2, "shape": "dot", "font": {"color": "black"}});
+		 nodeList.add({"color": "#97c2fc", "size": 10, "id": 3, "label": 3, "shape": "dot", "font": {"color": "black"}});
+		 nodeList.add({"color": "#97c2fc", "size": 10, "id": 4, "label": 4, "shape": "dot", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Due\nAvailable link: NA \nID: iER8\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 7.0, "url": "nan", "id": 8, "label": "Due", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName:  Study material\nAvailable link: NA \nID: iER9\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 7.0, "url": "nan", "id": 9, "label": " Study material", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Lecture video transcript\nAvailable link: g\nID: iER14\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 7.0, "url": "g", "id": 14, "label": "Lecture video\ntranscript", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: Pro Git book\nAvailable link: https://git-scm.com/book/en/v2\nID: iER15\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 7.0, "url": "https://git-scm.com/book/en/v2", "id": 15, "label": "Pro Git book", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.pdf\nName: Version Control\nAvailable link: https://wiki.eecs.yorku.ca/course_archive/2021-22/W/2311/_media/git.pdf\nID: iER16\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 7.0, "url": "https://wiki.eecs.yorku.ca/course_archive/2021-22/W/2311/_media/git.pdf", "id": 16, "label": "Version Control", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: Git Essential Training: The Basics\nAvailable link: https://www.linkedin.com/learning/git-essential-training-the-basics\nID: iER17\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 7.0, "url": "https://www.linkedin.com/learning/git-essential-training-the-basics", "id": 17, "label": "Git Essential\nTraining: The\nBasics", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "rER", "size": 25, "url": "g", "id": 18, "label": "Week 1: Rubric", "shape": "triangle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Rubric ER\n\nAssessment of aER\nGrades: NA \nAvailable link: g\nID: rER19\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 18.0, "url": "g", "id": 19, "label": "Rubric", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#F69159", "title": "iER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "d", "size": 10, "id": 39, "label": "Week 3:\nInstructions", "shape": "circle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Activity ER \n\nName: Lab task\nAssumes: NA\nAvailable link: g\nID: aER21\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 20.0, "url": "g", "id": 21, "label": "Lab task", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#F69159", "title": "iER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "g", "size": 10, "id": 22, "label": "Week 2:\nInstructions", "shape": "circle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Due\nAvailable link: g\nID: iER23\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 22.0, "url": "g", "id": 23, "label": "Due", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Study materials\nAvailable link: NA \nID: iER24\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 22.0, "url": "nan", "id": 24, "label": "Study materials", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Weekly goals\nAvailable link: NA \nID: iER25\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 22.0, "url": "nan", "id": 25, "label": "Weekly goals", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: Git: Branches, Merges, and Remotes\nAvailable link: https://www.linkedin.com/learning/git-branches-merges-and-remotes\nID: iER26\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 22.0, "url": "https://www.linkedin.com/learning/git-branches-merges-and-remotes", "id": 26, "label": "Git: Branches,\nMerges, and\nRemotes", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#FBF495", "background": "#FBF495"}, "hover": {"border": "#FBF495", "background": "#FBF495"}}, "title": "Instructional ER \n\nType:.mp4\nName: Instructional video\nAvailable link: https://echo360.ca/media/36a9b2a4-607a-45b4-b163-62ed966cd7da/public\nID: iER27\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", "size": 10, "isPartOf": 22.0, "url": "https://echo360.ca/media/36a9b2a4-607a-45b4-b163-62ed966cd7da/public", "id": 27, "label": "Instructional\nvideo", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#437C6C", "background": "#437C6C"}, "hover": {"border": "#437C6C", "background": "#437C6C"}}, "title": "Instructional ER \n\nType:.wav\nName: Instructional video audio\nAvailable link: j\nID: iER28\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", "size": 10, "isPartOf": 22.0, "url": "j", "id": 28, "label": "Instructional\nvideo audio", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Instructional video transcript\nAvailable link: j\nID: iER29\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 22.0, "url": "j", "id": 29, "label": "Instructional\nvideo\ntranscript", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: EGit Tutorial\nAvailable link: https://eclipsesource.com/blogs/tutorials/egit-tutorial/\nID: iER30\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 22.0, "url": "https://eclipsesource.com/blogs/tutorials/egit-tutorial/", "id": 30, "label": "EGit Tutorial", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: Programming Foundations: Object-Oriented Design\nAvailable link: https://www.linkedin.com/learning/programming-foundations-object-oriented-design-3\nID: iER31\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 22.0, "url": "https://www.linkedin.com/learning/programming-foundations-object-oriented-design-3", "id": 31, "label": "Programming\nFoundations:\nObject-Oriented\nDesign", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#FBF495", "background": "#FBF495"}, "hover": {"border": "#FBF495", "background": "#FBF495"}}, "title": "Instructional ER \n\nType:.mp4\nName: Lecture video\nAvailable link: https://echo360.ca/media/2c189d25-e45c-46c8-ba5e-64cbd3376268/public\nID: iER32\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", "size": 10, "isPartOf": 22.0, "url": "https://echo360.ca/media/2c189d25-e45c-46c8-ba5e-64cbd3376268/public", "id": 32, "label": "Lecture video", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#437C6C", "background": "#437C6C"}, "hover": {"border": "#437C6C", "background": "#437C6C"}}, "title": "Instructional ER \n\nType:.wav\nName: Lecture video audio\nAvailable link: f\nID: iER33\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", "size": 10, "isPartOf": 22.0, "url": "f", "id": 33, "label": "Lecture video\naudio", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Lecture video transcript\nAvailable link: f\nID: iER34\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 22.0, "url": "f", "id": 34, "label": "Lecture video\ntranscript", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "rER", "size": 25, "url": "d", "id": 35, "label": "Week 2: Rubric", "shape": "triangle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Rubric ER\n\nAssessment of aER\nGrades: NA \nAvailable link: d\nID: rER36\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 35.0, "url": "d", "id": 36, "label": "Rubric", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "aER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "d", "size": 10, "id": 37, "label": "Week 3:\nActivity", "shape": "box", "font": {"color": "black"}});
+		 nodeList.add({"color": "#F69159", "title": "iER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "d", "size": 10, "id": 56, "label": "Week 4:\nInstructions", "shape": "circle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Activity ER \n\nName: Lab task\nAssumes: NA\nAvailable link: d\nID: aER38\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 37.0, "url": "d", "id": 38, "label": "Lab task", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Due\nAvailable link: d\nID: iER40\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 39.0, "url": "d", "id": 40, "label": "Due", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Study materials\nAvailable link: NA \nID: iER41\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 39.0, "url": "nan", "id": 41, "label": "Study materials", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Weekly goals\nAvailable link: NA \nID: iER42\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 39.0, "url": "nan", "id": 42, "label": "Weekly goals", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Team expectations agreement\nAvailable link: https://wiki.eecs.yorku.ca/course_archive/2021-22/W/2311/_media/eecs_2311_team_expectations_agreement.txt\nID: iER43\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 39.0, "url": "https://wiki.eecs.yorku.ca/course_archive/2021-22/W/2311/_media/eecs_2311_team_expectations_agreement.txt", "id": 43, "label": "Team\nexpectations\nagreement", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: git Mergest Demystefied\nAvailable link: https://www.campingcoder.com/2018/03/git-merges-demystified/\nID: iER44\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 39.0, "url": "https://www.campingcoder.com/2018/03/git-merges-demystified/", "id": 44, "label": "git Mergest\nDemystefied", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: A successful Git branching model\nAvailable link: https://nvie.com/posts/a-successful-git-branching-model/\nID: iER45\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 39.0, "url": "https://nvie.com/posts/a-successful-git-branching-model/", "id": 45, "label": "A successful\nGit branching\nmodel", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: How to use git flow\nAvailable link: https://www.campingcoder.com/2018/04/how-to-use-git-flow/\nID: iER46\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 39.0, "url": "https://www.campingcoder.com/2018/04/how-to-use-git-flow/", "id": 46, "label": "How to use git\nflow", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.pdf\nName: Gitflow\nAvailable link: https://wiki.eecs.yorku.ca/course_archive/2021-22/W/2311/_media/gitflow.pdf\nID: iER47\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 39.0, "url": "https://wiki.eecs.yorku.ca/course_archive/2021-22/W/2311/_media/gitflow.pdf", "id": 47, "label": "Gitflow", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: Git & GitHub\nAvailable link: https://www.notion.so/Git-GitHub-61bc81766b2e4c7d9a346db3078ce833\nID: iER48\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 39.0, "url": "https://www.notion.so/Git-GitHub-61bc81766b2e4c7d9a346db3078ce833", "id": 48, "label": "Git & GitHub", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#FBF495", "background": "#FBF495"}, "hover": {"border": "#FBF495", "background": "#FBF495"}}, "title": "Instructional ER \n\nType:.mp4\nName: Week 3: Lecture video\nAvailable link: d\nID: iER49\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", "size": 10, "isPartOf": 39.0, "url": "d", "id": 49, "label": "Week 3: Lecture\nvideo", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#437C6C", "background": "#437C6C"}, "hover": {"border": "#437C6C", "background": "#437C6C"}}, "title": "Instructional ER \n\nType:.wav\nName: Week 3: Lecture video audio\nAvailable link: d\nID: iER50\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", "size": 10, "isPartOf": 39.0, "url": "d", "id": 50, "label": "Week 3: Lecture\nvideo audio", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Week 3: Lecture video transcript\nAvailable link: d\nID: iER51\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 39.0, "url": "d", "id": 51, "label": "Week 3: Lecture\nvideo\ntranscript", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "rER", "size": 25, "url": "d", "id": 52, "label": "Week 3: Rubric", "shape": "triangle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Rubric ER\n\nAssessment of aER37\nGrades: NA \nAvailable link: d\nID: rER53\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 52.0, "url": "d", "id": 53, "label": "Rubric", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "aER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "d", "size": 10, "id": 54, "label": "Week 4:\nActivity", "shape": "box", "font": {"color": "black"}});
+		 nodeList.add({"color": "#F69159", "title": "iER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "d", "size": 10, "id": 68, "label": "Week 5:\nInstructions", "shape": "circle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Activity ER \n\nName: Lab task\nAssumes: NA\nAvailable link: d\nID: aER55\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 54.0, "url": "d", "id": 55, "label": "Lab task", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Due\nAvailable link: d\nID: iER57\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 56.0, "url": "d", "id": 57, "label": "Due", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Study materials\nAvailable link: d\nID: iER58\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 56.0, "url": "d", "id": 58, "label": "Study materials", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Weekly goals\nAvailable link: d\nID: iER59\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 56.0, "url": "d", "id": 59, "label": "Weekly goals", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: JUnit 5 Basics\nAvailable link: https://www.youtube.com/watch?v=2E3WqYupx7c&list=PLqq-6Pq4lTTa4ad5JISViSb2FVG8Vwa4o\nID: iER60\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 56.0, "url": "https://www.youtube.com/watch?v=2E3WqYupx7c&list=PLqq-6Pq4lTTa4ad5JISViSb2FVG8Vwa4o", "id": 60, "label": "JUnit 5 Basics", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.pdf\nName: Test-Driven Development JUnit\nAvailable link: https://wiki.eecs.yorku.ca/course_archive/2021-22/W/2311/_media/junit.pdf\nID: iER61\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 56.0, "url": "https://wiki.eecs.yorku.ca/course_archive/2021-22/W/2311/_media/junit.pdf", "id": 61, "label": "Test-Driven\nDevelopment\nJUnit", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: TeachingCode\nAvailable link: https://github.com/biltzerpos/TeachingCode\nID: iER62\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 56.0, "url": "https://github.com/biltzerpos/TeachingCode", "id": 62, "label": "TeachingCode", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: JUnit 5 User Guide\nAvailable link: https://junit.org/junit5/docs/current/user-guide/\nID: iER63\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 56.0, "url": "https://junit.org/junit5/docs/current/user-guide/", "id": 63, "label": "JUnit 5 User\nGuide", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "rER", "size": 25, "url": "d", "id": 64, "label": "Week 4: Rubric", "shape": "triangle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Rubric ER\n\nAssessment of aER54\nGrades: NA \nAvailable link: d\nID: rER65\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 64.0, "url": "d", "id": 65, "label": " Rubric", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "aER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "d", "size": 10, "id": 66, "label": "Week 5:\nActivity", "shape": "box", "font": {"color": "black"}});
+		 nodeList.add({"color": "#F69159", "title": "iER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "d", "size": 10, "id": 84, "label": "Week 6:\nInstructions", "shape": "circle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Activity ER \n\nName: Lab task\nAssumes: NA\nAvailable link: d\nID: aER67\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 66.0, "url": "d", "id": 67, "label": "Lab task", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Due\nAvailable link: d\nID: iER69\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 68.0, "url": "d", "id": 69, "label": "Due", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Study materials\nAvailable link: d\nID: iER70\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 68.0, "url": "d", "id": 70, "label": "Study materials", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Weekly goals\nAvailable link: d\nID: iER71\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 68.0, "url": "d", "id": 71, "label": "Weekly goals", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: Using breakpoints - Eclipse tutorial\nAvailable link: https://www.linkedin.com/learning/eclipse-essential-training-8370170/using-breakpoints\nID: iER72\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 68.0, "url": "https://www.linkedin.com/learning/eclipse-essential-training-8370170/using-breakpoints", "id": 72, "label": "Using\nbreakpoints -\nEclipse\ntutorial", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: Debugging a Java app - Eclipse Tutorial\nAvailable link: https://www.linkedin.com/learning/eclipse-essential-training-8370170/debugging-a-java-app\nID: iER73\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 68.0, "url": "https://www.linkedin.com/learning/eclipse-essential-training-8370170/debugging-a-java-app", "id": 73, "label": "Debugging a\nJava app -\nEclipse\nTutorial", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#FBF495", "background": "#FBF495"}, "hover": {"border": "#FBF495", "background": "#FBF495"}}, "title": "Instructional ER \n\nType:.mp4\nName: Instructional video\nAvailable link: https://echo360.ca/media/403852b3-1df7-4c11-9f27-2ffa6a65db12/public\nID: iER74\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", "size": 10, "isPartOf": 68.0, "url": "https://echo360.ca/media/403852b3-1df7-4c11-9f27-2ffa6a65db12/public", "id": 74, "label": "Instructional\nvideo", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#437C6C", "background": "#437C6C"}, "hover": {"border": "#437C6C", "background": "#437C6C"}}, "title": "Instructional ER \n\nType:.wav\nName: Instructional video audio\nAvailable link: d\nID: iER75\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", "size": 10, "isPartOf": 68.0, "url": "d", "id": 75, "label": "Instructional\nvideo audio", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Instructional video transcript\nAvailable link: d\nID: iER76\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 68.0, "url": "d", "id": 76, "label": "Instructional\nvideo\ntranscript", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#FBF495", "background": "#FBF495"}, "hover": {"border": "#FBF495", "background": "#FBF495"}}, "title": "Instructional ER \n\nType:.mp4\nName: Lecture video\nAvailable link: https://echo360.ca/media/f5250275-5776-44eb-988a-1dba618154dc/public\nID: iER77\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", "size": 10, "isPartOf": 68.0, "url": "https://echo360.ca/media/f5250275-5776-44eb-988a-1dba618154dc/public", "id": 77, "label": "Lecture video", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#437C6C", "background": "#437C6C"}, "hover": {"border": "#437C6C", "background": "#437C6C"}}, "title": "Instructional ER \n\nType:.wav\nName: Lecture video audio\nAvailable link: d\nID: iER78\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", "size": 10, "isPartOf": 68.0, "url": "d", "id": 78, "label": "Lecture video\naudio", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Lecture video transcript\nAvailable link: d\nID: iER79\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 68.0, "url": "d", "id": 79, "label": "Lecture video\ntranscript", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "rER", "size": 25, "url": "d", "id": 80, "label": "Week 5: Rubric", "shape": "triangle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Rubric ER\n\nAssessment of aER66\nGrades: NA \nAvailable link: d\nID: rER81\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 80.0, "url": "d", "id": 81, "label": "Rubric", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "aER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "d", "size": 10, "id": 82, "label": "Week 6:\nActivity", "shape": "box", "font": {"color": "black"}});
+		 nodeList.add({"color": "#F69159", "title": "iER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "d", "size": 10, "id": 94, "label": "Week 7:\nInstructions", "shape": "circle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Activity ER \n\nName: Lab task\nAssumes: NA\nAvailable link: d\nID: aER83\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 82.0, "url": "d", "id": 83, "label": "Lab task", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Due\nAvailable link: d\nID: iER85\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 84.0, "url": "d", "id": 85, "label": "Due", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Weekly goals\nAvailable link: d\nID: iER86\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 84.0, "url": "d", "id": 86, "label": "Weekly goals", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#FBF495", "background": "#FBF495"}, "hover": {"border": "#FBF495", "background": "#FBF495"}}, "title": "Instructional ER \n\nType:.mp4\nName: Lecture video\nAvailable link: d\nID: iER87\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", "size": 10, "isPartOf": 84.0, "url": "d", "id": 87, "label": "Lecture video", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#437C6C", "background": "#437C6C"}, "hover": {"border": "#437C6C", "background": "#437C6C"}}, "title": "Instructional ER \n\nType:.wav\nName: Lecture video audio\nAvailable link: d\nID: iER88\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", "size": 10, "isPartOf": 84.0, "url": "d", "id": 88, "label": "Lecture video\naudio", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Lecture video transcript\nAvailable link: d\nID: iER89\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 84.0, "url": "d", "id": 89, "label": "Lecture video\ntranscript", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "rER", "size": 25, "url": "d", "id": 90, "label": "Week 6: Rubric", "shape": "triangle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Rubric ER\n\nAssessment of aER82\nGrades: NA \nAvailable link: d\nID: rER91\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 90.0, "url": "d", "id": 91, "label": "Rubric", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "aER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "d", "size": 10, "id": 92, "label": "Week 7:\nActivity", "shape": "box", "font": {"color": "black"}});
+		 nodeList.add({"color": "#F69159", "title": "iER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "nan", "size": 10, "id": 108, "label": "Week 8:\nInstructions", "shape": "circle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Activity ER \n\nName: Lab task\nAssumes: NA\nAvailable link: d\nID: aER93\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 92.0, "url": "d", "id": 93, "label": "Lab task", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Due\nAvailable link: d\nID: iER95\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 94.0, "url": "d", "id": 95, "label": "Due", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Weekly goals\nAvailable link: d\nID: iER96\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 94.0, "url": "d", "id": 96, "label": "Weekly goals", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.pdf\nName: Midterm submission\nAvailable link: https://wiki.eecs.yorku.ca/course_archive/2021-22/W/2311/_media/midtermsubmission.pdf\nID: iER97\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 94.0, "url": "https://wiki.eecs.yorku.ca/course_archive/2021-22/W/2311/_media/midtermsubmission.pdf", "id": 97, "label": "Midterm\nsubmission", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#FBF495", "background": "#FBF495"}, "hover": {"border": "#FBF495", "background": "#FBF495"}}, "title": "Instructional ER \n\nType:.mp4\nName: Lecture video\nAvailable link: https://echo360.ca/media/10dc0937-0017-4ecc-9681-ba05a7dcf7bb/public\nID: iER98\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", "size": 10, "isPartOf": 94.0, "url": "https://echo360.ca/media/10dc0937-0017-4ecc-9681-ba05a7dcf7bb/public", "id": 98, "label": "Lecture video", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#437C6C", "background": "#437C6C"}, "hover": {"border": "#437C6C", "background": "#437C6C"}}, "title": "Instructional ER \n\nType:.wav\nName: Lecture video audio\nAvailable link: d\nID: iER99\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", "size": 10, "isPartOf": 94.0, "url": "d", "id": 99, "label": "Lecture video\naudio", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Lecture video transcript\nAvailable link: d\nID: iER100\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 94.0, "url": "d", "id": 100, "label": "Lecture video\ntranscript", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#FBF495", "background": "#FBF495"}, "hover": {"border": "#FBF495", "background": "#FBF495"}}, "title": "Instructional ER \n\nType:.mp4\nName: Lecture video\nAvailable link: https://echo360.ca/media/1f26c086-a665-491c-835f-dd26bc40f667/public\nID: iER101\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", "size": 10, "isPartOf": 94.0, "url": "https://echo360.ca/media/1f26c086-a665-491c-835f-dd26bc40f667/public", "id": 101, "label": "Lecture video", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#437C6C", "background": "#437C6C"}, "hover": {"border": "#437C6C", "background": "#437C6C"}}, "title": "Instructional ER \n\nType:.wav\nName: Lecture video audio\nAvailable link: d\nID: iER102\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", "size": 10, "isPartOf": 94.0, "url": "d", "id": 102, "label": "Lecture video\naudio", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Lecture video transcript\nAvailable link: d\nID: iER103\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 94.0, "url": "d", "id": 103, "label": "Lecture video\ntranscript", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "rER", "size": 25, "url": "d", "id": 104, "label": "Week 7: Rubric", "shape": "triangle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Rubric ER\n\nAssessment of aER92\nGrades: NA \nAvailable link: d\nID: rER105\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 104.0, "url": "d", "id": 105, "label": "Rubric", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "aER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "d", "size": 10, "id": 106, "label": "Week 8:\nActivity", "shape": "box", "font": {"color": "black"}});
+		 nodeList.add({"color": "#F69159", "title": "iER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "d", "size": 10, "id": 122, "label": "Week 9:\nInstructions", "shape": "circle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Activity ER \n\nName: Lab task\nAssumes: NA\nAvailable link: d\nID: aER107\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 106.0, "url": "d", "id": 107, "label": "Lab task", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Due\nAvailable link: NA \nID: iER109\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 108.0, "url": "nan", "id": 109, "label": "Due", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Study materials\nAvailable link: NA \nID: iER110\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 108.0, "url": "nan", "id": 110, "label": "Study materials", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Weekly goals\nAvailable link: NA \nID: iER111\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 108.0, "url": "nan", "id": 111, "label": "Weekly goals", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: Software Design: Modeling with UML\nAvailable link: https://www.linkedin.com/learning/software-design-modeling-with-uml\nID: iER112\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 108.0, "url": "https://www.linkedin.com/learning/software-design-modeling-with-uml", "id": 112, "label": "Software\nDesign:\nModeling with\nUML", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: PlantUML in a nutshell\nAvailable link: https://plantuml.com/\nID: iER113\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 108.0, "url": "https://plantuml.com/", "id": 113, "label": "PlantUML in a\nnutshell", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: Security-first diagramming for teams\nAvailable link: https://www.diagrams.net/\nID: iER114\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 108.0, "url": "https://www.diagrams.net/", "id": 114, "label": "Security-first\ndiagramming for\nteams", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.pdf\nName: Design Documentation\nAvailable link: https://wiki.eecs.yorku.ca/course_archive/2021-22/W/2311/_media/design.pdf\nID: iER115\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 108.0, "url": "https://wiki.eecs.yorku.ca/course_archive/2021-22/W/2311/_media/design.pdf", "id": 115, "label": "Design\nDocumentation", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: VisualParadigm Diagram tutorials\nAvailable link: https://online.visual-paradigm.com/diagrams/tutorials/\nID: iER116\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 108.0, "url": "https://online.visual-paradigm.com/diagrams/tutorials/", "id": 116, "label": "VisualParadigm\nDiagram\ntutorials", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: List of Unified Modeling Language tools\nAvailable link: https://en.wikipedia.org/wiki/List_of_Unified_Modeling_Language_tools\nID: iER117\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 108.0, "url": "https://en.wikipedia.org/wiki/List_of_Unified_Modeling_Language_tools", "id": 117, "label": "List of Unified\nModeling\nLanguage tools", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "rER", "size": 25, "url": "d", "id": 118, "label": "Week 8: Rubric", "shape": "triangle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Rubric ER\n\nAssessment of aER106\nGrades: NA \nAvailable link: d\nID: rER119\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 118.0, "url": "d", "id": 119, "label": "Rubric", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "aER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "d", "size": 10, "id": 120, "label": "Week 9:\nActivity", "shape": "box", "font": {"color": "black"}});
+		 nodeList.add({"color": "#F69159", "title": "iER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "https://www.linkedin.com/learning/software-testing-foundations-bug-writing-and-management/common-bug-reporting-issues", "size": 10, "id": 134, "label": "Week 10:\nInstructions", "shape": "circle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Activity ER \n\nName: Lab tasks\nAssumes: NA\nAvailable link: d\nID: aER121\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 120.0, "url": "d", "id": 121, "label": "Lab tasks", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Due\nAvailable link: d\nID: iER123\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 122.0, "url": "d", "id": 123, "label": "Due", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Study materials\nAvailable link: d\nID: iER124\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 122.0, "url": "d", "id": 124, "label": "Study materials", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Weekly goals\nAvailable link: d\nID: iER125\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 122.0, "url": "d", "id": 125, "label": "Weekly goals", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: Programming Foundations: Software Testing/QA\nAvailable link: https://www.linkedin.com/learning/programming-foundations-software-testing-qa\nID: iER126\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 122.0, "url": "https://www.linkedin.com/learning/programming-foundations-software-testing-qa", "id": 126, "label": "Programming\nFoundations:\nSoftware\nTesting/QA", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: Solution: Bug reporting\nAvailable link: https://www.linkedin.com/learning/nail-your-software-tester-interview/solution-bug-reporting\nID: iER127\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 122.0, "url": "https://www.linkedin.com/learning/nail-your-software-tester-interview/solution-bug-reporting", "id": 127, "label": "Solution: Bug\nreporting", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: Software Testing Foundations: Bug Writing and Management\nAvailable link: https://www.linkedin.com/learning/software-testing-foundations-bug-writing-and-management\nID: iER128\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 122.0, "url": "https://www.linkedin.com/learning/software-testing-foundations-bug-writing-and-management", "id": 128, "label": "Software\nTesting\nFoundations:\nBug Writing and\nManagement", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: Common bug reporting issues - Jira Tutorial\nAvailable link: https://www.linkedin.com/learning/software-testing-foundations-bug-writing-and-management/common-bug-reporting-issues\nID: iER129\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 122.0, "url": "https://www.linkedin.com/learning/software-testing-foundations-bug-writing-and-management/common-bug-reporting-issues", "id": 129, "label": "Common bug\nreporting\nissues - Jira\nTutorial", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "rER", "size": 25, "url": "https://www.linkedin.com/learning/software-testing-foundations-bug-writing-and-management/common-bug-reporting-issues", "id": 130, "label": "Week 9: Rubric", "shape": "triangle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Rubric ER\n\nAssessment of aER120\nGrades: NA \nAvailable link: https://www.linkedin.com/learning/software-testing-foundations-bug-writing-and-management/common-bug-reporting-issues\nID: rER131\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 130.0, "url": "https://www.linkedin.com/learning/software-testing-foundations-bug-writing-and-management/common-bug-reporting-issues", "id": 131, "label": "Rubric", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "aER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "https://www.linkedin.com/learning/software-testing-foundations-bug-writing-and-management/common-bug-reporting-issues", "size": 10, "id": 132, "label": "Week 10:\nActivity", "shape": "box", "font": {"color": "black"}});
+		 nodeList.add({"color": "#F69159", "title": "iER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "size": 10, "id": 153, "label": "Week 11:\nInstructions", "shape": "circle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Activity ER \n\nName: Lab tasks\nAssumes: NA\nAvailable link: https://www.linkedin.com/learning/software-testing-foundations-bug-writing-and-management/common-bug-reporting-issues\nID: aER133\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 132.0, "url": "https://www.linkedin.com/learning/software-testing-foundations-bug-writing-and-management/common-bug-reporting-issues", "id": 133, "label": "Lab tasks", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Due\nAvailable link: https://www.linkedin.com/learning/software-testing-foundations-bug-writing-and-management/common-bug-reporting-issues\nID: iER135\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 134.0, "url": "https://www.linkedin.com/learning/software-testing-foundations-bug-writing-and-management/common-bug-reporting-issues", "id": 135, "label": "Due", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Study materials\nAvailable link: https://www.linkedin.com/learning/software-testing-foundations-bug-writing-and-management/common-bug-reporting-issues\nID: iER136\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 134.0, "url": "https://www.linkedin.com/learning/software-testing-foundations-bug-writing-and-management/common-bug-reporting-issues", "id": 136, "label": "Study materials", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Weekly goals\nAvailable link: https://www.linkedin.com/learning/software-testing-foundations-bug-writing-and-management/common-bug-reporting-issues\nID: iER137\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 134.0, "url": "https://www.linkedin.com/learning/software-testing-foundations-bug-writing-and-management/common-bug-reporting-issues", "id": 137, "label": "Weekly goals", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.pdf\nName: Code Coverage\nAvailable link: https://wiki.eecs.yorku.ca/course_archive/2021-22/W/2311/_media/codecoverage.pdf\nID: iER138\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 134.0, "url": "https://wiki.eecs.yorku.ca/course_archive/2021-22/W/2311/_media/codecoverage.pdf", "id": 138, "label": "Code Coverage", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#FBF495", "background": "#FBF495"}, "hover": {"border": "#FBF495", "background": "#FBF495"}}, "title": "Instructional ER \n\nType:.mp4\nName: Instructor video\nAvailable link: https://echo360.ca/media/dadaa02f-eb08-44cc-b471-9d2895a0ccf7/public\nID: iER139\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", "size": 10, "isPartOf": 134.0, "url": "https://echo360.ca/media/dadaa02f-eb08-44cc-b471-9d2895a0ccf7/public", "id": 139, "label": "Instructor\nvideo", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#437C6C", "background": "#437C6C"}, "hover": {"border": "#437C6C", "background": "#437C6C"}}, "title": "Instructional ER \n\nType:.wav\nName: Instructor video audio\nAvailable link: https://echo360.ca/media/dadaa02f-eb08-44cc-b471-9d2895a0ccf7/public\nID: iER140\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", "size": 10, "isPartOf": 134.0, "url": "https://echo360.ca/media/dadaa02f-eb08-44cc-b471-9d2895a0ccf7/public", "id": 140, "label": "Instructor\nvideo audio", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Instructor video transcript\nAvailable link: https://echo360.ca/media/dadaa02f-eb08-44cc-b471-9d2895a0ccf7/public\nID: iER141\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 134.0, "url": "https://echo360.ca/media/dadaa02f-eb08-44cc-b471-9d2895a0ccf7/public", "id": 141, "label": "Instructor\nvideo\ntranscript", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: TestFX\nAvailable link: https://github.com/TestFX/TestFX\nID: iER142\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 134.0, "url": "https://github.com/TestFX/TestFX", "id": 142, "label": "TestFX", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#FBF495", "background": "#FBF495"}, "hover": {"border": "#FBF495", "background": "#FBF495"}}, "title": "Instructional ER \n\nType:.mp4\nName: Instructor video\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER143\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", "size": 10, "isPartOf": 134.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 143, "label": "Instructor\nvideo", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#437C6C", "background": "#437C6C"}, "hover": {"border": "#437C6C", "background": "#437C6C"}}, "title": "Instructional ER \n\nType:.wav\nName: Instructor video audio\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER144\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", "size": 10, "isPartOf": 134.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 144, "label": "Instructor\nvideo audio", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Instructor video transcript\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER145\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 134.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 145, "label": "Instructor\nvideo\ntranscript", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#FBF495", "background": "#FBF495"}, "hover": {"border": "#FBF495", "background": "#FBF495"}}, "title": "Instructional ER \n\nType:.mp4\nName: Lecture video\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER146\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", "size": 10, "isPartOf": 134.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 146, "label": "Lecture video", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#437C6C", "background": "#437C6C"}, "hover": {"border": "#437C6C", "background": "#437C6C"}}, "title": "Instructional ER \n\nType:.wav\nName: Lecture video audio\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER147\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", "size": 10, "isPartOf": 134.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 147, "label": "Lecture video\naudio", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Lecture video transcript\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER148\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 134.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 148, "label": "Lecture video\ntranscript", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "rER", "size": 25, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 149, "label": "Week 10: Rubric", "shape": "triangle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Rubric ER\n\nAssessment of aER132\nGrades: NA \nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: rER150\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 149.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 150, "label": "Rubric", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "aER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "size": 10, "id": 151, "label": "Week 11:\nActivity", "shape": "box", "font": {"color": "black"}});
+		 nodeList.add({"color": "#C0CB6B", "title": "end", "size": 20, "x": 7500.0, "y": 0, "fixed": true, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 179, "label": "Finish", "shape": "diamond", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Activity ER \n\nName: Lab tasks\nAssumes: NA\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: aER152\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 151.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 152, "label": "Lab tasks", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Due\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER154\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 153.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 154, "label": "Due", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Study materials\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER155\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 153.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 155, "label": "Study materials", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Weekly goals\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER156\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 153.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 156, "label": "Weekly goals", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: Refactoring code - Eclipse Tutorial\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER157\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 153.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 157, "label": "Refactoring\ncode - Eclipse\nTutorial", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#FBF495", "background": "#FBF495"}, "hover": {"border": "#FBF495", "background": "#FBF495"}}, "title": "Instructional ER \n\nType:.mp4\nName: Instructor video\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER158\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", "size": 10, "isPartOf": 153.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 158, "label": "Instructor\nvideo", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#437C6C", "background": "#437C6C"}, "hover": {"border": "#437C6C", "background": "#437C6C"}}, "title": "Instructional ER \n\nType:.wav\nName: Instructor video audio\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER159\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", "size": 10, "isPartOf": 153.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 159, "label": "Instructor\nvideo audio", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Instructor video transcript\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER160\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 153.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 160, "label": "Instructor\nvideo\ntranscript", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#FBF495", "background": "#FBF495"}, "hover": {"border": "#FBF495", "background": "#FBF495"}}, "title": "Instructional ER \n\nType:.mp4\nName: Lecture video\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER161\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", "size": 10, "isPartOf": 153.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 161, "label": "Lecture video", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#437C6C", "background": "#437C6C"}, "hover": {"border": "#437C6C", "background": "#437C6C"}}, "title": "Instructional ER \n\nType:.wav\nName: Lecture video audio\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER162\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", "size": 10, "isPartOf": 153.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 162, "label": "Lecture video\naudio", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Lecture video transcript\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER163\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 153.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 163, "label": "Lecture video\ntranscript", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "rER", "size": 25, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 164, "label": "Week 11: Rubric", "shape": "triangle", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Rubric ER\n\nAssessment of aER151\nGrades: NA \nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: rER165\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 164.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 165, "label": "Rubric", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Project\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER167\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 166.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 167, "label": "Project", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: original_requirements\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER168\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 166.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 168, "label": "original_requir\nements", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Project: New requirements\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER169\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 166.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 169, "label": "Project: New\nrequirements", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Repeat\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER170\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 166.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 170, "label": "Repeat", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: ASCII tab\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER171\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 166.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 171, "label": "ASCII tab", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: Drum tablature\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER172\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 166.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 172, "label": "Drum tablature", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: musicXML\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER173\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 166.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 173, "label": "musicXML", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Guitar example\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER174\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 166.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 174, "label": "Guitar example", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.txt\nName: Drum example\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER175\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 166.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 175, "label": "Drum example", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: MuseScore\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER176\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 166.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 176, "label": "MuseScore", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: OpenSheetMusicDisplay demo\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER177\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 166.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 177, "label": "OpenSheetMusicD\nisplay demo", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "Instructional ER \n\nType:.html\nName: Free MusicXML viewer\nAvailable link: https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public\nID: iER178\nDuration: 0 min", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": 166.0, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "id": 178, "label": "Free MusicXML\nviewer", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": "#FF7273", "title": "aER", "value": 1, "scaling": {"label": {"enabled": true, "min": 25, "max": 25}}, "url": "https://echo360.ca/media/cdaba2af-3b4c-4989-98d5-999b398e9d32/public", "size": 10, "id": 180, "label": "test", "shape": "box", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": NaN, "url": "nan", "id": 10, "label": "Weekly goals", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#20C18B", "background": "#20C18B"}, "hover": {"border": "#20C18B", "background": "#20C18B"}}, "title": "", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/text.svg", "size": 10, "isPartOf": NaN, "url": "https://wiki.eecs.yorku.ca/course_archive/2021-22/W/2311/_media/projintro.pdf", "id": 11, "label": "Project\nIntroduction", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#FBF495", "background": "#FBF495"}, "hover": {"border": "#FBF495", "background": "#FBF495"}}, "title": "", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/video.svg", "size": 10, "isPartOf": NaN, "url": "https://echo360.ca/media/b33beb93-79f3-46b8-9d5e-38cb5f31c70d/public", "id": 12, "label": "Lecture video", "shape": "circularImage", "font": {"color": "black"}});
+		 nodeList.add({"color": {"border": "white", "background": "white", "highlight": {"border": "#437C6C", "background": "#437C6C"}, "hover": {"border": "#437C6C", "background": "#437C6C"}}, "title": "", "image": "https://raw.githubusercontent.com/LePa-YU/Visualizer/development/Visualizer/images/audio.svg", "size": 10, "isPartOf": NaN, "url": "g", "id": 13, "label": "Lecture video\naudio", "shape": "circularImage", "font": {"color": "black"}});
+
+     		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 0, "to": 7, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 5, "to": 20, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 5, "to": 166, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 5, "to": 6, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 7, "to": 1, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 7, "to": 2, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 7, "to": 3, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 7, "to": 4, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 7, "to": 8, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 7, "to": 9, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 7, "to": 14, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 7, "to": 15, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 7, "to": 16, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 7, "to": 17, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 18, "to": 19, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 20, "to": 39, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 20, "to": 21, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 22, "to": 23, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 22, "to": 24, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 22, "to": 25, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 22, "to": 26, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 22, "to": 27, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 22, "to": 28, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 22, "to": 29, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 22, "to": 30, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 22, "to": 31, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 22, "to": 32, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 22, "to": 33, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 22, "to": 34, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 35, "to": 36, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 37, "to": 56, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 37, "to": 38, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 39, "to": 37, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 39, "to": 40, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 39, "to": 41, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 39, "to": 42, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 39, "to": 43, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 39, "to": 44, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 39, "to": 45, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 39, "to": 46, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 39, "to": 47, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 39, "to": 48, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 39, "to": 49, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 39, "to": 50, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 39, "to": 51, "arrows": "to"});
+		 edgeList.add({"color": "#FF7273", "width": 1, "from": 52, "to": 37, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 52, "to": 53, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 54, "to": 68, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 54, "to": 55, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 56, "to": 54, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 56, "to": 57, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 56, "to": 58, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 56, "to": 59, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 56, "to": 60, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 56, "to": 61, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 56, "to": 62, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 56, "to": 63, "arrows": "to"});
+		 edgeList.add({"color": "#FF7273", "width": 1, "from": 64, "to": 54, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 64, "to": 65, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 66, "to": 84, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 66, "to": 67, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 68, "to": 66, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 68, "to": 69, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 68, "to": 70, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 68, "to": 71, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 68, "to": 72, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 68, "to": 73, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 68, "to": 74, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 68, "to": 75, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 68, "to": 76, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 68, "to": 77, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 68, "to": 78, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 68, "to": 79, "arrows": "to"});
+		 edgeList.add({"color": "#FF7273", "width": 1, "from": 80, "to": 66, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 80, "to": 81, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 82, "to": 94, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 82, "to": 83, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 84, "to": 82, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 84, "to": 85, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 84, "to": 86, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 84, "to": 87, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 84, "to": 88, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 84, "to": 89, "arrows": "to"});
+		 edgeList.add({"color": "#FF7273", "width": 1, "from": 90, "to": 82, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 90, "to": 91, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 92, "to": 108, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 92, "to": 93, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 94, "to": 92, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 94, "to": 95, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 94, "to": 96, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 94, "to": 97, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 94, "to": 98, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 94, "to": 99, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 94, "to": 100, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 94, "to": 101, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 94, "to": 102, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 94, "to": 103, "arrows": "to"});
+		 edgeList.add({"color": "#FF7273", "width": 1, "from": 104, "to": 92, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 104, "to": 105, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 106, "to": 122, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 106, "to": 107, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 108, "to": 106, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 108, "to": 109, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 108, "to": 110, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 108, "to": 111, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 108, "to": 112, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 108, "to": 113, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 108, "to": 114, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 108, "to": 115, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 108, "to": 116, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 108, "to": 117, "arrows": "to"});
+		 edgeList.add({"color": "#FF7273", "width": 1, "from": 118, "to": 106, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 118, "to": 119, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 120, "to": 134, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 120, "to": 121, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 122, "to": 120, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 122, "to": 123, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 122, "to": 124, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 122, "to": 125, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 122, "to": 126, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 122, "to": 127, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 122, "to": 128, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 122, "to": 129, "arrows": "to"});
+		 edgeList.add({"color": "#FF7273", "width": 1, "from": 130, "to": 120, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 130, "to": 131, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 132, "to": 153, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 132, "to": 133, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 134, "to": 132, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 134, "to": 135, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 134, "to": 136, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 134, "to": 137, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 134, "to": 138, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 134, "to": 139, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 134, "to": 140, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 134, "to": 141, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 134, "to": 142, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 134, "to": 143, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 134, "to": 144, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 134, "to": 145, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 134, "to": 146, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 134, "to": 147, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 134, "to": 148, "arrows": "to"});
+		 edgeList.add({"color": "#FF7273", "width": 1, "from": 149, "to": 132, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 149, "to": 150, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 151, "to": 179, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 151, "to": 152, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 153, "to": 151, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 153, "to": 154, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 153, "to": 155, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 153, "to": 156, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 153, "to": 157, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 153, "to": 158, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 153, "to": 159, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 153, "to": 160, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 153, "to": 161, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 153, "to": 162, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 153, "to": 163, "arrows": "to"});
+		 edgeList.add({"color": "#FF7273", "width": 1, "from": 164, "to": 151, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 164, "to": 165, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 166, "to": 22, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 166, "to": 167, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 166, "to": 168, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 166, "to": 169, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 166, "to": 170, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 166, "to": 171, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 166, "to": 172, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 166, "to": 173, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 166, "to": 174, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 166, "to": 175, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 166, "to": 176, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 166, "to": 177, "arrows": "to"});
+		 edgeList.add({"color": "#ECD19A", "width": 1, "from": 166, "to": 178, "arrows": "to"});
+		 edgeList.add({"color": "#C0CB6B", "width": 5, "from": 179, "to": 180, "arrows": "to"});
+
+   
+    if(physics){
+      var physicsContainer = document.createElement("div");
+      physicsContainer.style.overflow = "scroll";
+      physicsContainer.style.width = "70%";
+      document.getElementById("container").appendChild(physicsContainer);
+    }
+    
+    document.getElementById("label").innerHTML = fileLabel +" (" + view + ")";
+    if(bg == "black"){
+      document.getElementById("label").style.color = 'white';
+    }
+    window.onload=function(){
+    var mobile = (/iphone|ipad|ipod|android|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+      if (mobile && fileLabel == "FAKE1001.csv" && view =="View 1: Summative assessment only") {
+        alert("For the best viewing experience, please use a PC");           
+      } 
+    }
+    var container = document.getElementById('canvas');
+    // creating the data to be used for visuaization
+    var data = {
+        nodes: nodeList,
+        edges: edgeList
+    };
+   //options:
+      var options = {
+        configure:{
+          enabled: physics,
+          container: physicsContainer
+        },
+		nodes: {
+			borderWidth: 3,
+			borderWidthSelected: 6,
+			shadow: {
+				enabled: true,
+				color: "white",
+				size: 9,
+				x: -1,
+				y: -2
+			},
+			shapeProperties: {
+				useBorderWithImage: true
+			}
+		},
+		edges: {
+    		color: {
+      			inherit: true
+    		},
+    		dashes: true,
+    		font: {
+      			strokeWidth: 5
+    		},
+    		hoverWidth: 3.2,
+    	},
+		interaction: {
+     		hideEdgesOnZoom: true,
+     		hover: true,
+     		keyboard: {
+       			enabled: true
+     		},
+     		multiselect: true,
+     		navigationButtons: true
+		},
+		manipulation: {
+			enabled: false
+		},
+		layout: {
+    		randomSeed:10, 
+    		improvedLayout: false, 
+    		clusterThreshold:150,
+  		},
+		physics: {
+			barnesHut: {
+				centralGravity: 0,
+				springLength: 140,
+				springConstant: 1
+        
+			},
+			minVelocity: 0.75,
+		}
+
+	}
+  /*
+  stabilization:{
+        enabled: true, 
+        iterations: 800
+      }
+  */
+  //var needsStabilization = true; 
+  if(needsStabilization == false){
+    options.physics["stabilization"] = {
+        enabled: true, 
+        iterations: 800
+      }; 
+      //console.log("stabilization happen"); 
+  }
+  else{
+    options.physics["stabilization"] = {
+        enabled: true, 
+        iterations: 50
+      };  
+      //console.log("stabilization did not happen"); 
+  }
+    //creating the vis network
+    var network = new vis.Network(container, data, options);
+    network.setSize(width, height);
+    //Focus 
+    network.once("beforeDrawing", function () {
+      /*Highlightling select node automatically*/
+      nodeList.forEach(function(item) 
+      {
+        if(view == "View 4: Requirements" || view == "View 5: Requirements - Vertical"){
+            if(select_edit_node_id == item.id)
+            {
+              if (item.title == "iER" ||item.title == "aER" || item.title == "rER" || item.title == "start"|| item.title == "end"){
+                nodeList.update([{id: select_edit_node_id, color: {background: '#cde4f7'}}]);
+              }
+              else{
+                nodeList.update([{id: select_edit_node_id, color: {"border": "black", background: '#cde4f7'}}]);
+              }
+            }
+            if(select_edit_node2_id == item.id)
+            {
+              if (item.title == "iER" ||item.title == "aER" || item.title == "rER" || item.title == "start"|| item.title == "end"){
+                nodeList.update([{id: select_edit_node2_id, color: {background: '#cde4f7'}}]);
+              }
+              else{
+                nodeList.update([{id: select_edit_node2_id, color: {"border": "black", background: '#cde4f7'}}]);
+              }
+            }
+        }
+        else{
+            if(select_edit_node_id == item.id)
+            {
+              nodeList.update([{id: select_edit_node_id, color: {background: '#cde4f7'}}]);
+            }
+            if(select_edit_node2_id == item.id)
+            {
+              nodeList.update([{id: select_edit_node2_id, color: {background: '#cde4f7'}}]);
+            }
+        }
+        
+      }); 
+
+      
+      //if (fileLabel == 'temp.csv'){
+      if (select_edit_node2_id == null && select_edit_node_id !=null ){
+            network.focus(select_edit_node_id , {
+            scale: 0.5,
+            offset: {x:100, y:0}
+          });
+        }
+      //}
+     /* else{
+        if(isHorizontal){
+        network.focus(0, {
+          scale: 0.5,
+          offset: {x:-300, y:0}
+        });
+      }
+      else{
+        network.focus(0, {
+          scale: 0.5,
+          offset: {x:0, y:-300}
+        });
+      }*/
+      //}
+    }); 
+    // node collapse. if only one node is selected if the node is clustred (collapsed) then the cluster is open
+    // else the node is collapsed if if they have the isPartOf relation corresponding to this node's id (var v)
+    network.on("selectNode", function (params) {
+      if (params.nodes.length == 1) {
+        if (network.isCluster(params.nodes[0]) == true) {
+          network.openCluster(params.nodes[0]);
+        }
+        else{
+            var v = params.nodes[0];
+            // document.getElementById("demo").innerHTML = v;
+            network.cluster(getC(v));
+        }
+      
+        //url opening
+      nodeId = params.nodes;
+      node = nodeList.get(nodeId)[0];
+      nodeUrl = node.url;
+        //using eventlistener and event.key we can specify keys to open a link when a node is selected
+      document.addEventListener("keypress", (event)=>
+      {
+				  if(!(nodeUrl === "nan" ) && event.key == "Enter")
+          {
+					  window.open(nodeUrl);
+            delete nodeUrl;  
+				  }
+			}); 
+        
+      
+      }
+
+        
+    });
+   /* network.on('startStabilizing', function(params) {
+      let s = nodeList.length; 
+      console.log("node number: "+String(s)); 
+      const d = new Date();
+      let time = d.getTime();
+      console.log("Start time: " + String(time)); 
+    });*/
+
+    
+    var flag = false; 
+    network.on('stabilized', function(params) 
+    {
+     /* const d = new Date();
+      let time = d.getTime();
+      console.log("end time: " + String(time)); 
+      console.log("number of iteration: "+ String(params.iterations));*/
+
+
+     if(flag == false){
+        const jsonData = {}; 
+        if(view =="View 4: Requirements")
+        {
+          network.storePositions(); // causes some visual bugs 
+          //define coordinate in json
+          //assumption the ID match with csv file
+          nodeList.forEach(function(item) 
+            {
+              jsonData.id = item.id;
+              jsonData.x = item.x;
+              jsonData.y = item.y;
+            }); 
+
+
+          //csv format 
+          //adding x values to headers
+          csvRows[0].push("x values");
+          csvRows[0].push("y values");
+          //adding x values to array
+          for(var i = 1; i <csvRows.length; i++)
+          {
+            nodeID = csvRows[i][0];  
+            //getting x values from node list
+            nodeList.forEach(function(item) 
+            {
+              if(nodeID == item.id)
+              {
+                //console.log("node: " + nodeID + "item: " + item.id); 
+                csvRows[i].push(item.x);
+                csvRows[i].push(item.y);
+              }
+            }); 
+          } 
+        }
+        if (download_button_clicked == true)
+        {
+          	/*const jsonData = {
+              name: "Jonth",
+              email: "jobtd@mail.com",
+              website: "www.4codev.com"
+            };*/
+            //download(JSON.stringify(jsonData), "yourfile.json", "text/plain");
+            //function download(content, fileName, contentType)
+            
+
+            //download json
+            const a = document.createElement("a");
+            const content = JSON.stringify(jsonData); 
+            const contentType = "text/plain"; 
+            const file = new Blob([content], { type: contentType });
+            a.href = URL.createObjectURL(file);
+            a.download = "coordinates.json";
+            a.click();
+        
+
+          //download csv file
+         //exportToCsv(fileLabel, csvRows) ; 
+        }
+        flag = true; 
+      }
+      // select given nodes for creating dataset
+   // if (fileLabel == 'temp.csv'){
+     /* nodeList.forEach(function(item) 
+      {
+        if(view == "View 4: Requirements" || view == "View 5: Requirements - Vertical"){
+            if(select_edit_node_id == item.id)
+            {
+              if (item.title == "iER" ||item.title == "aER" || item.title == "rER" || item.title == "start"|| item.title == "end"){
+                nodeList.update([{id: select_edit_node_id, color: {background: '#cde4f7'}}]);
+              }
+              else{
+                nodeList.update([{id: select_edit_node_id, color: {"border": "black", background: '#cde4f7'}}]);
+              }
+            }
+            if(select_edit_node2_id == item.id)
+            {
+              if (item.title == "iER" ||item.title == "aER" || item.title == "rER" || item.title == "start"|| item.title == "end"){
+                nodeList.update([{id: select_edit_node2_id, color: {background: '#cde4f7'}}]);
+              }
+              else{
+                nodeList.update([{id: select_edit_node2_id, color: {"border": "black", background: '#cde4f7'}}]);
+              }
+            }
+        }
+        else{
+            if(select_edit_node_id == item.id)
+            {
+              nodeList.update([{id: select_edit_node_id, color: {background: '#cde4f7'}}]);
+            }
+            if(select_edit_node2_id == item.id)
+            {
+              nodeList.update([{id: select_edit_node2_id, color: {background: '#cde4f7'}}]);
+            }
+        }
+        
+      }); */
+    //}
+    });  
+
+    function exportToCsv(filename, rows) {
+        var processRow = function (row) {
+            var finalVal = '';
+            for (var j = 0; j < row.length; j++) {
+              //console.log(row[j]); 
+                var innerValue = row[j] === null ? '' : row[j].toString();
+                if (row[j] instanceof Date) {
+                    innerValue = row[j].toLocaleString();
+                };
+                var result = innerValue.replace(/"/g, '""');
+                if (result.search(/("|,|\n)/g) >= 0)
+                    result = '"' + result + '"';
+                if (j > 0)
+                    finalVal += ',';
+                finalVal += result;
+            }
+            return finalVal + '\n';
+        };
+
+        var csvFile = '';
+        for (var i = 0; i < rows.length; i++) {
+            csvFile += processRow(rows[i]);
+        }
+
+        var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+        if (navigator.msSaveBlob) { // IE 10+
+            navigator.msSaveBlob(blob, filename);
+        } else {
+            var link = document.createElement("a");
+            if (link.download !== undefined) { // feature detection
+                // Browsers that support HTML5 download attribute
+                var url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+    }
+
+    // cluster/ collapse options based on isPartOf. this method returns the cluster options to be used for the clustering
+    function getC(v){
+      var clusterOptionsByData = {
+          // condition for clustering: nodes with ispartof same as v and node that has id v
+          joinCondition: function (childOptions) {
+            return childOptions.isPartOf == v || childOptions.id == v;
+          },
+          // to have the clusters inherit the properties of the selected node
+          processProperties: function (clusterOptions, childNodes, childEdges){
+            var node;
+            // find the node with id v
+            for(let i = 0; i<childNodes.length; i++){
+              n = childNodes[i];
+              if(n.id == v){
+                node = n;
+                break;
+              }
+            }
+
+            // document.getElementById("demo").innerHTML += node.id;
+            // adding the properties of the node to th cluster options
+            clusterOptions.shape = node.shape;
+            clusterOptions.label = node.label;
+            clusterOptions.color = node.color;
+            clusterOptions.size = node.size;
+            clusterOptions.font = node.font; 
+            return clusterOptions;
+          }
+
+        };
+
+      return clusterOptionsByData;
+    }
+
+
+    </script>
+    </body>
+    </html>
+
+    
