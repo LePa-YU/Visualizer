@@ -119,18 +119,18 @@ class _Customization_menu:
         return bg
 ##############################################################################################
 # function to create html pages
-def __create_html_pages(label, view, bg, font_color, view1, physics, download_dataset_only):
-    view.Summative_assessment_only( bg, font_color, label, view1, physics, download_dataset_only)
-    view.Course_Overview( bg, font_color, label, view2, physics, download_dataset_only)
-    view.All_ERs( bg, font_color, label, view3, physics, download_dataset_only)
-    view.Requirements(bg, font_color, label, view4, physics, download_dataset_only)
-    view.vertical_Requirements(bg, font_color, label, view5, physics, download_dataset_only)
+def __create_html_pages(label, view, bg, font_color, view1, physics, dow_session_btn):
+    view.Summative_assessment_only( bg, font_color, label, view1, physics, dow_session_btn)
+    view.Course_Overview( bg, font_color, label, view2, physics, dow_session_btn)
+    view.All_ERs( bg, font_color, label, view3, physics, dow_session_btn)
+    view.Requirements(bg, font_color, label, view4, physics, dow_session_btn)
+    view.vertical_Requirements(bg, font_color, label, view5, physics, dow_session_btn)
 ##############################################################################################
 # function that allows downloading:
 # 1. dataset only 
 # 2. downloading session (coming soon)
 def download_dataset(uploaded_file):
-    c_down = False
+    download_session_btn = False
     dow_container = st.container(); report  = ""
     with dow_container:
         validity_file_name = uploaded_file.replace(".csv", "_validity_report.txt")
@@ -143,10 +143,9 @@ def download_dataset(uploaded_file):
         
         #    if report == "": st.write("All issues are solved") 
         # if os.path.getsize(validity_file_name) == 0 and report == "":
-        dow_options = st.radio("", ("Download Dataset File (.CSV)", "Download Coordinate File (.JSON)"))
         # save_file = st.checkbox("Download CSV File")
-        if(dow_options == "Download Dataset File (.CSV)"):
-                if os.path.getsize(validity_file_name) != 0 and report != "":
+        
+        if os.path.getsize(validity_file_name) != 0 and report != "":
                     validity_report = st.expander("Please fix the following issues:") 
                     with validity_report:
                         for s in myList:
@@ -174,6 +173,8 @@ def download_dataset(uploaded_file):
                                     st.write(s)
 
                     st.warning("Note that there are some issues with the dataset you are about to download. Check the report above.")
+        dow_options = st.radio("", ("Download Dataset (.CSV)", "Download Session (.CSV)"))
+        if(dow_options == "Download Dataset (.CSV)"):    
                 f_name_col, down_btn_col = st.columns([2.5, 1])
                 with f_name_col:
                     file_name= st.text_input("", value = uploaded_file , placeholder="What do you want to call this dataset?", label_visibility="collapsed")
@@ -188,8 +189,14 @@ def download_dataset(uploaded_file):
                             csv_file = df_copy.to_csv(index=False).encode('utf-8')
                             download_btn = st.download_button(label="Download", data=csv_file, file_name=file_name, mime='text/csv')
         else:
-            c_down = True
-    return c_down
+            f_name_col, down_btn_col = st.columns([2.5, 1])
+            with f_name_col:
+                n = uploaded_file.replace(".csv", "_session.csv")
+                file_name= st.text_input("", value = n , placeholder="What do you want to call this dataset?", label_visibility="collapsed")
+                with down_btn_col:
+                    download_session_btn = st.button(label="Download")
+    return download_session_btn
+   
 ##############################################################################################
 # function that removes existing dataset and corresponding html and validity files. 
 def reset_dataset(uploaded_file, delete_file_rec):
@@ -220,7 +227,7 @@ def reset_dataset(uploaded_file, delete_file_rec):
 #global variables:
 uploaded_file = None # file that contains the csv file used for visualization/ customization
 global df # dataframe of the csv file
-download_dataset_only = False
+dow_session_btn = False
 # initial settings for the streamlit app:
 # the "wide" layout allows the elements to be stretched to the size of the screen 
 st.set_page_config(page_title = "LePa Visualizer", layout="wide", initial_sidebar_state="collapsed")
@@ -452,7 +459,7 @@ with container:
                             uploaded_file = f_name
                             dataset = datasetCreator.datasetCreator(f_name)  
                     #flag that indicates user want to download the dataset
-                    download_dataset_only = download_dataset(uploaded_file)           
+                    dow_session_btn = download_dataset(uploaded_file)           
     if (uploaded_file is not None):
         # store file in a dataframe  used for views --> Visualization file
         dataframe = pd.read_csv(uploaded_file)
@@ -465,10 +472,10 @@ with container:
         
         # get the csv file as array -
         csvRows = []
-        # with open(label, encoding='utf_8_sig') as csvfile:
-        #     reader = csv.reader(csvfile) # change contents to floats
-        #     for row in reader: # each row is a list
-        #         csvRows.append(row)
+        with open(label, encoding='utf_8_sig') as csvfile:
+            reader = csv.reader(csvfile) # change contents to floats
+            for row in reader: # each row is a list
+                csvRows.append(row)
         view = views.Views(dataframe, csvRows)
         
         # for the custom dataset we retrive a selected node if they exists
@@ -500,7 +507,7 @@ with container:
         view.set_is_custom(is_custom)
         # create 5 htmls containing different layout of datasets
         # view1 is used for mobile warning when creating the html -- cannot have warning in streamlit
-        __create_html_pages(label, view, bg, font_color, view1, physics, download_dataset_only); 
+        __create_html_pages(label, view, bg, font_color, view1, physics, dow_session_btn); 
 
          # adding html file to the container based on the selction made by user
         with container_html:
