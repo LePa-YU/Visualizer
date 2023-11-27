@@ -944,13 +944,36 @@ class datasetCreator:
                             break
             
         if not relation_exist and st.session_state.btnval == False: #st.session_state.mylist.append(vip)
-            for i in range(len(st.session_state.df.index)):
-                    # find node_1
-                    n1 = st.session_state.df["identifier"][i]
-                    if n1 == node_1:
-                        st.session_state.df["comesAfter"][i] = node_2
-                        st.session_state.df.to_csv(self.file_name, index=False)
-                        break
+                node1_has_CA = datasetCreator.__node_has_CA(self, node_1)
+                # print(node1_has_CA)
+                node1_is_referred_ca = datasetCreator.__node_is_referred_by_other_ca(self, node_1)
+                # print(node1_is_referred_ca)
+                # refer to algorithm in doc
+                if(node1_has_CA):
+                    if(node1_is_referred_ca): #case 4
+                        # node_comesAfter_node1's CA = node1's CA
+                        # find node_1's ca in df"
+                        # for i in range(len(st.session_state.df.index)):
+                        #     node_id = st.session_state.df["identifier"][i]
+                        #     if(node_id == node_1): #found node_1
+                        #         node1_ca = st.session_state.df["comesAfter"][i] # found node1's ca
+                                for j in range(len(st.session_state.df.index)): # look for the node that refers node 1
+                                    try: ca = int(st.session_state.df["comesAfter"][j])
+                                    except: ca = None
+                                    if(ca != None and ca == node_1): # found the node that comesAFter node1
+                                        # change this node's ca to node1's ca
+                                        st.session_state.df["comesAfter"][j] = ""
+                                        # in case they are not null already -- e.g. bad dataset is entered
+                                        # st.session_state.df["assesses"][j] = ""; st.session_state.df["isPartOf"][j] = ""; st.session_state.df["requires"][j] = ""
+                                        st.session_state.df.to_csv(self.file_name, index=False)
+                                        break 
+                for i in range(len(st.session_state.df.index)):   
+                        # find node_1
+                        n1 = st.session_state.df["identifier"][i]
+                        if n1 == node_1:
+                            st.session_state.df["comesAfter"][i] = node_2
+                            st.session_state.df.to_csv(self.file_name, index=False)
+                            break
         st.session_state.df = pd.read_csv(self.file_name)
         #   st.session_state.txt_title = ""
 
