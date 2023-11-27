@@ -9,13 +9,61 @@ class datasetCreator:
     def __init__(self, file_name):
         self.file_name = file_name
         if "df" not in st.session_state:
-            col_list = ['identifier','title','description','url','type','isPartOf','assesses','comesAfter','requires','alternativeContent','references','isFormatOf','duration', "x values", "y values"]
-            if(not os.path.isfile(file_name)): 
+            col_list = [
+                "identifier",
+                "title",
+                "description",
+                "url",
+                "type",
+                "isPartOf",
+                "assesses",
+                "comesAfter",
+                "requires",
+                "alternativeContent",
+                "references",
+                "isFormatOf",
+                "duration",
+                "x values",
+                "y values",
+            ]
+            if not os.path.isfile(file_name):
                 st.session_state.df = pd.DataFrame(columns=col_list)
                 # add start and end node
-                if(len(st.session_state.df)==0):
-                    st.session_state.df.loc[len(st.session_state.df.index)] = [0,'Start','start','','start','','','','','','','','','','']
-                    st.session_state.df.loc[len(st.session_state.df.index)] = [len(st.session_state.df.index),'End','end','','end','','','','','','','','','','']
+                if len(st.session_state.df) == 0:
+                    st.session_state.df.loc[len(st.session_state.df.index)] = [
+                        0,
+                        "Start",
+                        "start",
+                        "",
+                        "start",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                    ]
+                    st.session_state.df.loc[len(st.session_state.df.index)] = [
+                        len(st.session_state.df.index),
+                        "End",
+                        "end",
+                        "",
+                        "end",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                    ]
                     st.session_state.df.to_csv(file_name, index=False)
             else:
                 st.session_state.df = pd.read_csv(file_name)
@@ -23,14 +71,62 @@ class datasetCreator:
                     if not col in st.session_state.df.columns:
                         st.session_state.df[col] = ""
                 st.session_state.df.to_csv(file_name, index=False)
-        col_list = ['identifier','title','description','url','type','isPartOf','assesses','comesAfter','requires','alternativeContent','references','isFormatOf','duration', "x values", "y values"]
-        
-        if(not os.path.isfile(file_name)): 
+        col_list = [
+            "identifier",
+            "title",
+            "description",
+            "url",
+            "type",
+            "isPartOf",
+            "assesses",
+            "comesAfter",
+            "requires",
+            "alternativeContent",
+            "references",
+            "isFormatOf",
+            "duration",
+            "x values",
+            "y values",
+        ]
+
+        if not os.path.isfile(file_name):
             st.session_state.df = pd.DataFrame(columns=col_list)
             # add start and end node
-            if(len(st.session_state.df.index)==0):
-                st.session_state.df.loc[len(st.session_state.df.index)] = [0,'Start','start','','start','','','','','','','','','','']
-                st.session_state.df.loc[len(st.session_state.df.index)] = [len(st.session_state.df.index),'End','end','','end','','','','','','','','','','']
+            if len(st.session_state.df.index) == 0:
+                st.session_state.df.loc[len(st.session_state.df.index)] = [
+                    0,
+                    "Start",
+                    "start",
+                    "",
+                    "start",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                ]
+                st.session_state.df.loc[len(st.session_state.df.index)] = [
+                    len(st.session_state.df.index),
+                    "End",
+                    "end",
+                    "",
+                    "end",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                ]
                 st.session_state.df.to_csv(file_name, index=False)
         else:
             st.session_state.df = pd.read_csv(file_name)
@@ -42,58 +138,92 @@ class datasetCreator:
         for i in range(len(st.session_state.df.index)):
             node_type = st.session_state.df["type"][i]
             if node_type != "start" and node_type != "end":
-                if node_type != "rER": st.session_state.df["assesses"][i] = "" # if node is not rER then it should not have assess field
-                else: # if node is rER then it must not have comesAfter, requires, and isPartOf
-                    st.session_state.df["comesAfter"][i] = ""; st.session_state.df["isPartOf"][i] = ""
+                if node_type != "rER":
+                    st.session_state.df["assesses"][
+                        i
+                    ] = ""  # if node is not rER then it should not have assess field
+                else:  # if node is rER then it must not have comesAfter, requires, and isPartOf
+                    st.session_state.df["comesAfter"][i] = ""
+                    st.session_state.df["isPartOf"][i] = ""
                     st.session_state.df["requires"][i] = ""
-                
+
                 # if a node is aER or iER --> might have comesAfter but no assesses, isPartof, requires
-                if node_type != "aER" and node_type!="iER": st.session_state.df["comesAfter"][i] = "" # if node is not aER or rER then doesnt have comesAfter
+                if node_type != "aER" and node_type != "iER":
+                    st.session_state.df["comesAfter"][
+                        i
+                    ] = ""  # if node is not aER or rER then doesnt have comesAfter
                 else:
-                    st.session_state.df["assesses"][i] = ""; st.session_state.df["isPartOf"][i] = ""
+                    st.session_state.df["assesses"][i] = ""
+                    st.session_state.df["isPartOf"][i] = ""
                     st.session_state.df["requires"][i] = ""
-            
+
             ## only requires can have multi values for the rest of relation they are set to "" if they have more than one value
-            a = st.session_state.df["assesses"][i]; ca = st.session_state.df["comesAfter"][i]; ipo = st.session_state.df["isPartOf"][i]
+            a = st.session_state.df["assesses"][i]
+            ca = st.session_state.df["comesAfter"][i]
+            ipo = st.session_state.df["isPartOf"][i]
             if type(a) != int:
-                try: a = int(float(st.session_state.df["assesses"][i]))
-                except: a = None
-                if a == None: st.session_state.df["assesses"][i] = ""
+                try:
+                    a = int(float(st.session_state.df["assesses"][i]))
+                except:
+                    a = None
+                if a == None:
+                    st.session_state.df["assesses"][i] = ""
             if type(ca) != int:
-                try: ca = int(float(st.session_state.df["comesAfter"][i]))
-                except: ca = None
-                if ca == None: st.session_state.df["comesAfter"][i] = ""
+                try:
+                    ca = int(float(st.session_state.df["comesAfter"][i]))
+                except:
+                    ca = None
+                if ca == None:
+                    st.session_state.df["comesAfter"][i] = ""
             if type(ipo) != int:
-                try: ipo = int(float(st.session_state.df["isPartOf"][i]))
-                except: ipo = None
-                if ipo == None: st.session_state.df["isPartOf"][i] = ""
-       
+                try:
+                    ipo = int(float(st.session_state.df["isPartOf"][i]))
+                except:
+                    ipo = None
+                if ipo == None:
+                    st.session_state.df["isPartOf"][i] = ""
+
         st.session_state.df.to_csv(file_name, index=False)
 
     def add_node(self):
         datasetCreator.set_selected_node(self, None)
         node_dict = datasetCreator.__create_node_addition_fields(self)
-        # print(node_dict)
-        if(node_dict):
-            # print(len(st.session_state.df.index))
-            end_node_comesAfter = st.session_state.df["comesAfter"].iloc[-1] # keep end node connected to its comesAfter
-            datasetCreator.__add_node_from_dict(self, node_dict, len(st.session_state.df.index)-1)
-            # st.session_state.df.loc[len(st.session_state.df.index)-1] = node
+        if node_dict:
+            end_node_comesAfter = st.session_state.df["comesAfter"].iloc[
+                -1
+            ]  # keep end node connected to its comesAfter
+            datasetCreator.__add_node_from_dict(
+                self, node_dict, len(st.session_state.df.index) - 1
+            )
             # end node dict:
-            end_dict = {"identifier": node_dict["identifier"]+1, "title": "End", "description": "end", "url":"", "type":"end"
-                    ,"isPartOf": '', "assesses":'','comesAfter':end_node_comesAfter,"requires":'', "alternativeContent":'', "references":'',
-                    "isFormatOf": "", "duration": "", "x values":'', "y values":""}
-            datasetCreator.__add_node_from_dict(self, end_dict, len(st.session_state.df.index))
-            # st.session_state.df.loc[len(st.session_state.df.index)] = [node_dict["identifier"]+1,'End','end','','end','','',end_node_comesAfter,'','','','','','','']
+            end_dict = {
+                "identifier": node_dict["identifier"] + 1,
+                "title": "End",
+                "description": "end",
+                "url": "",
+                "type": "end",
+                "isPartOf": "",
+                "assesses": "",
+                "comesAfter": end_node_comesAfter,
+                "requires": "",
+                "alternativeContent": "",
+                "references": "",
+                "isFormatOf": "",
+                "duration": "",
+                "x values": "",
+                "y values": "",
+            }
+            datasetCreator.__add_node_from_dict(
+                self, end_dict, len(st.session_state.df.index)
+            )
             st.session_state.df.to_csv(self.file_name, index=False)
             st.session_state.df = pd.read_csv(self.file_name)
-        # print(st.session_state.df)
-        # self.validity.check_validity()
-        
+
     def __add_node_from_dict(self, node_dict, index):
-        try: n_id = int(node_dict["identifier"])
-        except: n_id = int(float(node_dict["identifier"]))
-        # print(type(n_id))
+        try:
+            n_id = int(node_dict["identifier"])
+        except:
+            n_id = int(float(node_dict["identifier"]))
         st.session_state.df.loc[index, "identifier"] = str(n_id)
         st.session_state.df.loc[index, "title"] = node_dict["title"]
         st.session_state.df.loc[index, "description"] = node_dict["description"]
@@ -103,157 +233,194 @@ class datasetCreator:
         st.session_state.df.loc[index, "assesses"] = node_dict["assesses"]
         st.session_state.df.loc[index, "comesAfter"] = node_dict["comesAfter"]
         st.session_state.df.loc[index, "requires"] = node_dict["requires"]
-        st.session_state.df.loc[index, "alternativeContent"] = node_dict["alternativeContent"]
+        st.session_state.df.loc[index, "alternativeContent"] = node_dict[
+            "alternativeContent"
+        ]
         st.session_state.df.loc[index, "references"] = node_dict["references"]
         st.session_state.df.loc[index, "isFormatOf"] = node_dict["isFormatOf"]
         st.session_state.df.loc[index, "duration"] = node_dict["duration"]
         st.session_state.df.loc[index, "x values"] = node_dict["x values"]
         st.session_state.df.loc[index, "y values"] = node_dict["y values"]
-        # st.session_state.df.to_csv(self.file_name, index=False)
-        
+
     def edit_node(self):
         st.session_state.df = pd.read_csv(self.file_name)
         datasetCreator.set_selected_node(self, None)
-        if(len(st.session_state.df.index) <= 2):
+        if len(st.session_state.df.index) <= 2:
             st.text("Dataset is empty please add a node")
         else:
             st.divider()
             st.text("find the node you want to edit:")
             node = datasetCreator.__find_node_list(self)
-            # print(node)
-            if(node != None):
+            if node != None:
                 node = np.int16(node).item()
             datasetCreator.set_selected_node(self, node)
             disable = False
-            if("delete_node" in st.session_state):
-                if(st.session_state.delete_node == True): disable = True
+            if "delete_node" in st.session_state:
+                if st.session_state.delete_node == True:
+                    disable = True
             confirm_edit = st.checkbox("Confirm selection", key="confirm_edit")
-            if(confirm_edit):
+            if confirm_edit:
                 st.divider()
                 edited_node, edited_node_dict = datasetCreator.__edit_option(self, node)
-                if(edited_node):
-                    save_col, delete_col =st.columns([1, 3.5])
+                if edited_node:
+                    save_col, delete_col = st.columns([1, 3.5])
                     with save_col:
-                        save_node = st.button("Save Changes", key="save_change_btn", disabled=disable)
-                        if(save_node):
+                        save_node = st.button(
+                            "Save Changes", key="save_change_btn", disabled=disable
+                        )
+                        if save_node:
                             for i in range(len(st.session_state.df.index)):
                                 n_id = st.session_state.df["identifier"][i]
                                 if n_id == node:
-                                    # st.session_state.df.loc[i] = edited_node # add edited node
-                                    datasetCreator.__add_node_from_dict(self, edited_node_dict, i)
-                                    st.session_state.df.to_csv(self.file_name, index=False)
+                                    datasetCreator.__add_node_from_dict(
+                                        self, edited_node_dict, i
+                                    )
+                                    st.session_state.df.to_csv(
+                                        self.file_name, index=False
+                                    )
                                     break
                     with delete_col:
                         datasetCreator.__delete_node(self, node, disable)
                 else:
                     datasetCreator.__delete_node(self, node, disable)
+
     def __delete_node(self, node, disable):
         delete_node = st.button("Delete Node", key="delete_node", disabled=disable)
-        if(delete_node):
-                            # print(node)
-                            index = 0
-                            # find the index to be removed
-                            for i in range(len(st.session_state.df.index)):
-                                n_id = st.session_state.df["identifier"][i]
-                                if(n_id == node ):
-                                    index = i
-                                    break
-                            # before deleting, get this node's ca, find  the node that comes after this and set it ca to this node's ca
-                            for i in range(len(st.session_state.df.index)):
-                                this_id = st.session_state.df["identifier"][i]
-                                if(this_id == node):
-                                    try: this_ca = int(st.session_state.df["comesAfter"][i])
-                                    except: this_ca =None
-                                    for j in range(len(st.session_state.df.index)):
-                                            try: ca = int(st.session_state.df["comesAfter"][j])
-                                            except: ca =None
-                                            if(ca == node and ca != None):
-                                                st.session_state.df["comesAfter"][j] = this_ca
-                                    break
-                            # if a node is referred in isPartOf another node, clear the 2nd node's isPart
-                            for j in range(len(st.session_state.df.index)):
-                                try: ipo = int(st.session_state.df["isPartOf"][j])
-                                except: ipo = None
-                                if(ipo == node and ipo != None):
-                                    st.session_state.df["isPartOf"][j] = ""
+        if delete_node:
+            index = 0
+            # find the index to be removed
+            for i in range(len(st.session_state.df.index)):
+                n_id = st.session_state.df["identifier"][i]
+                if n_id == node:
+                    index = i
+                    break
+            # before deleting, get this node's ca, find  the node that comes after this and set it ca to this node's ca
+            for i in range(len(st.session_state.df.index)):
+                this_id = st.session_state.df["identifier"][i]
+                if this_id == node:
+                    try:
+                        this_ca = int(st.session_state.df["comesAfter"][i])
+                    except:
+                        this_ca = None
+                    for j in range(len(st.session_state.df.index)):
+                        try:
+                            ca = int(st.session_state.df["comesAfter"][j])
+                        except:
+                            ca = None
+                        if ca == node and ca != None:
+                            st.session_state.df["comesAfter"][j] = this_ca
+                    break
+            # if a node is referred in isPartOf another node, clear the 2nd node's isPart
+            for j in range(len(st.session_state.df.index)):
+                try:
+                    ipo = int(st.session_state.df["isPartOf"][j])
+                except:
+                    ipo = None
+                if ipo == node and ipo != None:
+                    st.session_state.df["isPartOf"][j] = ""
 
-                            # if a node is referred in assesses of another node, clear the 2nd node's assesses
-                            for j in range(len(st.session_state.df.index)):
-                                try: isb = int(st.session_state.df["assesses"][j])
-                                except: isb = None
-                                if(isb == node and isb != None):
-                                    st.session_state.df["assesses"][j] = ""
-                            
-                            # if node has requires already, allow deleting the relation from node 1's requires field if node 2 is part of it
-                            for i in range(len(st.session_state.df.index)):
-                                require_ids = st.session_state.df["requires"][i]
-                                require_id_list = []
-                                if type(require_ids) != str: require_ids = str(require_ids)
-                                if type(require_ids) == str and require_ids!="":
-                                    require_id_list = require_ids.split(",") # convert node's requires to list
-                                    for n in require_id_list: 
-                                        try: n_int = int(n)
-                                        except: 
-                                            try: n_int = int(float(n))
-                                            except: n_int = None
-                                        if n_int == node :  # node exist in required field of this node 
-                                            require_id_list.remove(str(n))
-                                            delimiter = ','
-                                            res = delimiter.join(require_id_list)
-                                            st.session_state.df["requires"][i] = res
-                                            
-                            st.session_state.df = st.session_state.df.drop(index) # remove the node itself
-                            st.session_state.df.to_csv(self.file_name, index=False)
-                            st.session_state.df = pd.read_csv(self.file_name)               
+            # if a node is referred in assesses of another node, clear the 2nd node's assesses
+            for j in range(len(st.session_state.df.index)):
+                try:
+                    isb = int(st.session_state.df["assesses"][j])
+                except:
+                    isb = None
+                if isb == node and isb != None:
+                    st.session_state.df["assesses"][j] = ""
+
+            # if node has requires already, allow deleting the relation from node 1's requires field if node 2 is part of it
+            for i in range(len(st.session_state.df.index)):
+                require_ids = st.session_state.df["requires"][i]
+                require_id_list = []
+                if type(require_ids) != str:
+                    require_ids = str(require_ids)
+                if type(require_ids) == str and require_ids != "":
+                    require_id_list = require_ids.split(
+                        ","
+                    )  # convert node's requires to list
+                    for n in require_id_list:
+                        try:
+                            n_int = int(n)
+                        except:
+                            try:
+                                n_int = int(float(n))
+                            except:
+                                n_int = None
+                        if n_int == node:  # node exist in required field of this node
+                            require_id_list.remove(str(n))
+                            delimiter = ","
+                            res = delimiter.join(require_id_list)
+                            st.session_state.df["requires"][i] = res
+
+            st.session_state.df = st.session_state.df.drop(
+                index
+            )  # remove the node itself
+            st.session_state.df.to_csv(self.file_name, index=False)
+            st.session_state.df = pd.read_csv(self.file_name)
+
     def add_relation(self):
-        # datasetCreator.set_selected_node(self, None)
         node_with_relation = datasetCreator.__add_relation_fields(self)
-        
-    
+
     def __add_relation_fields(self):
-        # datasetCreator.set_selected_node(self, None)
         col1, col2, col3 = st.columns(3)
-        node1_id = None; node2_id = None
-        node1_confirm = False; node2_confirm = False
-        node1_is_composite = False; node1_type =""; relation_select=""
-        with col1: 
+        node1_id = None
+        node2_id = None
+        node1_confirm = False
+        node2_confirm = False
+        node1_is_composite = False
+        node1_type = ""
+        relation_select = ""
+        with col1:
             st.text("select ER 1")
             node1_id = datasetCreator.__find_node1_for_relations(self)
-            if(node1_id != None):
+            if node1_id != None:
                 node1_id = np.int16(node1_id).item()
             datasetCreator.set_selected_node(self, node1_id)
-            node1_confirm = True; node_type_end=False
-            if node1_id == st.session_state.df["identifier"][len(st.session_state.df)-1]:
+            node1_confirm = True
+            node_type_end = False
+            if (
+                node1_id
+                == st.session_state.df["identifier"][len(st.session_state.df) - 1]
+            ):
                 node_type_end = True
-            if(node1_confirm):
-                # datasetCreator.set_selected_node(self, None)
+            if node1_confirm:
                 for i in range(len(st.session_state.df.index)):
                     node_id = st.session_state.df["identifier"][i]
-                    if (node_id == node1_id):
+                    if node_id == node1_id:
                         node1_type = st.session_state.df["type"][i]
-                        if(node1_type == "iER" or node1_type == "aER" or node1_type=="rER"): node1_is_composite = True
-                        break        
+                        if (
+                            node1_type == "iER"
+                            or node1_type == "aER"
+                            or node1_type == "rER"
+                        ):
+                            node1_is_composite = True
+                        break
         with col2:
             st.text("select relation")
             if node_type_end:
-                 relation_list = ["Comes After"]
-            else:    
+                relation_list = ["Comes After"]
+            else:
                 if node1_is_composite:
-                    # if first node is composite we can have: 
-                    # composite-composite relation: 
+                    # if first node is composite we can have:
+                    # composite-composite relation:
                     #   1. comesAfter, comesBefore: assumption --> between aER, rER, start and end
                     #       a. node1 comesAfter nodeB (add to node A)
                     #       b. node1 comesBefore node B (add to node B)
                     #   2. if node1_type is rER --> assess else is assessedBy
                     # composite-atomic relation: hasPart --> node 1 has node 2 (for now only atomic)
                     relation_list = []
-                    if node1_type == "rER": relation_list = ["Has Part", "Assesses"] #done
+                    if node1_type == "rER":
+                        relation_list = ["Has Part", "Assesses"]  # done
                     elif node1_type == "aER":
                         # possiblity of adding ComesBefore
-                        relation_list  = ["Comes After", "Has Part", "Is Assessed By"] #done
-                    else: 
+                        relation_list = [
+                            "Comes After",
+                            "Has Part",
+                            "Is Assessed By",
+                        ]  # done
+                    else:
                         # possiblity of adding ComesBefore
-                        relation_list = ["Comes After", "Has Part"] #done
+                        relation_list = ["Comes After", "Has Part"]  # done
                 else:
                     # if a node a not a composite then it is atomic ER. the only atomic-atomic relation:
                     #   1. Requires if node 1 requires node 2 --> add to node 1
@@ -266,371 +433,432 @@ class datasetCreator:
             st.text("select ER 2")
             # the avaiable nodes are changed based oon in col 2
             datasetCreator.__find_node2_for_relations(self, node1_id, relation_select)
-        
+
     def __find_node2_for_relations(self, node_1, relation):
-        # type_col, title_col, id_col = st.columns(3)
         # # select type: there are 4 type: iER, aER, rER, atomic ER or all --> default = All
         if "confirm_ER_2" not in st.session_state:
-                st.session_state.confirm_ER_2 = False
+            st.session_state.confirm_ER_2 = False
         # based on relation the types of nodes present change:
-        if(relation == "Comes After"):
+        if relation == "Comes After":
             datasetCreator.__add_relation_comesAfter(self, node_1)
-        if(relation == "Has Part"):
+        if relation == "Has Part":
             datasetCreator.__add_relation_HasPart(self, node_1)
-        if(relation == "Is Assessed By"):
+        if relation == "Is Assessed By":
             datasetCreator.__add_relation_isAssessedBy(self, node_1)
-        
-        if( relation == "Assesses"):
+
+        if relation == "Assesses":
             datasetCreator.__add_relation_assesses(self, node_1)
-        if( relation == "Is Part Of"):
+        if relation == "Is Part Of":
             datasetCreator.__add_relation_Is_Part_Of(self, node_1)
-        if( relation == "Requires"):
+        if relation == "Requires":
             datasetCreator.__add_relation_requires(self, node_1, True)
-        if( relation == "Is Required By"):
+        if relation == "Is Required By":
             datasetCreator.__add_relation_requires(self, node_1, False)
-        # print(relation)
-    def toggle_btns_req(self, node_1, node_2, is_requires): 
-        relation_exist = False; node_1_requires = []; index = None; n2 = None
+
+    def toggle_btns_req(self, node_1, node_2, is_requires):
+        relation_exist = False
+        node_1_requires = []
+        index = None
+        n2 = None
         for i in range(len(st.session_state.df.index)):
             n_id = st.session_state.df["identifier"][i]
-            if(n_id == node_1): # find node 1
+            if n_id == node_1:  # find node 1
                 require_ids = st.session_state.df["requires"][i]
                 require_id_list = []
-                if type(require_ids) != str: require_ids = str(require_ids)
-                if type(require_ids) == str and require_ids!="":
+                if type(require_ids) != str:
+                    require_ids = str(require_ids)
+                if type(require_ids) == str and require_ids != "":
                     require_id_list = require_ids.split(",")
-                        # find node 2:
+                    # find node 2:
                     for n in require_id_list:
-                        # print(node_2)
-                        try: n_int = int(n)
-                        except: 
-                            try: n_int = int(float(n))
-                            except: n_int = None
-                        if n_int == node_2 :  # node exist in required field of node 1 
-                            relation_exist = True; node_1_requires = require_id_list.copy()
-                            index = i; n2 = n
+                        try:
+                            n_int = int(n)
+                        except:
+                            try:
+                                n_int = int(float(n))
+                            except:
+                                n_int = None
+                        if n_int == node_2:  # node exist in required field of node 1
+                            relation_exist = True
+                            node_1_requires = require_id_list.copy()
+                            index = i
+                            n2 = n
                             break
-        #delete
-        if relation_exist and st.session_state.btnval == True: #st.session_state.mylist.remove(vip)
-                     # print(node_1_requires)
-                # print(str(node_2))
-                node_1_requires.remove(str(n2))
-                delimiter = ','
-                res = delimiter.join(node_1_requires)
-                if index != None: st.session_state.df["requires"][index] = res
-                st.session_state.df.to_csv(self.file_name, index=False)
-        #add    
-        if not relation_exist and st.session_state.btnval == False: #st.session_state.mylist.append(vip)
+        # delete
+        if relation_exist and st.session_state.btnval == True:
+            node_1_requires.remove(str(n2))
+            delimiter = ","
+            res = delimiter.join(node_1_requires)
+            if index != None:
+                st.session_state.df["requires"][index] = res
+            st.session_state.df.to_csv(self.file_name, index=False)
+        # add
+        if not relation_exist and st.session_state.btnval == False:
             for i in range(len(st.session_state.df.index)):
                 n_id = st.session_state.df["identifier"][i]
-                if(is_requires):
-                    if(n_id == node_1): # find node 1
-                        if(pd.isna(st.session_state.df["requires"][i])): # requires field is empty
-                            st.session_state.df["requires"][i] =  str(int(node_2))
+                if is_requires:
+                    if n_id == node_1:  # find node 1
+                        if pd.isna(st.session_state.df["requires"][i]):  
+                            # requires field is empty
+                            st.session_state.df["requires"][i] = str(int(node_2))
                             st.session_state.df.to_csv(self.file_name, index=False)
                         else:
-                            st.session_state.df["requires"][i] = str(st.session_state.df["requires"][i]) +"," + str(int(node_2))
+                            st.session_state.df["requires"][i] = (
+                                str(st.session_state.df["requires"][i])
+                                + ","
+                                + str(int(node_2))
+                            )
                             st.session_state.df.to_csv(self.file_name, index=False)
-                        # st.session_state.df["requires"][i] =  node_2
                         break
                 else:
-                    if(n_id == node_2): # find node 2
-                        if(pd.isna(st.session_state.df["requires"][i])): # requires field is empty
-                            st.session_state.df["requires"][i] =  str(int(node_1))
+                    if n_id == node_2:  # find node 2
+                        if pd.isna(
+                            st.session_state.df["requires"][i]
+                        ):  # requires field is empty
+                            st.session_state.df["requires"][i] = str(int(node_1))
                             st.session_state.df.to_csv(self.file_name, index=False)
                         else:
-                            st.session_state.df["requires"][i] = str(st.session_state.df["requires"][i]) +"," + str(int(node_1))
+                            st.session_state.df["requires"][i] = (
+                                str(st.session_state.df["requires"][i])
+                                + ","
+                                + str(int(node_1))
+                            )
                             st.session_state.df.to_csv(self.file_name, index=False)
-                        # st.session_state.df["requires"][i] =  node_2
-                        break      
+                        break
         st.session_state.df = pd.read_csv(self.file_name)
+
     def __add_relation_requires(self, node_1, is_requires):
         ## Both node_1 and node_2 need to be atomic
-        atomic_title_list = []; node_2 = None
+        atomic_title_list = []
+        node_2 = None
         for i in range(len(st.session_state.df.index)):
             node_title = st.session_state.df["title"][i]
             node_type = st.session_state.df["type"][i]
             node_id = st.session_state.df["identifier"][i]
-            if(node_id != node_1):
-                if(node_type != "start" and node_type != "end" and node_type != "iER" and node_type != "rER" and node_type != "aER"):
+            if node_id != node_1:
+                if (
+                    node_type != "start"
+                    and node_type != "end"
+                    and node_type != "iER"
+                    and node_type != "rER"
+                    and node_type != "aER"
+                ):
                     atomic_title_list.append(node_title)
-        title_selector = st.selectbox("Select atomic ER", set(atomic_title_list), key="find_node2_ha_relation", disabled= False)
+        title_selector = st.selectbox(
+            "Select atomic ER",
+            set(atomic_title_list),
+            key="find_node2_ha_relation",
+            disabled=False,
+        )
         # find type or types based on title
-        title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, atomic_title_list)
+        title_has_duplicate = datasetCreator.__title_has_duplicate(
+            title_selector, atomic_title_list
+        )
         node_has_duplicate = False
-        type_selector  = ""
-        if title_has_duplicate: 
+        type_selector = ""
+        if title_has_duplicate:
             type_list = []
             for i in range(len(st.session_state.df.index)):
                 node_title = st.session_state.df["title"][i]
                 node_type = st.session_state.df["type"][i]
                 node_id = st.session_state.df["identifier"][i]
-                if(node_id != node_1):  
-                    if (node_title == title_selector):
-                        if(node_type != "start" and node_type != "end" and node_type != "iER" and node_type != "rER" and node_type != "aER"):
+                if node_id != node_1:
+                    if node_title == title_selector:
+                        if (
+                            node_type != "start"
+                            and node_type != "end"
+                            and node_type != "iER"
+                            and node_type != "rER"
+                            and node_type != "aER"
+                        ):
                             type_list.append(node_type)
-            type_selector = st.selectbox("Select ER type", set(type_list), key = "find_node2_req_type")
-            node_has_duplicate = datasetCreator.__title_has_duplicate(type_selector, type_list)    
-        # if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find 
+            type_selector = st.selectbox(
+                "Select ER type", set(type_list), key="find_node2_req_type"
+            )
+            node_has_duplicate = datasetCreator.__title_has_duplicate(
+                type_selector, type_list
+            )
+        # if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find
         # the correct node
         id_selector = ""
-        if( node_has_duplicate):
+        if node_has_duplicate:
             id_list = []
             for i in range(len(st.session_state.df.index)):
                 node_id = st.session_state.df["identifier"][i]
                 node_title = st.session_state.df["title"][i]
                 node_type = st.session_state.df["type"][i]
-                if(node_id != node_1):  
-                    if(node_type == type_selector):
-                        if(title_selector == node_title): id_list.append(node_id)
-            id_selector = st.selectbox("Select ID: ", id_list, key="find_node2_id_relation_req", disabled= False)    
-        if(id_selector): node_2 = int(id_selector)
+                if node_id != node_1:
+                    if node_type == type_selector:
+                        if title_selector == node_title:
+                            id_list.append(node_id)
+            id_selector = st.selectbox(
+                "Select ID: ", id_list, key="find_node2_id_relation_req", disabled=False
+            )
+        if id_selector:
+            node_2 = int(id_selector)
         else:
-            #if node is unique --> no id selector --> find id
+            # if node is unique --> no id selector --> find id
             for i in range(len(st.session_state.df.index)):
                 node_id = st.session_state.df["identifier"][i]
                 node_title = st.session_state.df["title"][i]
                 node_type = st.session_state.df["type"][i]
                 if node_id != node_1:
                     if type_selector == "":
-                        if title_selector == node_title: 
-                            if(node_type != "start" and node_type != "end" and node_type != "iER" and node_type != "rER" and node_type != "aER"):    
+                        if title_selector == node_title:
+                            if (
+                                node_type != "start"
+                                and node_type != "end"
+                                and node_type != "iER"
+                                and node_type != "rER"
+                                and node_type != "aER"
+                            ):
                                 node_2 = node_id
                     else:
-                        if(node_type == type_selector and title_selector == node_title): node_2 = node_id
-        if(node_2!= None):
+                        if node_type == type_selector and title_selector == node_title:
+                            node_2 = node_id
+        if node_2 != None:
             node_2 = np.int16(node_2).item()
-        datasetCreator.set_selected_node2(self, node_2)  
+        datasetCreator.set_selected_node2(self, node_2)
         # if node 1 has requires already, allow deleting the relation from node 1's requires field if node 2 is part of it
-        relation_exist = False; node_1_requires = []; index = None; n2 = None
+        relation_exist = False
+        node_1_requires = []
+        index = None
+        n2 = None
         for i in range(len(st.session_state.df.index)):
             n_id = st.session_state.df["identifier"][i]
-            if(n_id == node_1): # find node 1
+            if n_id == node_1:  # find node 1
                 require_ids = st.session_state.df["requires"][i]
                 require_id_list = []
-                if type(require_ids) != str: require_ids = str(require_ids)
-                if type(require_ids) == str and require_ids!="":
+                if type(require_ids) != str:
+                    require_ids = str(require_ids)
+                if type(require_ids) == str and require_ids != "":
                     require_id_list = require_ids.split(",")
-                        # find node 2:
+                    # find node 2:
                     for n in require_id_list:
-                        # print(node_2)
-                        try: n_int = int(n)
-                        except: 
-                            try: n_int = int(float(n))
-                            except: n_int = None
-                        if n_int == node_2 :  # node exist in required field of node 1 
-                            relation_exist = True; node_1_requires = require_id_list.copy()
-                            index = i; n2 = n
+                        try:
+                            n_int = int(n)
+                        except:
+                            try:
+                                n_int = int(float(n))
+                            except:
+                                n_int = None
+                        if n_int == node_2:  # node exist in required field of node 1
+                            relation_exist = True
+                            node_1_requires = require_id_list.copy()
+                            index = i
+                            n2 = n
                             break
-        if "btnval" not in st.session_state: st.session_state.btnval = None
+        if "btnval" not in st.session_state:
+            st.session_state.btnval = None
         st.session_state.btnval = True if relation_exist else False
-        add_relation = st.button("Add Relation", on_click=datasetCreator.toggle_btns_req, args=(self, node_1, node_2, is_requires), disabled=st.session_state.btnval)
-        del_relation = st.button("Delete Relation",  on_click=datasetCreator.toggle_btns_req, args=(self, node_1, node_2, is_requires), disabled=not st.session_state.btnval)
-       
-        
-        # print(node_1_requires); print(n2)
-        # add_relation = st.button("Add Relation", key="add_relation_req", disabled = relation_exist)
-        # del_relation = st.button("Delete Relation", key="delete_req_relation",  disabled = not relation_exist)
-        # #Relation itself:
-        # # node 1 requires node 2 --> node 2 id added to node 1's requires field
-        # # requires field is a list so it must retrieve and add to the list
-        # # add_relation = st.button("Add Relation", key="add_relation_ha")
-        # if del_relation:
-        #         # print(node_1_requires)
-        #         # print(str(node_2))
-        #         node_1_requires.remove(str(n2))
-        #         delimiter = ','
-        #         res = delimiter.join(node_1_requires)
-        #         if index != None: st.session_state.df["requires"][index] = res
-        # if(add_relation):
-        #     for i in range(len(st.session_state.df.index)):
-        #         n_id = st.session_state.df["identifier"][i]
-        #         if(is_requires):
-        #             if(n_id == node_1): # find node 1
-        #                 if(pd.isna(st.session_state.df["requires"][i])): # requires field is empty
-        #                     st.session_state.df["requires"][i] =  str(int(node_2))
-        #                 else:
-        #                     st.session_state.df["requires"][i] = str(st.session_state.df["requires"][i]) +"," + str(int(node_2))
-        #                 # st.session_state.df["requires"][i] =  node_2
-        #                 break
-        #         else:
-        #             if(n_id == node_2): # find node 2
-        #                 if(pd.isna(st.session_state.df["requires"][i])): # requires field is empty
-        #                     st.session_state.df["requires"][i] =  str(int(node_1))
-        #                 else:
-        #                     st.session_state.df["requires"][i] = str(st.session_state.df["requires"][i]) +"," + str(int(node_1))
-        #                 # st.session_state.df["requires"][i] =  node_2
-        #                 break
-        
-                              
-        # st.session_state.df.to_csv(self.file_name, index=False)
+        add_relation = st.button(
+            "Add Relation",
+            on_click=datasetCreator.toggle_btns_req,
+            args=(self, node_1, node_2, is_requires),
+            disabled=st.session_state.btnval,
+        )
+        del_relation = st.button(
+            "Delete Relation",
+            on_click=datasetCreator.toggle_btns_req,
+            args=(self, node_1, node_2, is_requires),
+            disabled=not st.session_state.btnval,
+        )
 
-    def toggle_btns_ipo(self, node_1, node_2): 
+    def toggle_btns_ipo(self, node_1, node_2):
         relation_exist = False
         for i in range(len(st.session_state.df.index)):
             node1_id = node_id = st.session_state.df["identifier"][i]
-            if node1_id ==node_1:
-                node1_ipo =  st.session_state.df["isPartOf"][i]
+            if node1_id == node_1:
+                node1_ipo = st.session_state.df["isPartOf"][i]
                 if node1_ipo == node_2:
                     relation_exist = True
                     break
-        #delete
-        if relation_exist and st.session_state.btnval == True: #st.session_state.mylist.remove(vip)
+        # delete
+        if (
+            relation_exist and st.session_state.btnval == True
+        ): 
             for i in range(len(st.session_state.df.index)):
-                        node1_id = st.session_state.df["identifier"][i]
-                        if node1_id ==node_1:
-                            node1_ipo =  st.session_state.df["isPartOf"][i]
-                            if node1_ipo == node_2:
-                                st.session_state.df["isPartOf"][i] = None
-                                st.session_state.df.to_csv(self.file_name, index=False)
-                                break
-        #add    
-        if not relation_exist and st.session_state.btnval == False: #st.session_state.mylist.append(vip)
+                node1_id = st.session_state.df["identifier"][i]
+                if node1_id == node_1:
+                    node1_ipo = st.session_state.df["isPartOf"][i]
+                    if node1_ipo == node_2:
+                        st.session_state.df["isPartOf"][i] = None
+                        st.session_state.df.to_csv(self.file_name, index=False)
+                        break
+        # add
+        if (
+            not relation_exist and st.session_state.btnval == False
+        ): 
             for i in range(len(st.session_state.df.index)):
                 n_id = st.session_state.df["identifier"][i]
-                if(n_id == node_1): # find node 1
+                if n_id == node_1:  # find node 1
                     st.session_state.df["isPartOf"][i] = node_2
                     break
             st.session_state.df.to_csv(self.file_name, index=False)
         st.session_state.df = pd.read_csv(self.file_name)
+
     def __add_relation_Is_Part_Of(self, node_1):
         # Is part of is only possible if node 1 is atomic and node 2 is composite
         # so the option for node are all composite --> choose type, choose title, choose ID
         type_selector = st.selectbox("Select Type:", ("All", "aER", "rER", "iER"))
-        aer_list = []; ier_list = []; rer_list = []; all_list = []; node_2 = None
+        aer_list = []
+        ier_list = []
+        rer_list = []
+        all_list = []
+        node_2 = None
         for i in range(len(st.session_state.df.index)):
             node_title = st.session_state.df["title"][i]
             node_type = st.session_state.df["type"][i]
-            if(node_type != "start" and node_type != "end"):
-                if node_type == "aER": 
-                    aer_list.append(node_title); all_list.append(node_title)
-                if node_type == "iER": 
-                    ier_list.append(node_title); all_list.append(node_title)
-                if node_type == "rER": 
-                    rer_list.append(node_title); all_list.append(node_title)
-        if type_selector == "All": 
+            if node_type != "start" and node_type != "end":
+                if node_type == "aER":
+                    aer_list.append(node_title)
+                    all_list.append(node_title)
+                if node_type == "iER":
+                    ier_list.append(node_title)
+                    all_list.append(node_title)
+                if node_type == "rER":
+                    rer_list.append(node_title)
+                    all_list.append(node_title)
+        if type_selector == "All":
             title_selector = st.selectbox("Select ER", set(all_list))
-            title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, all_list)
-        elif type_selector == "aER": 
+            title_has_duplicate = datasetCreator.__title_has_duplicate(
+                title_selector, all_list
+            )
+        elif type_selector == "aER":
             title_selector = st.selectbox("Select ER", set(aer_list))
-            title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, aer_list)
-        elif type_selector == "rER": 
+            title_has_duplicate = datasetCreator.__title_has_duplicate(
+                title_selector, aer_list
+            )
+        elif type_selector == "rER":
             title_selector = st.selectbox("Select ER", set(rer_list))
-            title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, rer_list)
-        elif type_selector == "iER": 
-            title_selector = st.selectbox("Select ER", set(ier_list))  
-            title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, ier_list)
-        
+            title_has_duplicate = datasetCreator.__title_has_duplicate(
+                title_selector, rer_list
+            )
+        elif type_selector == "iER":
+            title_selector = st.selectbox("Select ER", set(ier_list))
+            title_has_duplicate = datasetCreator.__title_has_duplicate(
+                title_selector, ier_list
+            )
+
         id_selector = ""
-        if(title_has_duplicate):
+        if title_has_duplicate:
             id_list = []
             for i in range(len(st.session_state.df.index)):
                 node_id = st.session_state.df["identifier"][i]
                 node_title = st.session_state.df["title"][i]
                 node_type = st.session_state.df["type"][i]
-                if(type_selector == "All"):
-                    if (node_type == "aER" or node_type == "iER" or node_type == "rER"):
-                        if(title_selector == node_title): id_list.append(node_id)
+                if type_selector == "All":
+                    if node_type == "aER" or node_type == "iER" or node_type == "rER":
+                        if title_selector == node_title:
+                            id_list.append(node_id)
                 else:
-                    if(type_selector == node_type and title_selector == node_title): id_list.append(node_id)
-            id_selector = st.selectbox("Select ID: ", id_list)    
-        if(id_selector):
-           node_2 =  int(id_selector)
+                    if type_selector == node_type and title_selector == node_title:
+                        id_list.append(node_id)
+            id_selector = st.selectbox("Select ID: ", id_list)
+        if id_selector:
+            node_2 = int(id_selector)
         else:
-            #if node is unique --> no id selector --> find id
+            # if node is unique --> no id selector --> find id
             for i in range(len(st.session_state.df.index)):
                 node_id = st.session_state.df["identifier"][i]
                 node_title = st.session_state.df["title"][i]
                 node_type = st.session_state.df["type"][i]
-                if(type_selector == "All"):
-                    if(node_type == "aER" or node_type =="iER" or node_type =="rER"):
-                        if(title_selector == node_title): node_2 = node_id
+                if type_selector == "All":
+                    if node_type == "aER" or node_type == "iER" or node_type == "rER":
+                        if title_selector == node_title:
+                            node_2 = node_id
                 else:
-                    if(type_selector == node_type and title_selector == node_title): node_2 = node_id
-       
-        if(node_2!= None):
+                    if type_selector == node_type and title_selector == node_title:
+                        node_2 = node_id
+
+        if node_2 != None:
             node_2 = np.int16(node_2).item()
-        datasetCreator.set_selected_node2(self, node_2)  
-        ## the relation itself: 
+        datasetCreator.set_selected_node2(self, node_2)
+        ## the relation itself:
         ## node 2 id is added to is part of field of node 1
-         # check if the relationship exist:
+        # check if the relationship exist:
         relation_exist = False
         for i in range(len(st.session_state.df.index)):
             node1_id = node_id = st.session_state.df["identifier"][i]
-            if node1_id ==node_1:
-                node1_ipo =  st.session_state.df["isPartOf"][i]
+            if node1_id == node_1:
+                node1_ipo = st.session_state.df["isPartOf"][i]
                 if node1_ipo == node_2:
                     relation_exist = True
                     break
-        if "btnval" not in st.session_state: st.session_state.btnval = None
+        if "btnval" not in st.session_state:
+            st.session_state.btnval = None
         st.session_state.btnval = True if relation_exist else False
-        add_relation = st.button("Add Relation", on_click=datasetCreator.toggle_btns_ipo, args=(self, node_1, node_2), disabled=st.session_state.btnval)
-        del_relation = st.button("Delete Relation",  on_click=datasetCreator.toggle_btns_ipo, args=(self, node_1, node_2), disabled=not st.session_state.btnval)
-       
-        # add_relation = st.button("Add Relation", key="add_relation_ipo", disabled = relation_exist)
-        # del_relation = st.button("Delete Relation", key="delete_ipo_relation",  disabled = not relation_exist)
-        # if del_relation:
-        #             for i in range(len(st.session_state.df.index)):
-        #                 node1_id = st.session_state.df["identifier"][i]
-        #                 if node1_id ==node_1:
-        #                     node1_ipo =  st.session_state.df["isPartOf"][i]
-        #                     if node1_ipo == node_2:
-        #                         st.session_state.df["isPartOf"][i] = None
-        #                         st.session_state.df.to_csv(self.file_name, index=False)
-        #                         break
-        # # add_relation = st.button("Add Relation", key="add_relation_ha")
-        # if(add_relation):
-        #     for i in range(len(st.session_state.df.index)):
-        #         n_id = st.session_state.df["identifier"][i]
-        #         if(n_id == node_1): # find node 1
-        #             st.session_state.df["isPartOf"][i] = node_2
-        #             break
-        # st.session_state.df.to_csv(self.file_name, index=False)
+        add_relation = st.button(
+            "Add Relation",
+            on_click=datasetCreator.toggle_btns_ipo,
+            args=(self, node_1, node_2),
+            disabled=st.session_state.btnval,
+        )
+        del_relation = st.button(
+            "Delete Relation",
+            on_click=datasetCreator.toggle_btns_ipo,
+            args=(self, node_1, node_2),
+            disabled=not st.session_state.btnval,
+        )
 
-    def toggle_btns_assess(self, node_1, node_2): 
+    def toggle_btns_assess(self, node_1, node_2):
         relation_exist = False
         for i in range(len(st.session_state.df.index)):
             node_id = st.session_state.df["identifier"][i]
-            if node_id ==node_1:
-                node1_assesses =  st.session_state.df["assesses"][i]
+            if node_id == node_1:
+                node1_assesses = st.session_state.df["assesses"][i]
                 if node1_assesses == node_2:
                     relation_exist = True
                     break
-        #delete
-        if relation_exist and st.session_state.btnval == True: #st.session_state.mylist.remove(vip)
+        # delete
+        if (
+            relation_exist and st.session_state.btnval == True
+        ):  
             for i in range(len(st.session_state.df.index)):
-                        node_id = st.session_state.df["identifier"][i]
-                        if node_id ==node_1:
-                            node1_assesses =  st.session_state.df["assesses"][i]
-                            if node1_assesses  == node_2:
-                                st.session_state.df["assesses"][i] = None
-                                st.session_state.df.to_csv(self.file_name, index=False)
-                                break
-        #add    
-        if not relation_exist and st.session_state.btnval == False: #st.session_state.mylist.append(vip)
-                 #one to one --> check if any other node refers to node_2 in assesses
+                node_id = st.session_state.df["identifier"][i]
+                if node_id == node_1:
+                    node1_assesses = st.session_state.df["assesses"][i]
+                    if node1_assesses == node_2:
+                        st.session_state.df["assesses"][i] = None
+                        st.session_state.df.to_csv(self.file_name, index=False)
+                        break
+        # add
+        if (
+            not relation_exist and st.session_state.btnval == False
+        ): 
+            # one to one --> check if any other node refers to node_2 in assesses
             for j in range(len(st.session_state.df.index)):
-                try: assess = int(st.session_state.df["assesses"][j] )
-                except: assess = None
-                if(assess != None and assess == node_2): 
+                try:
+                    assess = int(st.session_state.df["assesses"][j])
+                except:
+                    assess = None
+                if assess != None and assess == node_2:
                     st.session_state.df["assesses"][j] = ""
             for i in range(len(st.session_state.df.index)):
                 n_id = st.session_state.df["identifier"][i]
-                if(n_id == node_1): # find node 1
+                if n_id == node_1:  # find node 1
                     st.session_state.df["assesses"][i] = node_2
                     break
             st.session_state.df.to_csv(self.file_name, index=False)
         st.session_state.df = pd.read_csv(self.file_name)
+
     def __add_relation_assesses(self, node_1):
         ## node 1 is rER and 2 nodes must be aER
-        aER_list = []; node_2 = None
+        aER_list = []
+        node_2 = None
         for i in range(len(st.session_state.df.index)):
             node_title = st.session_state.df["title"][i]
             node_type = st.session_state.df["type"][i]
-            if(node_type == "aER"):
+            if node_type == "aER":
                 aER_list.append(node_title)
-        title_selector = st.selectbox("Select aER you want to assess", set(aER_list), key="find_node2_assess_relation")
-        title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, aER_list)
+        title_selector = st.selectbox(
+            "Select aER you want to assess",
+            set(aER_list),
+            key="find_node2_assess_relation",
+        )
+        title_has_duplicate = datasetCreator.__title_has_duplicate(
+            title_selector, aER_list
+        )
         id_selector = ""
         if title_has_duplicate:
             id_list = []
@@ -639,106 +867,109 @@ class datasetCreator:
                 node_title = st.session_state.df["title"][i]
                 node_type = st.session_state.df["type"][i]
                 if node_type == "aER":
-                     if(title_selector == node_title): id_list.append(node_id)
-            id_selector = st.selectbox("Select ID: ", id_list, key="find_node2_id_relation", disabled= False)    
-        if(id_selector): node_2 = int(id_selector)
+                    if title_selector == node_title:
+                        id_list.append(node_id)
+            id_selector = st.selectbox(
+                "Select ID: ", id_list, key="find_node2_id_relation", disabled=False
+            )
+        if id_selector:
+            node_2 = int(id_selector)
         else:
-            #if node is unique --> no id selector --> find id
+            # if node is unique --> no id selector --> find id
             for i in range(len(st.session_state.df.index)):
                 node_id = st.session_state.df["identifier"][i]
                 node_title = st.session_state.df["title"][i]
                 node_type = st.session_state.df["type"][i]
                 if node_type == "aER":
-                    if(title_selector == node_title): node_2 = node_id
-        if(node_2!= None):
+                    if title_selector == node_title:
+                        node_2 = node_id
+        if node_2 != None:
             node_2 = np.int16(node_2).item()
-        datasetCreator.set_selected_node2(self, node_2) 
-        ## the relation itself: 
+        datasetCreator.set_selected_node2(self, node_2)
+        ## the relation itself:
         ## the node_1 is added to “assesses” field of node with id  node_2.
-         # check if the relationship exist:
+        # check if the relationship exist:
         relation_exist = False
         for i in range(len(st.session_state.df.index)):
             node_id = st.session_state.df["identifier"][i]
-            if node_id ==node_1:
-                node1_assesses =  st.session_state.df["assesses"][i]
+            if node_id == node_1:
+                node1_assesses = st.session_state.df["assesses"][i]
                 if node1_assesses == node_2:
                     relation_exist = True
                     break
-        if "btnval" not in st.session_state: st.session_state.btnval = None
+        if "btnval" not in st.session_state:
+            st.session_state.btnval = None
         st.session_state.btnval = True if relation_exist else False
-        add_relation = st.button("Add Relation", on_click=datasetCreator.toggle_btns_assess, args=(self, node_1, node_2), disabled=st.session_state.btnval)
-        del_relation = st.button("Delete Relation",  on_click=datasetCreator.toggle_btns_assess, args=(self, node_1, node_2), disabled=not st.session_state.btnval)
-       
-        # add_relation = st.button("Add Relation", key="add_relation_a", disabled = relation_exist)
-        # del_relation = st.button("Delete Relation", key="delete_a_relation",  disabled = not relation_exist)
-        # if del_relation:
-        #             for i in range(len(st.session_state.df.index)):
-        #                 node_id = st.session_state.df["identifier"][i]
-        #                 if node_id ==node_1:
-        #                     node1_assesses =  st.session_state.df["assesses"][i]
-        #                     if node1_assesses  == node_2:
-        #                         st.session_state.df["assesses"][i] = None
-        #                         st.session_state.df.to_csv(self.file_name, index=False)
-        #                         break
-        # if(add_relation):
-        #     #one to one --> check if any other node refers to node_2 in assesses
-        #     for j in range(len(st.session_state.df.index)):
-        #         try: assess = int(st.session_state.df["assesses"][j] )
-        #         except: assess = None
-        #         if(assess != None and assess == node_2): 
-        #             st.session_state.df["assesses"][j] = ""
-        #     for i in range(len(st.session_state.df.index)):
-        #         n_id = st.session_state.df["identifier"][i]
-        #         if(n_id == node_1): # find node 1
-        #             st.session_state.df["assesses"][i] = node_2
-        #             break
-        #     st.session_state.df.to_csv(self.file_name, index=False)
-    
-    def toggle_btns_iab(self, node_1, node_2): 
+        add_relation = st.button(
+            "Add Relation",
+            on_click=datasetCreator.toggle_btns_assess,
+            args=(self, node_1, node_2),
+            disabled=st.session_state.btnval,
+        )
+        del_relation = st.button(
+            "Delete Relation",
+            on_click=datasetCreator.toggle_btns_assess,
+            args=(self, node_1, node_2),
+            disabled=not st.session_state.btnval,
+        )
+
+    def toggle_btns_iab(self, node_1, node_2):
         relation_exist = False
         for i in range(len(st.session_state.df.index)):
             node2_id = node_id = st.session_state.df["identifier"][i]
-            if node2_id ==node_2:
-                node2_assesses =  st.session_state.df["assesses"][i]
+            if node2_id == node_2:
+                node2_assesses = st.session_state.df["assesses"][i]
                 if node2_assesses == node_1:
                     relation_exist = True
                     break
-        #delete
-        if relation_exist and st.session_state.btnval == True: #st.session_state.mylist.remove(vip)
+        # delete
+        if (
+            relation_exist and st.session_state.btnval == True
+        ): 
             for i in range(len(st.session_state.df.index)):
-                        node2_id = node_id = st.session_state.df["identifier"][i]
-                        if node2_id ==node_2:
-                            node2_assesses =  st.session_state.df["assesses"][i]
-                            if node2_assesses  == node_1:
-                                st.session_state.df["assesses"][i] = None
-                                st.session_state.df.to_csv(self.file_name, index=False)
-                                break
-        #add    
-        if not relation_exist and st.session_state.btnval == False: #st.session_state.mylist.append(vip)
-             # is Assessed by is one to one --> check if any other node refers to node_1 in assesses
-                ## and if it does then set this field to empty
+                node2_id = node_id = st.session_state.df["identifier"][i]
+                if node2_id == node_2:
+                    node2_assesses = st.session_state.df["assesses"][i]
+                    if node2_assesses == node_1:
+                        st.session_state.df["assesses"][i] = None
+                        st.session_state.df.to_csv(self.file_name, index=False)
+                        break
+        # add
+        if (
+            not relation_exist and st.session_state.btnval == False
+        ):
+            # is Assessed by is one to one --> check if any other node refers to node_1 in assesses
+            ## and if it does then set this field to empty
             for j in range(len(st.session_state.df.index)):
-                try: assess = int(st.session_state.df["assesses"][j] )
-                except: assess = None
-                if(assess != None and assess == node_1): 
+                try:
+                    assess = int(st.session_state.df["assesses"][j])
+                except:
+                    assess = None
+                if assess != None and assess == node_1:
                     st.session_state.df["assesses"][j] = ""
                     st.session_state.df.to_csv(self.file_name, index=False)
             for i in range(len(st.session_state.df.index)):
                 n_id = st.session_state.df["identifier"][i]
-                if(n_id == node_2): # find node 2
+                if n_id == node_2:  # find node 2
                     st.session_state.df["assesses"][i] = node_1
                     st.session_state.df.to_csv(self.file_name, index=False)
                     break
         st.session_state.df = pd.read_csv(self.file_name)
+
     def __add_relation_isAssessedBy(self, node_1):
-        rER_list = []; node_2 = None
+        rER_list = []
+        node_2 = None
         for i in range(len(st.session_state.df.index)):
             node_title = st.session_state.df["title"][i]
             node_type = st.session_state.df["type"][i]
-            if(node_type == "rER"):
+            if node_type == "rER":
                 rER_list.append(node_title)
-        title_selector = st.selectbox("Select rER", set(rER_list), key="find_node2_isb_relation", disabled= False)
-        title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, rER_list)
+        title_selector = st.selectbox(
+            "Select rER", set(rER_list), key="find_node2_isb_relation", disabled=False
+        )
+        title_has_duplicate = datasetCreator.__title_has_duplicate(
+            title_selector, rER_list
+        )
         id_selector = ""
         if title_has_duplicate:
             id_list = []
@@ -747,456 +978,531 @@ class datasetCreator:
                 node_title = st.session_state.df["title"][i]
                 node_type = st.session_state.df["type"][i]
                 if node_type == "rER":
-                     if(title_selector == node_title): id_list.append(node_id)
-            id_selector = st.selectbox("Select ID: ", id_list, key="find_node2_id_relation", disabled= False)    
-        if(id_selector): node_2 = int(id_selector)
+                    if title_selector == node_title:
+                        id_list.append(node_id)
+            id_selector = st.selectbox(
+                "Select ID: ", id_list, key="find_node2_id_relation", disabled=False
+            )
+        if id_selector:
+            node_2 = int(id_selector)
         else:
-            #if node is unique --> no id selector --> find id
+            # if node is unique --> no id selector --> find id
             for i in range(len(st.session_state.df.index)):
                 node_id = st.session_state.df["identifier"][i]
                 node_title = st.session_state.df["title"][i]
                 node_type = st.session_state.df["type"][i]
                 if node_type == "rER":
-                    if(title_selector == node_title): node_2 = node_id
-        if(node_2!= None):
+                    if title_selector == node_title:
+                        node_2 = node_id
+        if node_2 != None:
             node_2 = np.int16(node_2).item()
-        datasetCreator.set_selected_node2(self, node_2) 
-         ## the relation itself: 
+        datasetCreator.set_selected_node2(self, node_2)
+        ## the relation itself:
         ## the node_1 is added to “assesses” field of node with id  node_2.
         # check if the relationship exist:
         relation_exist = False
         for i in range(len(st.session_state.df.index)):
             node2_id = node_id = st.session_state.df["identifier"][i]
-            if node2_id ==node_2:
-                node2_assesses =  st.session_state.df["assesses"][i]
+            if node2_id == node_2:
+                node2_assesses = st.session_state.df["assesses"][i]
                 if node2_assesses == node_1:
                     relation_exist = True
                     break
-        if "btnval" not in st.session_state: st.session_state.btnval = None
+        if "btnval" not in st.session_state:
+            st.session_state.btnval = None
         st.session_state.btnval = True if relation_exist else False
-        add_relation = st.button("Add Relation", on_click=datasetCreator.toggle_btns_iab, args=(self, node_1, node_2), disabled=st.session_state.btnval)
-        del_relation = st.button("Delete Relation",  on_click=datasetCreator.toggle_btns_iab, args=(self, node_1, node_2), disabled=not st.session_state.btnval)
-            
-        # add_relation = st.button("Add Relation", key="add_relation_isb", disabled = relation_exist)
-        # del_relation = st.button("Delete Relation", key="delete_isb_relation",  disabled = not relation_exist)
-        # allow deletion of relation if it exists
-       
-        # if del_relation:
-        #             for i in range(len(st.session_state.df.index)):
-        #                 node2_id = node_id = st.session_state.df["identifier"][i]
-        #                 if node2_id ==node_2:
-        #                     node2_assesses =  st.session_state.df["assesses"][i]
-        #                     if node2_assesses  == node_1:
-        #                         st.session_state.df["assesses"][i] = None
-        #                         st.session_state.df.to_csv(self.file_name, index=False)
-        #                         break
-        # # add_relation = st.button("Add Relation", key="add_relation_ha")
-        # if(add_relation):
-        #      ## is Assessed by is one to one --> check if any other node refers to node_1 in assesses
-        #         ## and if it does then set this field to empty
-        #     for j in range(len(st.session_state.df.index)):
-        #         try: assess = int(st.session_state.df["assesses"][j] )
-        #         except: assess = None
-        #         if(assess != None and assess == node_1): 
-        #             st.session_state.df["assesses"][j] = ""
-        #     for i in range(len(st.session_state.df.index)):
-        #         n_id = st.session_state.df["identifier"][i]
-        #         if(n_id == node_2): # find node 2
-        #             st.session_state.df["assesses"][i] = node_1
-        #             break
-        # st.session_state.df.to_csv(self.file_name, index=False)
+        add_relation = st.button(
+            "Add Relation",
+            on_click=datasetCreator.toggle_btns_iab,
+            args=(self, node_1, node_2),
+            disabled=st.session_state.btnval,
+        )
+        del_relation = st.button(
+            "Delete Relation",
+            on_click=datasetCreator.toggle_btns_iab,
+            args=(self, node_1, node_2),
+            disabled=not st.session_state.btnval,
+        )
 
-    def toggle_btns_hp(self, node_1, node_2): 
+    def toggle_btns_hp(self, node_1, node_2):
         relation_exist = False
         for i in range(len(st.session_state.df.index)):
             node2_id = node_id = st.session_state.df["identifier"][i]
-            if node2_id ==node_2:
-                node2_ipo =  st.session_state.df["isPartOf"][i]
+            if node2_id == node_2:
+                node2_ipo = st.session_state.df["isPartOf"][i]
                 if node2_ipo == node_1:
                     relation_exist = True
                     break
-        #delete
-        if relation_exist and st.session_state.btnval == True: #st.session_state.mylist.remove(vip)
+        # delete
+        if (
+            relation_exist and st.session_state.btnval == True
+        ): 
             for i in range(len(st.session_state.df.index)):
                 node2_id = st.session_state.df["identifier"][i]
-                if node2_id ==node_2:
-                    node2_ipo =  st.session_state.df["isPartOf"][i]
+                if node2_id == node_2:
+                    node2_ipo = st.session_state.df["isPartOf"][i]
                     if node2_ipo == node_1:
                         st.session_state.df["isPartOf"][i] = None
                         st.session_state.df.to_csv(self.file_name, index=False)
                         break
-        #add    
-        if not relation_exist and st.session_state.btnval == False: #st.session_state.mylist.append(vip)
+        # add
+        if (
+            not relation_exist and st.session_state.btnval == False
+        ): 
             for i in range(len(st.session_state.df.index)):
                 n_id = st.session_state.df["identifier"][i]
-                if(n_id == node_2): # find node 2
+                if n_id == node_2:  # find node 2
                     st.session_state.df["isPartOf"][i] = node_1
                     st.session_state.df.to_csv(self.file_name, index=False)
                     break
         st.session_state.df = pd.read_csv(self.file_name)
-    
+
     def __add_relation_HasPart(self, node_1):
         # Has Part is only possible if node 1 is composite and node 2 is atomic
         # so the only possible options for node 2 are atomics ER
-        atomic_title_list = []; node_2 = None
+        atomic_title_list = []
+        node_2 = None
         for i in range(len(st.session_state.df.index)):
             node_title = st.session_state.df["title"][i]
             node_type = st.session_state.df["type"][i]
-            if(node_type != "start" and node_type != "end" and node_type != "iER" and node_type != "rER" and node_type != "aER"):
+            if (
+                node_type != "start"
+                and node_type != "end"
+                and node_type != "iER"
+                and node_type != "rER"
+                and node_type != "aER"
+            ):
                 atomic_title_list.append(node_title)
-        title_selector = st.selectbox("Select atomic ER", set(atomic_title_list), key="find_node2_ha_relation", disabled= False)
+        title_selector = st.selectbox(
+            "Select atomic ER",
+            set(atomic_title_list),
+            key="find_node2_ha_relation",
+            disabled=False,
+        )
         # find type or types based on title
-        title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, atomic_title_list)
+        title_has_duplicate = datasetCreator.__title_has_duplicate(
+            title_selector, atomic_title_list
+        )
         node_has_duplicate = False
-        type_selector  = ""
-        if title_has_duplicate: 
+        type_selector = ""
+        if title_has_duplicate:
             type_list = []
             for i in range(len(st.session_state.df.index)):
                 node_title = st.session_state.df["title"][i]
                 node_type = st.session_state.df["type"][i]
-                if (node_title == title_selector):
-                    if(node_type != "start" and node_type != "end" and node_type != "iER" and node_type != "rER" and node_type != "aER"):
+                if node_title == title_selector:
+                    if (
+                        node_type != "start"
+                        and node_type != "end"
+                        and node_type != "iER"
+                        and node_type != "rER"
+                        and node_type != "aER"
+                    ):
                         type_list.append(node_type)
             type_selector = st.selectbox("Select ER type", set(type_list))
-            node_has_duplicate = datasetCreator.__title_has_duplicate(type_selector, type_list)    
-        # if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find 
+            node_has_duplicate = datasetCreator.__title_has_duplicate(
+                type_selector, type_list
+            )
+        # if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find
         # the correct node
         id_selector = ""
-        if( node_has_duplicate):
+        if node_has_duplicate:
             id_list = []
             for i in range(len(st.session_state.df.index)):
                 node_id = st.session_state.df["identifier"][i]
                 node_title = st.session_state.df["title"][i]
                 node_type = st.session_state.df["type"][i]
-                if(node_type == type_selector):
-                     if(title_selector == node_title): id_list.append(node_id)
-            id_selector = st.selectbox("Select ID: ", id_list, key="find_node2_id_relation", disabled= False)    
-        if(id_selector): node_2 = int(id_selector)
+                if node_type == type_selector:
+                    if title_selector == node_title:
+                        id_list.append(node_id)
+            id_selector = st.selectbox(
+                "Select ID: ", id_list, key="find_node2_id_relation", disabled=False
+            )
+        if id_selector:
+            node_2 = int(id_selector)
         else:
-            #if node is unique --> no id selector --> find id
+            # if node is unique --> no id selector --> find id
             for i in range(len(st.session_state.df.index)):
                 node_id = st.session_state.df["identifier"][i]
                 node_title = st.session_state.df["title"][i]
                 node_type = st.session_state.df["type"][i]
                 if type_selector == "":
-                    if title_selector == node_title: 
-                        if(node_type != "start" and node_type != "end" and node_type != "iER" and node_type != "rER" and node_type != "aER"):    
+                    if title_selector == node_title:
+                        if (
+                            node_type != "start"
+                            and node_type != "end"
+                            and node_type != "iER"
+                            and node_type != "rER"
+                            and node_type != "aER"
+                        ):
                             node_2 = node_id
                 else:
-                    if(node_type == type_selector and title_selector == node_title): node_2 = node_id
-        if(node_2!= None):
+                    if node_type == type_selector and title_selector == node_title:
+                        node_2 = node_id
+        if node_2 != None:
             node_2 = np.int16(node_2).item()
-        datasetCreator.set_selected_node2(self, node_2)  
-        ## the relation itself: 
+        datasetCreator.set_selected_node2(self, node_2)
+        ## the relation itself:
         ## node 1 id is added to is part of field of node 2
         # check if the relationship exist:
         relation_exist = False
         for i in range(len(st.session_state.df.index)):
             node2_id = node_id = st.session_state.df["identifier"][i]
-            if node2_id ==node_2:
-                node2_ipo =  st.session_state.df["isPartOf"][i]
+            if node2_id == node_2:
+                node2_ipo = st.session_state.df["isPartOf"][i]
                 if node2_ipo == node_1:
                     relation_exist = True
                     break
-        if "btnval" not in st.session_state: st.session_state.btnval = None
+        if "btnval" not in st.session_state:
+            st.session_state.btnval = None
         st.session_state.btnval = True if relation_exist else False
-        add_relation = st.button("Add Relation", on_click=datasetCreator.toggle_btns_hp, args=(self, node_1, node_2), disabled=st.session_state.btnval)
-        del_relation = st.button("Delete Relation",  on_click=datasetCreator.toggle_btns_hp, args=(self, node_1, node_2), disabled=not st.session_state.btnval)
-            
-        # add_relation = st.button("Add Relation", key="add_relation_ha", disabled = relation_exist)
-        # del_relation = st.button("Delete Relation", key="delete_ha_relation", disabled = not relation_exist)
-
-        # # allow deletion of relation if it exists
-        # if del_relation:
-        #             for i in range(len(st.session_state.df.index)):
-        #                 node2_id = node_id = st.session_state.df["identifier"][i]
-        #                 if node2_id ==node_2:
-        #                     node2_ipo =  st.session_state.df["isPartOf"][i]
-        #                     if node2_ipo == node_1:
-        #                         st.session_state.df["isPartOf"][i] = None
-        #                         st.session_state.df.to_csv(self.file_name, index=False)
-        #                         break
-                        
-        # if(add_relation):
-        #     for i in range(len(st.session_state.df.index)):
-        #         n_id = st.session_state.df["identifier"][i]
-        #         if(n_id == node_2): # find node 2
-        #             st.session_state.df["isPartOf"][i] = node_1
-        #             break
+        add_relation = st.button(
+            "Add Relation",
+            on_click=datasetCreator.toggle_btns_hp,
+            args=(self, node_1, node_2),
+            disabled=st.session_state.btnval,
+        )
+        del_relation = st.button(
+            "Delete Relation",
+            on_click=datasetCreator.toggle_btns_hp,
+            args=(self, node_1, node_2),
+            disabled=not st.session_state.btnval,
+        )
         st.session_state.df.to_csv(self.file_name, index=False)
 
     def toggle_btns_ca(self, node_1, node_2):
         relation_exist = False
         for i in range(len(st.session_state.df.index)):
-                node1_id = st.session_state.df["identifier"][i]
-                if node1_id ==node_1:
-                    node1_CA =  st.session_state.df["comesAfter"][i]
-                    if node1_CA == node_2:
-                        relation_exist = True
-                        break 
-        #delete
-        if relation_exist and st.session_state.btnval == True: #st.session_state.mylist.remove(vip)
-            for i in range(len(st.session_state.df.index)):
-                        node1_CA =  st.session_state.df["comesAfter"][i]
-                        if node1_CA == node_2:
-                            st.session_state.df["comesAfter"][i] = None
-                            st.session_state.df.to_csv(self.file_name, index=False)
-                            break
-            
-        if not relation_exist and st.session_state.btnval == False: #st.session_state.mylist.append(vip)
-                node1_has_CA = datasetCreator.__node_has_CA(self, node_1)
-                # print(node1_has_CA)
-                node1_is_referred_ca = datasetCreator.__node_is_referred_by_other_ca(self, node_1)
-                # print(node1_is_referred_ca)
-                # refer to algorithm in doc
-                if(node1_has_CA):
-                    if(node1_is_referred_ca): #case 4
-                        # node_comesAfter_node1's CA = node1's CA
-                        # find node_1's ca in df"
-                        # for i in range(len(st.session_state.df.index)):
-                        #     node_id = st.session_state.df["identifier"][i]
-                        #     if(node_id == node_1): #found node_1
-                        #         node1_ca = st.session_state.df["comesAfter"][i] # found node1's ca
-                                for j in range(len(st.session_state.df.index)): # look for the node that refers node 1
-                                    try: ca = int(st.session_state.df["comesAfter"][j])
-                                    except: ca = None
-                                    if(ca != None and ca == node_1): # found the node that comesAFter node1
-                                        # change this node's ca to node1's ca
-                                        st.session_state.df["comesAfter"][j] = ""
-                                        # in case they are not null already -- e.g. bad dataset is entered
-                                        # st.session_state.df["assesses"][j] = ""; st.session_state.df["isPartOf"][j] = ""; st.session_state.df["requires"][j] = ""
-                                        st.session_state.df.to_csv(self.file_name, index=False)
-                                        break 
-                for i in range(len(st.session_state.df.index)):   
-                        # find node_1
-                        n1 = st.session_state.df["identifier"][i]
-                        if n1 == node_1:
-                            st.session_state.df["comesAfter"][i] = node_2
-                            st.session_state.df.to_csv(self.file_name, index=False)
-                            break
-        st.session_state.df = pd.read_csv(self.file_name)
-        #   st.session_state.txt_title = ""
-
-    def Callback(): st.session_state.btnval = not st.session_state.btnval
-    def __add_relation_comesAfter(self, node_1):
-            type_list = []; node_2 = None
-            # check if node 1 comes after end
-            node1_ca_end = False
-            for i in range(len(st.session_state.df)):
-                node1_id = st.session_state.df["identifier"][i]
-                if node1_id == node_1:
-                    node_1_ca = st.session_state.df["comesAfter"][i]
-                    for j in range(len(st.session_state.df)):
-                        node2_id = st.session_state.df["identifier"][j]
-                        if node2_id == node_1_ca:
-                        #     node2_type = st.session_state.df["type"][i]
-                        #     if node2_type == "end":
-                            if node2_id == len(st.session_state.df)-1:
-                                # print("ok")
-                                node1_ca_end = True
+            node1_id = st.session_state.df["identifier"][i]
+            if node1_id == node_1:
+                node1_CA = st.session_state.df["comesAfter"][i]
+                if node1_CA == node_2:
+                    relation_exist = True
                     break
+        # delete
+        if (
+            relation_exist and st.session_state.btnval == True
+        ): 
+            for i in range(len(st.session_state.df.index)):
+                node1_CA = st.session_state.df["comesAfter"][i]
+                if node1_CA == node_2:
+                    st.session_state.df["comesAfter"][i] = None
+                    st.session_state.df.to_csv(self.file_name, index=False)
+                    break
+
+        if (
+            not relation_exist and st.session_state.btnval == False
+        ):  
+            node1_has_CA = datasetCreator.__node_has_CA(self, node_1)
+            node1_is_referred_ca = datasetCreator.__node_is_referred_by_other_ca(
+                self, node_1
+            )
+            # refer to algorithm in doc
+            if node1_has_CA:
+                if n
+                    for j in range(
+                        len(st.session_state.df.index)
+                    ):  # look for the node that refers node 1
+                        try:
+                            ca = int(st.session_state.df["comesAfter"][j])
+                        except:
+                            ca = None
+                        if (
+                            ca != None and ca == node_1
+                        ):  # found the node that comesAFter node1
+                            # change this node's ca to node1's ca
+                            st.session_state.df["comesAfter"][j] = ""
+                            # in case they are not null already -- e.g. bad dataset is entered
+                            st.session_state.df.to_csv(self.file_name, index=False)
+                            break
+            for i in range(len(st.session_state.df.index)):
+                # find node_1
+                n1 = st.session_state.df["identifier"][i]
+                if n1 == node_1:
+                    st.session_state.df["comesAfter"][i] = node_2
+                    st.session_state.df.to_csv(self.file_name, index=False)
+                    break
+        st.session_state.df = pd.read_csv(self.file_name)
+
+    def __add_relation_comesAfter(self, node_1):
+        type_list = []
+        node_2 = None
+        # check if node 1 comes after end
+        node1_ca_end = False
+        for i in range(len(st.session_state.df)):
+            node1_id = st.session_state.df["identifier"][i]
+            if node1_id == node_1:
+                node_1_ca = st.session_state.df["comesAfter"][i]
+                for j in range(len(st.session_state.df)):
+                    node2_id = st.session_state.df["identifier"][j]
+                    if node2_id == node_1_ca:
+                        if node2_id == len(st.session_state.df) - 1:
+                            node1_ca_end = True
+                break
+        if node1_ca_end:
+            type_list = ["All", "start", "iER", "aER", "End"]
+        else:
+            type_list = ["All", "start", "iER", "aER"]
+        type_select = st.selectbox(
+            "Select the ER type",
+            type_list,
+            key="find_node2_type_relation",
+            disabled=False,
+        )
+        ier_title_list = []
+        aer_title_list = []
+        all_title_list = []
+        if type_select == "start":
+            node_2 = 0
+        elif type_select == "End":
+            node_2 = len(st.session_state.df) - 1
+        else:
+            # add start node to all:
+            all_title_list.append(st.session_state.df["title"][0])
             if node1_ca_end:
-                type_list = ["All",'start','iER', 'aER', 'End']
-            else:
-                type_list = ["All",'start','iER', 'aER']
-            type_select = st.selectbox("Select the ER type", type_list, key="find_node2_type_relation", disabled=False)
-            ier_title_list = []; aer_title_list = []; all_title_list = []
-            if(type_select == "start"):
-                node_2 = 0
-            elif type_select == "End":
-                node_2 = len(st.session_state.df)-1
-            else:
-                #add start node to all:
-                all_title_list.append(st.session_state.df["title"][0])
-                if node1_ca_end:
-                    all_title_list.append(st.session_state.df["title"][len(st.session_state.df)-1])
-                # adding aer and ier to their respective lists excluding the node 1   
+                all_title_list.append(
+                    st.session_state.df["title"][len(st.session_state.df) - 1]
+                )
+            # adding aer and ier to their respective lists excluding the node 1
+            for i in range(len(st.session_state.df.index)):
+                node_id = st.session_state.df["identifier"][i]
+                node_title = st.session_state.df["title"][i]
+                node_type = st.session_state.df["type"][i]
+                if node_id != node_1:
+                    if node_type == "iER":
+                        ier_title_list.append(node_title)
+                        all_title_list.append(node_title)
+                    elif node_type == "aER":
+                        aer_title_list.append(node_title)
+                        all_title_list.append(node_title)
+            title_has_duplicate = False
+            if type_select == "All":
+                title_selector = st.selectbox(
+                    "Select ER",
+                    set(all_title_list),
+                    key="find_node2_title_relation",
+                    disabled=False,
+                )
+                title_has_duplicate = datasetCreator.__title_has_duplicate(
+                    title_selector, all_title_list
+                )
+            elif type_select == "iER":
+                title_selector = st.selectbox(
+                    "Select ER",
+                    set(ier_title_list),
+                    key="find_node2_title_relation",
+                    disabled=False,
+                )
+                title_has_duplicate = datasetCreator.__title_has_duplicate(
+                    title_selector, ier_title_list
+                )
+            elif type_select == "aER":
+                title_selector = st.selectbox(
+                    "Select ER",
+                    set(aer_title_list),
+                    key="find_node2_title_relation",
+                    disabled=False,
+                )
+                title_has_duplicate = datasetCreator.__title_has_duplicate(
+                    title_selector, aer_title_list
+                )
+
+            # #if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find
+            # # the corret node
+            id_selector = ""
+            if title_has_duplicate:
+                id_list = []
                 for i in range(len(st.session_state.df.index)):
                     node_id = st.session_state.df["identifier"][i]
-                    node_title =st.session_state.df["title"][i]
+                    node_title = st.session_state.df["title"][i]
                     node_type = st.session_state.df["type"][i]
-                    if( node_id != node_1):
-                        if(node_type == "iER"): 
-                            ier_title_list.append(node_title)
-                            all_title_list.append(node_title) 
-                        elif(node_type == "aER"):
-                            aer_title_list.append(node_title)
-                            all_title_list.append(node_title)
-                title_has_duplicate = False 
-                if(type_select == "All"): 
-                    title_selector = st.selectbox("Select ER", set(all_title_list), key="find_node2_title_relation", disabled= False)
-                    title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, all_title_list)    
-                elif(type_select == "iER"): 
-                    title_selector = st.selectbox("Select ER", set(ier_title_list), key="find_node2_title_relation", disabled= False)
-                    title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, ier_title_list)
-                elif(type_select == "aER"): 
-                    title_selector = st.selectbox("Select ER", set(aer_title_list), key="find_node2_title_relation", disabled= False)
-                    title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, aer_title_list) 
-                
-                # #if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find 
-                # # the corret node
-                id_selector = ""
-                if(title_has_duplicate):
-                    id_list = []
-                    for i in range(len(st.session_state.df.index)):
-                        node_id = st.session_state.df["identifier"][i]
-                        node_title = st.session_state.df["title"][i]
-                        node_type = st.session_state.df["type"][i]
-                        if( node_id != node_1):
-                            if(type_select == "All"):
-                                if(title_selector == node_title): id_list.append(node_id)
-                            else:
-                                if(type_select == node_type and title_selector == node_title): id_list.append(node_id)
-                    id_selector = st.selectbox("Select ID: ", id_list, key="find_node2_id_relation", disabled= False)    
-                if(id_selector): node_2 = int(id_selector)
-                else:
-                    #if node is unique --> no id selector --> find id
-                    for i in range(len(st.session_state.df.index)):
-                        node_id = st.session_state.df["identifier"][i]
-                        node_title = st.session_state.df["title"][i]
-                        node_type = st.session_state.df["type"][i]
-                        if( node_id != node_1):
-                            if(type_select == "All"):
-                                if node_type == "aER" or node_type=="iER" or node_type =="start" or node_type =="end":
-                                    if(title_selector == node_title): node_2 = node_id
-                            else:
-                                if(type_select == node_type and title_selector == node_title): node_2= node_id
-            if(node_2!= None):
-                node_2 = np.int16(node_2).item()
-            datasetCreator.set_selected_node2(self, node_2)
+                    if node_id != node_1:
+                        if type_select == "All":
+                            if title_selector == node_title:
+                                id_list.append(node_id)
+                        else:
+                            if (
+                                type_select == node_type
+                                and title_selector == node_title
+                            ):
+                                id_list.append(node_id)
+                id_selector = st.selectbox(
+                    "Select ID: ", id_list, key="find_node2_id_relation", disabled=False
+                )
+            if id_selector:
+                node_2 = int(id_selector)
+            else:
+                # if node is unique --> no id selector --> find id
+                for i in range(len(st.session_state.df.index)):
+                    node_id = st.session_state.df["identifier"][i]
+                    node_title = st.session_state.df["title"][i]
+                    node_type = st.session_state.df["type"][i]
+                    if node_id != node_1:
+                        if type_select == "All":
+                            if (
+                                node_type == "aER"
+                                or node_type == "iER"
+                                or node_type == "start"
+                                or node_type == "end"
+                            ):
+                                if title_selector == node_title:
+                                    node_2 = node_id
+                        else:
+                            if (
+                                type_select == node_type
+                                and title_selector == node_title
+                            ):
+                                node_2 = node_id
+        if node_2 != None:
+            node_2 = np.int16(node_2).item()
+        datasetCreator.set_selected_node2(self, node_2)
 
-            # check if the relationship exist:
-            relation_exist = False
-            for i in range(len(st.session_state.df.index)):
-                node1_id = node_id = st.session_state.df["identifier"][i]
-                if node1_id ==node_1:
-                    node1_CA =  st.session_state.df["comesAfter"][i]
-                    if node1_CA == node_2:
-                        relation_exist = True
-                        break
+        # check if the relationship exist:
+        relation_exist = False
+        for i in range(len(st.session_state.df.index)):
+            node1_id = node_id = st.session_state.df["identifier"][i]
+            if node1_id == node_1:
+                node1_CA = st.session_state.df["comesAfter"][i]
+                if node1_CA == node_2:
+                    relation_exist = True
+                    break
 
-            # find the node with `comesAfter` == node2 --> change this field to node1, if relation does not exists
-            # add_relation = False
-            # if not relation_exist: 
-            if "btnval" not in st.session_state: st.session_state.btnval = None
-            st.session_state.btnval = True if relation_exist else False
-            add_relation = st.button("Add Relation", on_click=datasetCreator.toggle_btns_ca, args=(self, node_1, node_2), disabled=st.session_state.btnval)
-            del_relation = st.button("Delete Relation",  on_click=datasetCreator.toggle_btns_ca, args=(self, node_1, node_2), disabled=not st.session_state.btnval)
-            # allow deletign comesAFter if it exists
-            # if del_relation:
-            #         for i in range(len(st.session_state.df.index)):
-            #             node1_CA =  st.session_state.df["comesAfter"][i]
-            #             if node1_CA == node_2:
-            #                 st.session_state.df["comesAfter"][i] = None
-            #                 st.session_state.df.to_csv(self.file_name, index=False)
-            #                 break
-            # if(add_relation):
-            #     for i in range(len(st.session_state.df.index)):
-            #         # find node_1
-            #         n1 = st.session_state.df["identifier"][i]
-            #         if n1 == node_1:
-            #             st.session_state.df["comesAfter"][i] = node_2
-            #             st.session_state.df.to_csv(self.file_name, index=False)
-            #             break
-                # node1_has_CA = datasetCreator.__node_has_CA(self, node_1)
-                # # print(node1_has_CA)
-                # node1_is_referred_ca = datasetCreator.__node_is_referred_by_other_ca(self, node_1)
-                # # print(node1_is_referred_ca)
-                # # refer to algorithm in doc
-                # if(node1_has_CA):
-                #     if(node1_is_referred_ca): #case 4
-                #         # node_comesAfter_node1's CA = node1's CA
-                #         # find node_1's ca in df"
-                #         for i in range(len(st.session_state.df.index)):
-                #             node_id = st.session_state.df["identifier"][i]
-                #             if(node_id == node_1): #found node_1
-                #                 node1_ca = st.session_state.df["comesAfter"][i] # found node1's ca
-                #                 for j in range(len(st.session_state.df.index)): # look for the node that refers node 1
-                #                     try: ca = int(st.session_state.df["comesAfter"][j])
-                #                     except: ca = None
-                #                     if(ca != None and ca == node_1): # found the node that comesAFter node1
-                #                         # change this node's ca to node1's ca
-                #                         st.session_state.df["comesAfter"][j] = node1_ca
-                #                         # in case they are not null already -- e.g. bad dataset is entered
-                #                         st.session_state.df["assesses"][j] = ""; st.session_state.df["isPartOf"][j] = ""; st.session_state.df["requires"][j] = ""
-                #                         st.session_state.df.to_csv(self.file_name, index=False)
-                #                         break 
-                #                 break
-                #     # node_comesAfter_node2's CA = node1's ID
-                #     # look for the node that refers node 2
-                #     for i in range(len(st.session_state.df.index)):
-                #         try: ca = int(st.session_state.df["comesAfter"][i])
-                #         except: ca = None
-                #         if(ca != None and ca == node_2): # found the node that comesAFter node1
-                #             # change this node's ca to node1's ca
-                #             st.session_state.df["comesAfter"][i] = node_1
-                #             # in case they are not null already -- e.g. bad dataset is entered
-                #             st.session_state.df["assesses"][i] = ""; st.session_state.df["isPartOf"][i] = ""; st.session_state.df["requires"][i] = ""
-                #             st.session_state.df.to_csv(self.file_name, index=False)
-                #             break             
-                # else:
-                #     if(node1_is_referred_ca): # case 2
-                #         # find the last node in the chain starting with node_1 where node 1 does not come after anything
-                #         y = datasetCreator.__find_last_node_in_chain(self, node_1) 
-                #         # node_comesAfter_node2's CA = y
-                #         # look for the node that refers node 2
-                #         for i in range(len(st.session_state.df.index)):
-                #             try: ca = int(st.session_state.df["comesAfter"][i])
-                #             except: ca = None
-                #             if(ca != None and ca == node_2): # found the node that comesAFter node1
-                #                 # change this node's ca to node1's ca
-                #                 st.session_state.df["comesAfter"][i] = y
-                #                 # in case they are not null already -- e.g. bad dataset is entered
-                #                 st.session_state.df["assesses"][i] = ""; st.session_state.df["isPartOf"][i] = ""; st.session_state.df["requires"][i] = ""
-                #                 st.session_state.df.to_csv(self.file_name, index=False)
-                #                 break 
-                #         pass
-                #     else:
-                #         # node_comesAfter_node2's CA = node1's ID
-                #         # look for the node that refers node 2
-                #         for i in range(len(st.session_state.df.index)):
-                #             try: ca = int(st.session_state.df["comesAfter"][i])
-                #             except: ca = None
-                #             if(ca != None and ca == node_2): # found the node that comesAFter node1
-                #                 # change this node's ca to node1's ca
-                #                 st.session_state.df["comesAfter"][i] = node_1
-                #                 # in case they are not null already -- e.g. bad dataset is entered
-                #                 st.session_state.df["assesses"][i] = ""; st.session_state.df["isPartOf"][i] = ""; st.session_state.df["requires"][i] = ""
-                #                 st.session_state.df.to_csv(self.file_name, index=False)
-                #                 break 
+        # find the node with `comesAfter` == node2 --> change this field to node1, if relation does not exists
+        if "btnval" not in st.session_state:
+            st.session_state.btnval = None
+        st.session_state.btnval = True if relation_exist else False
+        add_relation = st.button(
+            "Add Relation",
+            on_click=datasetCreator.toggle_btns_ca,
+            args=(self, node_1, node_2),
+            disabled=st.session_state.btnval,
+        )
+        del_relation = st.button(
+            "Delete Relation",
+            on_click=datasetCreator.toggle_btns_ca,
+            args=(self, node_1, node_2),
+            disabled=not st.session_state.btnval,
+        )
+        # allow deletign comesAFter if it exists
+        # if del_relation:
+        #         for i in range(len(st.session_state.df.index)):
+        #             node1_CA =  st.session_state.df["comesAfter"][i]
+        #             if node1_CA == node_2:
+        #                 st.session_state.df["comesAfter"][i] = None
+        #                 st.session_state.df.to_csv(self.file_name, index=False)
+        #                 break
+        # if(add_relation):
+        #     for i in range(len(st.session_state.df.index)):
+        #         # find node_1
+        #         n1 = st.session_state.df["identifier"][i]
+        #         if n1 == node_1:
+        #             st.session_state.df["comesAfter"][i] = node_2
+        #             st.session_state.df.to_csv(self.file_name, index=False)
+        #             break
+        # node1_has_CA = datasetCreator.__node_has_CA(self, node_1)
+        # # print(node1_has_CA)
+        # node1_is_referred_ca = datasetCreator.__node_is_referred_by_other_ca(self, node_1)
+        # # print(node1_is_referred_ca)
+        # # refer to algorithm in doc
+        # if(node1_has_CA):
+        #     if(node1_is_referred_ca): #case 4
+        #         # node_comesAfter_node1's CA = node1's CA
+        #         # find node_1's ca in df"
+        #         for i in range(len(st.session_state.df.index)):
+        #             node_id = st.session_state.df["identifier"][i]
+        #             if(node_id == node_1): #found node_1
+        #                 node1_ca = st.session_state.df["comesAfter"][i] # found node1's ca
+        #                 for j in range(len(st.session_state.df.index)): # look for the node that refers node 1
+        #                     try: ca = int(st.session_state.df["comesAfter"][j])
+        #                     except: ca = None
+        #                     if(ca != None and ca == node_1): # found the node that comesAFter node1
+        #                         # change this node's ca to node1's ca
+        #                         st.session_state.df["comesAfter"][j] = node1_ca
+        #                         # in case they are not null already -- e.g. bad dataset is entered
+        #                         st.session_state.df["assesses"][j] = ""; st.session_state.df["isPartOf"][j] = ""; st.session_state.df["requires"][j] = ""
+        #                         st.session_state.df.to_csv(self.file_name, index=False)
+        #                         break
+        #                 break
+        #     # node_comesAfter_node2's CA = node1's ID
+        #     # look for the node that refers node 2
+        #     for i in range(len(st.session_state.df.index)):
+        #         try: ca = int(st.session_state.df["comesAfter"][i])
+        #         except: ca = None
+        #         if(ca != None and ca == node_2): # found the node that comesAFter node1
+        #             # change this node's ca to node1's ca
+        #             st.session_state.df["comesAfter"][i] = node_1
+        #             # in case they are not null already -- e.g. bad dataset is entered
+        #             st.session_state.df["assesses"][i] = ""; st.session_state.df["isPartOf"][i] = ""; st.session_state.df["requires"][i] = ""
+        #             st.session_state.df.to_csv(self.file_name, index=False)
+        #             break
+        # else:
+        #     if(node1_is_referred_ca): # case 2
+        #         # find the last node in the chain starting with node_1 where node 1 does not come after anything
+        #         y = datasetCreator.__find_last_node_in_chain(self, node_1)
+        #         # node_comesAfter_node2's CA = y
+        #         # look for the node that refers node 2
+        #         for i in range(len(st.session_state.df.index)):
+        #             try: ca = int(st.session_state.df["comesAfter"][i])
+        #             except: ca = None
+        #             if(ca != None and ca == node_2): # found the node that comesAFter node1
+        #                 # change this node's ca to node1's ca
+        #                 st.session_state.df["comesAfter"][i] = y
+        #                 # in case they are not null already -- e.g. bad dataset is entered
+        #                 st.session_state.df["assesses"][i] = ""; st.session_state.df["isPartOf"][i] = ""; st.session_state.df["requires"][i] = ""
+        #                 st.session_state.df.to_csv(self.file_name, index=False)
+        #                 break
+        #         pass
+        #     else:
+        #         # node_comesAfter_node2's CA = node1's ID
+        #         # look for the node that refers node 2
+        #         for i in range(len(st.session_state.df.index)):
+        #             try: ca = int(st.session_state.df["comesAfter"][i])
+        #             except: ca = None
+        #             if(ca != None and ca == node_2): # found the node that comesAFter node1
+        #                 # change this node's ca to node1's ca
+        #                 st.session_state.df["comesAfter"][i] = node_1
+        #                 # in case they are not null already -- e.g. bad dataset is entered
+        #                 st.session_state.df["assesses"][i] = ""; st.session_state.df["isPartOf"][i] = ""; st.session_state.df["requires"][i] = ""
+        #                 st.session_state.df.to_csv(self.file_name, index=False)
+        #                 break
 
-                # # then change node1's `comesAfter` field to node 2's id --> case 1: General case
-                # # algorithm in doc: Node1's CA = Node2's id
-                # #task: check if node 2 has ca == node 1 id and if yes remove it
-                # for i in range(len(st.session_state.df.index)):
-                #     node_id= st.session_state.df["identifier"][i]
-                #     if(node_id == node_1): #find node 1 in df
-                #         st.session_state.df["comesAfter"][i] = node_2 # set node1's ca to node 2
-                #         # in case they are not null already -- e.g. bad dataset is entered
-                #         st.session_state.df["assesses"][i] = ""; st.session_state.df["isPartOf"][i] = ""; st.session_state.df["requires"][i] = ""
-                #         st.session_state.df.to_csv(self.file_name, index=False) # save the df
-                #         # if node 2's CA == node 1 --> remove it
-                #         for j in range(len(st.session_state.df.index)):
-                #             node2_id= st.session_state.df["identifier"][j]
-                #             if(node2_id == node_2): #find node 2
-                #                 try: ca = int(st.session_state.df["comesAfter"][j])
-                #                 except: ca = None
-                #                 if(ca != None and ca == node_1):
-                #                     st.session_state.df["comesAfter"][j] = None
-                #                     # in case they are not null already -- e.g. bad dataset is entered
-                #                     st.session_state.df["assesses"][j] = ""; st.session_state.df["isPartOf"][j] = ""; st.session_state.df["requires"][j] = ""
-                #                     st.session_state.df.to_csv(self.file_name, index=False) # save the df
-                #                     break
-                #         break
-                # if a node 1 has comesAfter then it is either aER or iER --> set assess and isPart and requires of to null for node 1
+        # # then change node1's `comesAfter` field to node 2's id --> case 1: General case
+        # # algorithm in doc: Node1's CA = Node2's id
+        # #task: check if node 2 has ca == node 1 id and if yes remove it
+        # for i in range(len(st.session_state.df.index)):
+        #     node_id= st.session_state.df["identifier"][i]
+        #     if(node_id == node_1): #find node 1 in df
+        #         st.session_state.df["comesAfter"][i] = node_2 # set node1's ca to node 2
+        #         # in case they are not null already -- e.g. bad dataset is entered
+        #         st.session_state.df["assesses"][i] = ""; st.session_state.df["isPartOf"][i] = ""; st.session_state.df["requires"][i] = ""
+        #         st.session_state.df.to_csv(self.file_name, index=False) # save the df
+        #         # if node 2's CA == node 1 --> remove it
+        #         for j in range(len(st.session_state.df.index)):
+        #             node2_id= st.session_state.df["identifier"][j]
+        #             if(node2_id == node_2): #find node 2
+        #                 try: ca = int(st.session_state.df["comesAfter"][j])
+        #                 except: ca = None
+        #                 if(ca != None and ca == node_1):
+        #                     st.session_state.df["comesAfter"][j] = None
+        #                     # in case they are not null already -- e.g. bad dataset is entered
+        #                     st.session_state.df["assesses"][j] = ""; st.session_state.df["isPartOf"][j] = ""; st.session_state.df["requires"][j] = ""
+        #                     st.session_state.df.to_csv(self.file_name, index=False) # save the df
+        #                     break
+        #         break
+        # if a node 1 has comesAfter then it is either aER or iER --> set assess and isPart and requires of to null for node 1
+
     # given a node id this function returns true if there is another node with id of this node in its comesAfter field
     def __node_is_referred_by_other_ca(self, node_1):
         res = False
         for i in range(len(st.session_state.df.index)):
-            try: ca = int(st.session_state.df["comesAfter"][i])
-            except: ca = None
-            if(ca == node_1): # check if there is a comesAfter fields that refer to node_1's id
-                if(ca != None): 
+            try:
+                ca = int(st.session_state.df["comesAfter"][i])
+            except:
+                ca = None
+            if (
+                ca == node_1
+            ):  # check if there is a comesAfter fields that refer to node_1's id
+                if ca != None:
                     res = True
                     break
         return res
@@ -1205,382 +1511,691 @@ class datasetCreator:
     def __node_has_CA(self, node_1):
         res = False
         for i in range(len(st.session_state.df.index)):
-            node_id= st.session_state.df["identifier"][i]
-            if(node_id == node_1): # find node_1
-                try: ca = int(st.session_state.df["comesAfter"][i])
-                except: ca = None
-                if(ca != None): 
+            node_id = st.session_state.df["identifier"][i]
+            if node_id == node_1:  # find node_1
+                try:
+                    ca = int(st.session_state.df["comesAfter"][i])
+                except:
+                    ca = None
+                if ca != None:
                     res = True
                     break
         return res
-    #Recursive function to find the last node in a chain of nodes with comesAfter relation starting with given node
+
+    # Recursive function to find the last node in a chain of nodes with comesAfter relation starting with given node
     def __find_last_node_in_chain(self, node):
         current_node = node
         for i in range(len(st.session_state.df.index)):
             node_comesAfter_current_node = st.session_state.df["comesAfter"][i]
             node_comesAfter_current_node_id = st.session_state.df["identifier"][i]
-            if(node_comesAfter_current_node == current_node):
+            if node_comesAfter_current_node == current_node:
                 current_node = node_comesAfter_current_node_id
-                current_node = datasetCreator.__find_last_node_in_chain(self, current_node)
+                current_node = datasetCreator.__find_last_node_in_chain(
+                    self, current_node
+                )
                 break
         return current_node
-    
+
     def __find_node1_for_relations(self):
         # type_col, title_col, id_col = st.columns(3)
         # # select type: there are 4 type: iER, aER, rER, atomic ER or all --> default = All
         if "confirm_ER_1" not in st.session_state:
-                st.session_state.confirm_ER_1 = False
-        type_selector = st.selectbox("Select the ER type", ("All",'iER', 'aER', 'rER', "atomic ER", "End"), key="find_node1_type_relation", disabled= st.session_state.confirm_ER_1)
+            st.session_state.confirm_ER_1 = False
+        type_selector = st.selectbox(
+            "Select the ER type",
+            ("All", "iER", "aER", "rER", "atomic ER", "End"),
+            key="find_node1_type_relation",
+            disabled=st.session_state.confirm_ER_1,
+        )
         # after choosing type and selectbox of unique titles is created based on the type (ordered alphabetically)
-        ier_title_list = []; aer_title_list = []; rer_title_list = []; atomic_title_list = []; all_title_list = []
+        ier_title_list = []
+        aer_title_list = []
+        rer_title_list = []
+        atomic_title_list = []
+        all_title_list = []
         for i in range(len(st.session_state.df.index)):
             node_title = st.session_state.df["title"][i]
             node_type = st.session_state.df["type"][i]
-            if node_type == "end":all_title_list.append(node_title)
-            if(node_type != "start" and node_type != "end"):
+            if node_type == "end":
                 all_title_list.append(node_title)
-                if(node_type == "iER"): ier_title_list.append(node_title) 
-                elif(node_type == "aER"):aer_title_list.append(node_title)
-                elif(node_type =="rER"):rer_title_list.append(node_title)
-                else:atomic_title_list.append(node_title)
+            if node_type != "start" and node_type != "end":
+                all_title_list.append(node_title)
+                if node_type == "iER":
+                    ier_title_list.append(node_title)
+                elif node_type == "aER":
+                    aer_title_list.append(node_title)
+                elif node_type == "rER":
+                    rer_title_list.append(node_title)
+                else:
+                    atomic_title_list.append(node_title)
         title_has_duplicate = False
-        if(type_selector == "All"): 
-            title_selector = st.selectbox("Select ER", set(all_title_list), key="find_node1_title_relation", disabled= st.session_state.confirm_ER_1)
-            title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, all_title_list)    
-        elif(type_selector == "iER"): 
-            title_selector = st.selectbox("Select ER", set(ier_title_list), key="find_node1_title_relation", disabled= st.session_state.confirm_ER_1)
-            title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, ier_title_list)
-        elif(type_selector == "aER"): 
-            title_selector = st.selectbox("Select ER", set(aer_title_list), key="find_node1_title_relation", disabled= st.session_state.confirm_ER_1)
-            title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, aer_title_list) 
-        elif(type_selector == "rER"): 
-            title_selector = st.selectbox("Select ER", set(rer_title_list), key="find_node1_title_relation", disabled= st.session_state.confirm_ER_1)
-            title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, rer_title_list)
-        elif(type_selector == "atomic ER"): 
-            title_selector = st.selectbox("Select ER", set(atomic_title_list), key="find_node1_title_relation", disabled= st.session_state.confirm_ER_1)
-            title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, atomic_title_list)
-        elif(type_selector ==  "End" ):
-            return st.session_state.df["identifier"][len(st.session_state.df)-1]
-        #if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find 
+        if type_selector == "All":
+            title_selector = st.selectbox(
+                "Select ER",
+                set(all_title_list),
+                key="find_node1_title_relation",
+                disabled=st.session_state.confirm_ER_1,
+            )
+            title_has_duplicate = datasetCreator.__title_has_duplicate(
+                title_selector, all_title_list
+            )
+        elif type_selector == "iER":
+            title_selector = st.selectbox(
+                "Select ER",
+                set(ier_title_list),
+                key="find_node1_title_relation",
+                disabled=st.session_state.confirm_ER_1,
+            )
+            title_has_duplicate = datasetCreator.__title_has_duplicate(
+                title_selector, ier_title_list
+            )
+        elif type_selector == "aER":
+            title_selector = st.selectbox(
+                "Select ER",
+                set(aer_title_list),
+                key="find_node1_title_relation",
+                disabled=st.session_state.confirm_ER_1,
+            )
+            title_has_duplicate = datasetCreator.__title_has_duplicate(
+                title_selector, aer_title_list
+            )
+        elif type_selector == "rER":
+            title_selector = st.selectbox(
+                "Select ER",
+                set(rer_title_list),
+                key="find_node1_title_relation",
+                disabled=st.session_state.confirm_ER_1,
+            )
+            title_has_duplicate = datasetCreator.__title_has_duplicate(
+                title_selector, rer_title_list
+            )
+        elif type_selector == "atomic ER":
+            title_selector = st.selectbox(
+                "Select ER",
+                set(atomic_title_list),
+                key="find_node1_title_relation",
+                disabled=st.session_state.confirm_ER_1,
+            )
+            title_has_duplicate = datasetCreator.__title_has_duplicate(
+                title_selector, atomic_title_list
+            )
+        elif type_selector == "End":
+            return st.session_state.df["identifier"][len(st.session_state.df) - 1]
+        # if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find
         # the corret node
-        id_selector = ""; atomic_type_selector  = ""
-        if(type_selector != "atomic ER"):
-            if(title_has_duplicate):
+        id_selector = ""
+        atomic_type_selector = ""
+        if type_selector != "atomic ER":
+            if title_has_duplicate:
                 id_list = []
                 for i in range(len(st.session_state.df.index)):
                     node_id = st.session_state.df["identifier"][i]
                     node_title = st.session_state.df["title"][i]
                     node_type = st.session_state.df["type"][i]
-                    if(type_selector == "All" or type_selector == "atomic ER"):
-                        if(title_selector == node_title): id_list.append(node_id)
+                    if type_selector == "All" or type_selector == "atomic ER":
+                        if title_selector == node_title:
+                            id_list.append(node_id)
                     else:
-                        if(type_selector == node_type and title_selector == node_title): id_list.append(node_id)
-                id_selector = st.selectbox("Select ID: ", id_list, key="find_node1_id_relation", disabled= st.session_state.confirm_ER_1)    
+                        if type_selector == node_type and title_selector == node_title:
+                            id_list.append(node_id)
+                id_selector = st.selectbox(
+                    "Select ID: ",
+                    id_list,
+                    key="find_node1_id_relation",
+                    disabled=st.session_state.confirm_ER_1,
+                )
         else:
             node_has_duplicate = False
-            if title_has_duplicate: 
+            if title_has_duplicate:
                 type_list = []
                 for i in range(len(st.session_state.df.index)):
                     node_title = st.session_state.df["title"][i]
                     node_type = st.session_state.df["type"][i]
                     node_id = st.session_state.df["identifier"][i]
-                    # if(node_id != node_1):  
-                    if (node_title == title_selector):
-                        if(node_type != "start" and node_type != "end" and node_type != "iER" and node_type != "rER" and node_type != "aER"):
+                    # if(node_id != node_1):
+                    if node_title == title_selector:
+                        if (
+                            node_type != "start"
+                            and node_type != "end"
+                            and node_type != "iER"
+                            and node_type != "rER"
+                            and node_type != "aER"
+                        ):
                             type_list.append(node_type)
                 atomic_type_selector = st.selectbox("Select ER type", set(type_list))
-                node_has_duplicate = datasetCreator.__title_has_duplicate(atomic_type_selector, type_list) 
-            if( node_has_duplicate):
+                node_has_duplicate = datasetCreator.__title_has_duplicate(
+                    atomic_type_selector, type_list
+                )
+            if node_has_duplicate:
                 id_list = []
                 for i in range(len(st.session_state.df.index)):
                     node_id = st.session_state.df["identifier"][i]
                     node_title = st.session_state.df["title"][i]
                     node_type = st.session_state.df["type"][i]
-                    # if(node_id != node_1):  
-                    if(node_type == atomic_type_selector):
-                            if(title_selector == node_title): id_list.append(node_id)
-                id_selector = st.selectbox("Select ID: ", id_list, key="find_node2_id_relation", disabled= False) 
-        
-        if(id_selector): return int(id_selector)
+                    # if(node_id != node_1):
+                    if node_type == atomic_type_selector:
+                        if title_selector == node_title:
+                            id_list.append(node_id)
+                id_selector = st.selectbox(
+                    "Select ID: ", id_list, key="find_node2_id_relation", disabled=False
+                )
+
+        if id_selector:
+            return int(id_selector)
         else:
-            #if node is unique --> no id selector --> find id
+            # if node is unique --> no id selector --> find id
             for i in range(len(st.session_state.df.index)):
                 node_id = st.session_state.df["identifier"][i]
                 node_title = st.session_state.df["title"][i]
                 node_type = st.session_state.df["type"][i]
-                if(type_selector == "All"):
-                    if(title_selector == node_title): return node_id
+                if type_selector == "All":
+                    if title_selector == node_title:
+                        return node_id
                 elif type_selector == "atomic ER":
                     if atomic_type_selector == "":
-                        if title_selector == node_title: 
-                            if(node_type != "start" and node_type != "end" and node_type != "iER" and node_type != "rER" and node_type != "aER"):    
+                        if title_selector == node_title:
+                            if (
+                                node_type != "start"
+                                and node_type != "end"
+                                and node_type != "iER"
+                                and node_type != "rER"
+                                and node_type != "aER"
+                            ):
                                 return node_id
                     else:
-                            if(node_type == atomic_type_selector and title_selector == node_title): return node_id
+                        if (
+                            node_type == atomic_type_selector
+                            and title_selector == node_title
+                        ):
+                            return node_id
                 else:
-                    if(type_selector == node_type and title_selector == node_title): return node_id
+                    if type_selector == node_type and title_selector == node_title:
+                        return node_id
                 # print(type_selector)
+
     def __create_node_addition_fields(self):
-        adder = st.container(); node_title = ""; node_type = ""; node_des = ""
-        node_url = ""; node_dur = 0; node_type_select = ""; node = []; node_dict = {}
+        adder = st.container()
+        node_title = ""
+        node_type = ""
+        node_des = ""
+        node_url = ""
+        node_dur = 0
+        node_type_select = ""
+        node = []
+        node_dict = {}
         with adder:
             # title
             st.subheader("Add a New Node")
-            #necessary data
+            # necessary data
             disable = False
             if "Save_node" in st.session_state:
                 disable = st.session_state.Save_node
             if "add_next" in st.session_state:
                 disable = not st.session_state.add_next
-                if (not disable): st.session_state.add_node_title = ""
-            must_input  = False
-            title_col, ER_col, atomic_col = st.columns([1.75,0.875,0.875])
+                if not disable:
+                    st.session_state.add_node_title = ""
+            must_input = False
+            title_col, ER_col, atomic_col = st.columns([1.75, 0.875, 0.875])
             with title_col:
                 t = "Add a Title"
-                node_title = st.text_input("Title", key="add_node_title", disabled=disable, placeholder = t)
+                node_title = st.text_input(
+                    "Title", key="add_node_title", disabled=disable, placeholder=t
+                )
             with ER_col:
-                if(node_title !=""):
+                if node_title != "":
                     must_input = True
-                    node_type_select = st.selectbox("ER type", ('iER', 'aER', 'rER', "atomic ER"), disabled=disable)
+                    node_type_select = st.selectbox(
+                        "ER type", ("iER", "aER", "rER", "atomic ER"), disabled=disable
+                    )
                     node_type = node_type_select
-                    if(node_type_select == "atomic ER"):
+                    if node_type_select == "atomic ER":
                         with atomic_col:
-                            atomic_type = st.selectbox("atomic type", ('.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip' ), disabled=disable)
+                            atomic_type = st.selectbox(
+                                "atomic type",
+                                (
+                                    ".png",
+                                    ".jpeg",
+                                    ".mov",
+                                    ".mp4",
+                                    ".exe",
+                                    ".ipynd",
+                                    ".app",
+                                    ".mp3",
+                                    ".wav",
+                                    ".txt",
+                                    ".pdf",
+                                    ".html",
+                                    ".md",
+                                    ".pptx",
+                                    ".dvi",
+                                    ".csv",
+                                    ".xlsx",
+                                    ".zip",
+                                ),
+                                disabled=disable,
+                            )
                             node_type = atomic_type
-            if(must_input):
+            if must_input:
                 d = "Add a Description"
                 u = "Add an URL"
-                if(node_type=="iER" or node_type=="aER" or node_type=="rER"):
-                    des_col, url_col= st.columns(2)
+                if node_type == "iER" or node_type == "aER" or node_type == "rER":
+                    des_col, url_col = st.columns(2)
                     with des_col:
-                        node_des = st.text_input("Description", disabled=disable, placeholder = d)
+                        node_des = st.text_input(
+                            "Description", disabled=disable, placeholder=d
+                        )
                     with url_col:
-                        node_url = st.text_input("URL", disabled=disable, placeholder = u)
+                        node_url = st.text_input("URL", disabled=disable, placeholder=u)
                 else:
                     des_col, url_col, dur_col = st.columns(3)
                     with des_col:
-                        node_des = st.text_input("Description", disabled=disable, placeholder = d)
+                        node_des = st.text_input(
+                            "Description", disabled=disable, placeholder=d
+                        )
                     with url_col:
-                        node_url = st.text_input("URL", disabled=disable,  placeholder = u)
+                        node_url = st.text_input("URL", disabled=disable, placeholder=u)
                     with dur_col:
-                        node_dur = st.number_input('Duration', value = 2, disabled=disable)
+                        node_dur = st.number_input(
+                            "Duration", value=2, disabled=disable
+                        )
             # if(node_des!="" or node_url!=""):
-            if (True):
+            if True:
                 col1, col2 = st.columns([1, 8])
                 with col1:
                     add_node = st.button("Save", key="Save_node", disabled=disable)
-                if(add_node):
-                    new_id = st.session_state.df["identifier"][len(st.session_state.df.index)-1]
-                    if(new_id != None):
+                if add_node:
+                    new_id = st.session_state.df["identifier"][
+                        len(st.session_state.df.index) - 1
+                    ]
+                    if new_id != None:
                         new_id = np.int16(new_id).item()
-                    node = [new_id,node_title,node_des,node_url,node_type,'','','','','','','',node_dur]
-                    node_dict={"identifier": new_id, "title": node_title, "description": node_des, "url":node_url, "type":node_type
-                    ,"isPartOf": '', "assesses":'','comesAfter':'',"requires":'', "alternativeContent":'', "references":'',
-                    "isFormatOf": "", "duration": node_dur, "x values":'', "y values":""}
+                    node = [
+                        new_id,
+                        node_title,
+                        node_des,
+                        node_url,
+                        node_type,
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        node_dur,
+                    ]
+                    node_dict = {
+                        "identifier": new_id,
+                        "title": node_title,
+                        "description": node_des,
+                        "url": node_url,
+                        "type": node_type,
+                        "isPartOf": "",
+                        "assesses": "",
+                        "comesAfter": "",
+                        "requires": "",
+                        "alternativeContent": "",
+                        "references": "",
+                        "isFormatOf": "",
+                        "duration": node_dur,
+                        "x values": "",
+                        "y values": "",
+                    }
                     datasetCreator.set_selected_node(self, new_id)
                 with col2:
-                    if(disable):
+                    if disable:
                         add_new_node = st.button("Add another node", key="add_next")
-        return node_dict                  
+        return node_dict
+
     def __reset_field_after_node_saved(self):
-       print( st.session_state.add_node_title)
+        print(st.session_state.add_node_title)
+
     # this function return id of node for editing purposes
-    def __find_node_list(self):   
+    def __find_node_list(self):
         type_col, title_col, id_col = st.columns(3)
         # select type: there are 4 type: iER, aER, rER, atomic ER or all --> default = All
         with type_col:
             disable = False
             if "confirm_edit" in st.session_state:
                 disable = st.session_state.confirm_edit
-            type_selector = st.selectbox("Select the ER type", ("All",'iER', 'aER', 'rER', "atomic ER"), disabled=disable)
+            type_selector = st.selectbox(
+                "Select the ER type",
+                ("All", "iER", "aER", "rER", "atomic ER"),
+                disabled=disable,
+            )
         # after choosing type and selectbox of unique titles is created based on the type (ordered alphabetically)
         with title_col:
-            ier_title_list = []; aer_title_list = []; rer_title_list = []; atomic_title_list = []; all_title_list = []
+            ier_title_list = []
+            aer_title_list = []
+            rer_title_list = []
+            atomic_title_list = []
+            all_title_list = []
             for i in range(len(st.session_state.df.index)):
                 node_title = st.session_state.df["title"][i]
                 node_type = st.session_state.df["type"][i]
-                if(node_type != "start" and node_type != "end"):
+                if node_type != "start" and node_type != "end":
                     all_title_list.append(node_title)
-                    if(node_type == "iER"): ier_title_list.append(node_title) 
-                    elif(node_type == "aER"):aer_title_list.append(node_title)
-                    elif(node_type =="rER"):rer_title_list.append(node_title)
-                    else:atomic_title_list.append(node_title)
+                    if node_type == "iER":
+                        ier_title_list.append(node_title)
+                    elif node_type == "aER":
+                        aer_title_list.append(node_title)
+                    elif node_type == "rER":
+                        rer_title_list.append(node_title)
+                    else:
+                        atomic_title_list.append(node_title)
             title_has_duplicate = False
-            if(type_selector == "All"): 
-                title_selector = st.selectbox("Select ER", set(all_title_list), disabled=disable, key="find_node_title")
-                title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, all_title_list)    
-            elif(type_selector == "iER"): 
-                title_selector = st.selectbox("Select ER", set(ier_title_list),  disabled=disable, key="find_node_title")
-                title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, ier_title_list)
-            elif(type_selector == "aER"): 
-                title_selector = st.selectbox("Select ER", set(aer_title_list),  disabled=disable, key="find_node_title")
-                title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, aer_title_list) 
-            elif(type_selector == "rER"): 
-                title_selector = st.selectbox("Select ER", set(rer_title_list),  disabled=disable, key="find_node_title")
-                title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, rer_title_list)
-            elif(type_selector == "atomic ER"): 
-                title_selector = st.selectbox("Select ER", set(atomic_title_list),  disabled=disable, key="find_node_title")
-                title_has_duplicate = datasetCreator.__title_has_duplicate(title_selector, atomic_title_list)
-        #if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find 
+            if type_selector == "All":
+                title_selector = st.selectbox(
+                    "Select ER",
+                    set(all_title_list),
+                    disabled=disable,
+                    key="find_node_title",
+                )
+                title_has_duplicate = datasetCreator.__title_has_duplicate(
+                    title_selector, all_title_list
+                )
+            elif type_selector == "iER":
+                title_selector = st.selectbox(
+                    "Select ER",
+                    set(ier_title_list),
+                    disabled=disable,
+                    key="find_node_title",
+                )
+                title_has_duplicate = datasetCreator.__title_has_duplicate(
+                    title_selector, ier_title_list
+                )
+            elif type_selector == "aER":
+                title_selector = st.selectbox(
+                    "Select ER",
+                    set(aer_title_list),
+                    disabled=disable,
+                    key="find_node_title",
+                )
+                title_has_duplicate = datasetCreator.__title_has_duplicate(
+                    title_selector, aer_title_list
+                )
+            elif type_selector == "rER":
+                title_selector = st.selectbox(
+                    "Select ER",
+                    set(rer_title_list),
+                    disabled=disable,
+                    key="find_node_title",
+                )
+                title_has_duplicate = datasetCreator.__title_has_duplicate(
+                    title_selector, rer_title_list
+                )
+            elif type_selector == "atomic ER":
+                title_selector = st.selectbox(
+                    "Select ER",
+                    set(atomic_title_list),
+                    disabled=disable,
+                    key="find_node_title",
+                )
+                title_has_duplicate = datasetCreator.__title_has_duplicate(
+                    title_selector, atomic_title_list
+                )
+        # if the there are duplicate titles (there can be duplicate nodes --> only IDs are unique) then we need id field to find
         # the corret node
         with id_col:
             id_selector = ""
-            if(title_has_duplicate):
+            if title_has_duplicate:
                 id_list = []
                 for i in range(len(st.session_state.df.index)):
                     node_id = st.session_state.df["identifier"][i]
                     node_title = st.session_state.df["title"][i]
                     node_type = st.session_state.df["type"][i]
-                    if(type_selector == "All" or type_selector == "atomic ER"):
-                        if(title_selector == node_title): id_list.append(node_id)
+                    if type_selector == "All" or type_selector == "atomic ER":
+                        if title_selector == node_title:
+                            id_list.append(node_id)
                     else:
-                        if(type_selector == node_type and title_selector == node_title): id_list.append(node_id)
-                id_selector = st.selectbox("Select ID: ", id_list,  disabled=disable)    
-        if(id_selector):
+                        if type_selector == node_type and title_selector == node_title:
+                            id_list.append(node_id)
+                id_selector = st.selectbox("Select ID: ", id_list, disabled=disable)
+        if id_selector:
             return int(id_selector)
         else:
-            #if node is unique --> no id selector --> find id
+            # if node is unique --> no id selector --> find id
             for i in range(len(st.session_state.df.index)):
                 node_id = st.session_state.df["identifier"][i]
                 node_title = st.session_state.df["title"][i]
                 node_type = st.session_state.df["type"][i]
-                if(type_selector == "All"):
-                    if(title_selector == node_title): return node_id
-                elif type_selector == "atomic ER": 
-                    if(node_type != "aER" and node_type!="iER" and node_type != "rER"):
-                       if(title_selector == node_title): return node_id 
+                if type_selector == "All":
+                    if title_selector == node_title:
+                        return node_id
+                elif type_selector == "atomic ER":
+                    if node_type != "aER" and node_type != "iER" and node_type != "rER":
+                        if title_selector == node_title:
+                            return node_id
                 else:
-                    if(type_selector == node_type and title_selector == node_title): return node_id
+                    if type_selector == node_type and title_selector == node_title:
+                        return node_id
 
     def __edit_option(self, n_id):
-        if n_id == None: return None
+        if n_id == None:
+            return None
         node = datasetCreator.__get_node_from_id(self, n_id)
         old_title = node["title"]
         old_type = node["type"]
         old_des = str(node["des"])
-        if(old_des == "nan"): old_des =""
+        if old_des == "nan":
+            old_des = ""
         old_url = str(node["url"])
-        if( old_url  == "nan"):  old_url  =""
-        try: old_dur = int(node["dur"])
-        except: 
-            try: old_dur = int(float(node["dur"]))
-            except: old_dur = 2
+        if old_url == "nan":
+            old_url = ""
+        try:
+            old_dur = int(node["dur"])
+        except:
+            try:
+                old_dur = int(float(node["dur"]))
+            except:
+                old_dur = 2
         new_node_title = ""
         new_node_type = ""
         new_node_des = ""
         new_node_url = ""
         new_node_dur = 0
         node_type_select = ""
-        node = []; node_dict={}
+        node = []
+        node_dict = {}
         must_input = False
-        title_col, ER_col, atomic_col = st.columns([1.75,0.875,0.875])
+        title_col, ER_col, atomic_col = st.columns([1.75, 0.875, 0.875])
         disable = False
-        if("delete_node" in st.session_state):
-            if(st.session_state.delete_node == True):
+        if "delete_node" in st.session_state:
+            if st.session_state.delete_node == True:
                 disable = True
         with title_col:
-            new_node_title = st.text_input("Title", value=old_title, disabled=disable, key = "new_edit_node_title")
+            new_node_title = st.text_input(
+                "Title", value=old_title, disabled=disable, key="new_edit_node_title"
+            )
         with ER_col:
-            if(new_node_title !=""):
+            if new_node_title != "":
                 must_input = True
                 ER_list = datasetCreator.__get_ER_list_for_edit(self, old_type)
                 ER_type = old_type
                 # if er type is one of the atomic, then it is changed to "atomic ER"
-                if(ER_type!= "iER" and ER_type != "aER" and ER_type !="rER"): ER_type = "atomic ER"
-                ER_index = 0; 
+                if ER_type != "iER" and ER_type != "aER" and ER_type != "rER":
+                    ER_type = "atomic ER"
+                ER_index = 0
                 for e in ER_list:
-                    if e == ER_type: ER_index = ER_list.index(e)
-                node_type_select = st.selectbox("ER type", ER_list, index=ER_index, key="node_type_select", disabled=disable)
+                    if e == ER_type:
+                        ER_index = ER_list.index(e)
+                node_type_select = st.selectbox(
+                    "ER type",
+                    ER_list,
+                    index=ER_index,
+                    key="node_type_select",
+                    disabled=disable,
+                )
                 new_node_type = node_type_select
-                if(new_node_type == "atomic ER"):
+                if new_node_type == "atomic ER":
                     with atomic_col:
-                        atomic_ER_list = ['.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip']
+                        atomic_ER_list = [
+                            ".png",
+                            ".jpeg",
+                            ".mov",
+                            ".mp4",
+                            ".exe",
+                            ".ipynd",
+                            ".app",
+                            ".mp3",
+                            ".wav",
+                            ".txt",
+                            ".pdf",
+                            ".html",
+                            ".md",
+                            ".pptx",
+                            ".dvi",
+                            ".csv",
+                            ".xlsx",
+                            ".zip",
+                        ]
                         atomic_ER_index = 0
                         for e in atomic_ER_list:
-                            if e == old_type: atomic_ER_index = atomic_ER_list.index(e)
-                        atomic_type = st.selectbox("atomic type", atomic_ER_list, index = atomic_ER_index, disabled=disable)
+                            if e == old_type:
+                                atomic_ER_index = atomic_ER_list.index(e)
+                        atomic_type = st.selectbox(
+                            "atomic type",
+                            atomic_ER_list,
+                            index=atomic_ER_index,
+                            disabled=disable,
+                        )
                         new_node_type = atomic_type
 
-        if(must_input):
-            if(new_node_type=="iER" or new_node_type=="aER" or new_node_type=="rER"):
-                des_col, url_col= st.columns(2)
+        if must_input:
+            if (
+                new_node_type == "iER"
+                or new_node_type == "aER"
+                or new_node_type == "rER"
+            ):
+                des_col, url_col = st.columns(2)
                 with des_col:
-                    new_node_des = st.text_input("Description", value=old_des, disabled=disable)
+                    new_node_des = st.text_input(
+                        "Description", value=old_des, disabled=disable
+                    )
                 with url_col:
                     new_node_url = st.text_input("URL", value=old_url, disabled=disable)
             else:
                 des_col, url_col, dur_col = st.columns(3)
                 with des_col:
-                    new_node_des = st.text_input("Description", value=old_des, disabled=disable)
+                    new_node_des = st.text_input(
+                        "Description", value=old_des, disabled=disable
+                    )
                 with url_col:
                     new_node_url = st.text_input("URL", value=old_url, disabled=disable)
                 with dur_col:
-                    new_node_dur = st.number_input('Duration', value =old_dur, disabled=disable)
-        # if(new_node_des!="" or new_node_url!=""):
-        if(True):
-            #isPartOf,assesses,comesAfter,requires,alternativeContent,references,isFormatOf,duration
-            is_part_of = ""; assesses = ""; ca = ""; req=""; ac = ""; ref = ""; is_format_of = ""
+                    new_node_dur = st.number_input(
+                        "Duration", value=old_dur, disabled=disable
+                    )
+        if True:
+            # isPartOf,assesses,comesAfter,requires,alternativeContent,references,isFormatOf,duration
+            is_part_of = ""
+            assesses = ""
+            ca = ""
+            req = ""
+            ac = ""
+            ref = ""
+            is_format_of = ""
             for i in range(len(st.session_state.df.index)):
                 n = st.session_state.df["identifier"][i]
                 if n == n_id:
-                    is_part_of = st.session_state.df["isPartOf"][i]; assesses = st.session_state.df["assesses"][i]; ca = st.session_state.df["comesAfter"][i]
-                    req = st.session_state.df["requires"][i]; ac= st.session_state.df["alternativeContent"][i]
-                    ref= st.session_state.df["references"][i]; is_format_of= st.session_state.df["isFormatOf"][i]
+                    is_part_of = st.session_state.df["isPartOf"][i]
+                    assesses = st.session_state.df["assesses"][i]
+                    ca = st.session_state.df["comesAfter"][i]
+                    req = st.session_state.df["requires"][i]
+                    ac = st.session_state.df["alternativeContent"][i]
+                    ref = st.session_state.df["references"][i]
+                    is_format_of = st.session_state.df["isFormatOf"][i]
 
                     if old_type == "aER" and new_node_type != "aER":
                         # the node is not aER anymore --> remove all references to this node in assess field
                         for j in range(len(st.session_state.df.index)):
-                            try: a = int(st.session_state.df["assesses"][j])
-                            except: a =None
-                            if a != None and a == n_id: st.session_state.df["assesses"][j] = ""
-                        if new_node_type != "iER": # update comesAFter if new node is not ier ir aers
-                            try: c = int(st.session_state.df["comesAfter"][i])
-                            except: c = None
-                            if c != None: # technically this value should not be none
+                            try:
+                                a = int(st.session_state.df["assesses"][j])
+                            except:
+                                a = None
+                            if a != None and a == n_id:
+                                st.session_state.df["assesses"][j] = ""
+                        if (
+                            new_node_type != "iER"
+                        ):  # update comesAFter if new node is not ier ir aers
+                            try:
+                                c = int(st.session_state.df["comesAfter"][i])
+                            except:
+                                c = None
+                            if c != None:  # technically this value should not be none
                                 for j in range(len(st.session_state.df.index)):
-                                    try: next_ca = int(st.session_state.df["comesAfter"][j])
-                                    except: next_ca = None
+                                    try:
+                                        next_ca = int(
+                                            st.session_state.df["comesAfter"][j]
+                                        )
+                                    except:
+                                        next_ca = None
                                     if next_ca == n_id:
-                                        # print(next_ca)
                                         st.session_state.df["comesAfter"][j] = c
                                         ca = ""
-                            if new_node_type != "rER": ## new node is atomic then remove any reference in ispart of other ndoes
+                            if (
+                                new_node_type != "rER"
+                            ):  ## new node is atomic then remove any reference in ispart of other ndoes
                                 for j in range(len(st.session_state.df.index)):
-                                    try: a = int(st.session_state.df["isPartOf"][j])
-                                    except: a =None
-                                    if a != None and a == n_id: st.session_state.df["isPartOf"][j] = ""
+                                    try:
+                                        a = int(st.session_state.df["isPartOf"][j])
+                                    except:
+                                        a = None
+                                    if a != None and a == n_id:
+                                        st.session_state.df["isPartOf"][j] = ""
                     if old_type == "iER" and new_node_type != "iER":
                         # two relations: comesAfter, isPartof
                         # if new node is aER nothing is affected
                         # if new node is atomic or rER then we need to update comesAfter
                         if new_node_type != "aER":
-                            try: c = int(st.session_state.df["comesAfter"][i])
-                            except: c = None
-                            if c != None: # technically this value should not be none
+                            try:
+                                c = int(st.session_state.df["comesAfter"][i])
+                            except:
+                                c = None
+                            if c != None:  # technically this value should not be none
                                 for j in range(len(st.session_state.df.index)):
-                                    try: next_ca = int(st.session_state.df["comesAfter"][j])
-                                    except: next_ca = None
+                                    try:
+                                        next_ca = int(
+                                            st.session_state.df["comesAfter"][j]
+                                        )
+                                    except:
+                                        next_ca = None
                                     if next_ca == n_id:
-                                        # print(next_ca)
                                         st.session_state.df["comesAfter"][j] = c
                                         ca = ""
-                            if new_node_type != "rER": ## new node is atomic then remove any reference in ispart of other ndoes
+                            if (
+                                new_node_type != "rER"
+                            ):  ## new node is atomic then remove any reference in ispart of other ndoes
                                 for j in range(len(st.session_state.df.index)):
-                                    try: a = int(st.session_state.df["isPartOf"][j])
-                                    except: a =None
-                                    if a != None and a == n_id: st.session_state.df["isPartOf"][j] = ""
+                                    try:
+                                        a = int(st.session_state.df["isPartOf"][j])
+                                    except:
+                                        a = None
+                                    if a != None and a == n_id:
+                                        st.session_state.df["isPartOf"][j] = ""
                     if old_type == "rER" and new_node_type != "rER":
                         # if node type is changed from rER to something that is not rER --> remove assesses field from this node
                         assesses = ""
-                        if new_node_type != "iER" and new_node_type !="aER": # new type is atomic --> remove isPArtOf references
+                        if (
+                            new_node_type != "iER" and new_node_type != "aER"
+                        ):  # new type is atomic --> remove isPArtOf references
                             for j in range(len(st.session_state.df.index)):
-                                    try: a = int(st.session_state.df["isPartOf"][j])
-                                    except: a =None
-                                    if a != None and a == n_id: st.session_state.df["isPartOf"][j] = ""
-                    old_is_atomic = old_type != "iER" and old_type != "aER" and old_type != "rER"
-                    new_is_atomic = new_node_type != "iER" and new_node_type != "aER" and new_node_type != "rER"
+                                try:
+                                    a = int(st.session_state.df["isPartOf"][j])
+                                except:
+                                    a = None
+                                if a != None and a == n_id:
+                                    st.session_state.df["isPartOf"][j] = ""
+                    old_is_atomic = (
+                        old_type != "iER" and old_type != "aER" and old_type != "rER"
+                    )
+                    new_is_atomic = (
+                        new_node_type != "iER"
+                        and new_node_type != "aER"
+                        and new_node_type != "rER"
+                    )
                     if old_is_atomic and not new_is_atomic:
-                        #if new type is not atomic --> remove ispartof this node
+                        # if new type is not atomic --> remove ispartof this node
                         is_part_of = ""
                         ## update requires
                         # set req of node itself to empty
@@ -1589,46 +2204,106 @@ class datasetCreator:
                         for i in range(len(st.session_state.df.index)):
                             require_ids = st.session_state.df["requires"][i]
                             require_id_list = []
-                            if type(require_ids) != str: require_ids = str(require_ids)
-                            if type(require_ids) == str and require_ids!="":
-                                require_id_list = require_ids.split(",") # convert node's requires to list
-                                for n in require_id_list: 
-                                    try: n_int = int(n)
-                                    except: 
-                                        try: n_int = int(float(n))
-                                        except: n_int = None
-                                    if n_int == n_id :  # node exist in required field of this node 
+                            if type(require_ids) != str:
+                                require_ids = str(require_ids)
+                            if type(require_ids) == str and require_ids != "":
+                                require_id_list = require_ids.split(
+                                    ","
+                                )  # convert node's requires to list
+                                for n in require_id_list:
+                                    try:
+                                        n_int = int(n)
+                                    except:
+                                        try:
+                                            n_int = int(float(n))
+                                        except:
+                                            n_int = None
+                                    if (
+                                        n_int == n_id
+                                    ):  # node exist in required field of this node
                                         require_id_list.remove(str(n))
-                                        delimiter = ','
+                                        delimiter = ","
                                         res = delimiter.join(require_id_list)
                                         st.session_state.df["requires"][i] = res
                     break
-            node = [n_id ,new_node_title, new_node_des,new_node_url,new_node_type,is_part_of,assesses,ca,req,ac,ref,is_format_of,new_node_dur]
-            node_dict={"identifier": n_id, "title": new_node_title, "description": new_node_des, "url":new_node_url, "type":new_node_type
-                    ,"isPartOf": is_part_of, "assesses":assesses,'comesAfter':ca,"requires":req, "alternativeContent":ac, "references":ref,
-                    "isFormatOf": is_format_of, "duration": new_node_dur, "x values":'', "y values":""}
+            node = [
+                n_id,
+                new_node_title,
+                new_node_des,
+                new_node_url,
+                new_node_type,
+                is_part_of,
+                assesses,
+                ca,
+                req,
+                ac,
+                ref,
+                is_format_of,
+                new_node_dur,
+            ]
+            node_dict = {
+                "identifier": n_id,
+                "title": new_node_title,
+                "description": new_node_des,
+                "url": new_node_url,
+                "type": new_node_type,
+                "isPartOf": is_part_of,
+                "assesses": assesses,
+                "comesAfter": ca,
+                "requires": req,
+                "alternativeContent": ac,
+                "references": ref,
+                "isFormatOf": is_format_of,
+                "duration": new_node_dur,
+                "x values": "",
+                "y values": "",
+            }
         return node, node_dict
 
-   
     def __get_atomic_ER_list_for_edit(self, old_type):
-        atomic_ers = ['.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip']
+        atomic_ers = [
+            ".png",
+            ".jpeg",
+            ".mov",
+            ".mp4",
+            ".exe",
+            ".ipynd",
+            ".app",
+            ".mp3",
+            ".wav",
+            ".txt",
+            ".pdf",
+            ".html",
+            ".md",
+            ".pptx",
+            ".dvi",
+            ".csv",
+            ".xlsx",
+            ".zip",
+        ]
         res = []
         res.append(old_type)
         for er in atomic_ers:
-            if er not in res: res.append(er)
+            if er not in res:
+                res.append(er)
         return res
 
     def __get_ER_list_for_edit(self, node_type):
         t = node_type
         er = []
-        if(t == "iER" or t == "aER" or t =="rER"): er.append(t)
-        else: 
+        if t == "iER" or t == "aER" or t == "rER":
+            er.append(t)
+        else:
             t = "atomic ER"
             er.append(t)
-        if "iER" not in er: er.append("iER")
-        if "aER" not in er: er.append("aER")
-        if "rER" not in er: er.append("rER")
-        if "atomic ER" not in er: er.append("atomic ER")
+        if "iER" not in er:
+            er.append("iER")
+        if "aER" not in er:
+            er.append("aER")
+        if "rER" not in er:
+            er.append("rER")
+        if "atomic ER" not in er:
+            er.append("atomic ER")
         return er
 
     def __get_node_from_id(self, n_id):
@@ -1640,26 +2315,37 @@ class datasetCreator:
             node_des = st.session_state.df["description"][i]
             node_url = st.session_state.df["url"][i]
             node_dur = st.session_state.df["duration"][i]
-            if(node_id == n_id):
-                node["id"] = node_id; node["title"] = node_title; node["type"] = node_type; node["des"] = node_des
-                node["url"] = node_url; node["dur"] = node_dur
-                break; 
+            if node_id == n_id:
+                node["id"] = node_id
+                node["title"] = node_title
+                node["type"] = node_type
+                node["des"] = node_des
+                node["url"] = node_url
+                node["dur"] = node_dur
+                break
         return node
 
     def __title_has_duplicate(title, title_list):
         count = 0
         title_has_duplicate = False
         for t in title_list:
-            if(t == title): count = count + 1
-        if count > 1: title_has_duplicate = True
+            if t == title:
+                count = count + 1
+        if count > 1:
+            title_has_duplicate = True
         return title_has_duplicate
+
     def print_df(self):
         print(st.session_state.df)
+
     def set_selected_node(self, node_id):
         self.selected_node_id = node_id
+
     def get_selected_node(self):
         return self.selected_node_id
+
     def set_selected_node2(self, node_id):
         self.selected_node2_id = node_id
+
     def get_selected_node2(self):
         return self.selected_node2_id
