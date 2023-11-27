@@ -395,7 +395,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
 
      if(flag == false){
         const jsonData = {}; 
-        if(view =="View 4: Requirements")
+        if(view =="View 3: All ERs")
         {
           network.storePositions(); // causes some visual bugs 
           //define coordinate in json
@@ -440,17 +440,17 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
             
 
             //download json
-            const a = document.createElement("a");
+           /* const a = document.createElement("a");
             const content = JSON.stringify(jsonData); 
             const contentType = "text/plain"; 
             const file = new Blob([content], { type: contentType });
             a.href = URL.createObjectURL(file);
             a.download = "coordinates.json";
-            a.click();
+            a.click();*/
         
 
           //download csv file
-         //exportToCsv(fileLabel, csvRows) ; 
+         exportToCsv(fileLabel, csvRows) ; 
         }
         flag = true; 
       }
