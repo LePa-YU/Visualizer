@@ -241,24 +241,29 @@ with container:
         enter_own = "Custom dataset"
         dataset_options=st.selectbox('',(fake_ds, ds_2311, ds_3461, ds_1530, ds_4462, enter_own), label_visibility="collapsed")
     #col2: current views, view 3-5 are same with different layouts
+    #create layout for custom dataset --> change the screen real state for better viewing
+    # basically giving different size container to hold the static html
+    if dataset_options == enter_own:
+        is_Custom_view = True
+        upload_col, edit_col = st.columns([3.5, 4.5])
+        with edit_col:
+            container_html = st.container()
+    else:    
+        container_html = st.container()
+        is_Custom_view = False
     with col2:
         view1 = 'View 1: Summative assessment only'
         view2 = 'View 2: Course Overview'
         view3 = 'View 3: All ERs'
         view4 = "View 4: Requirements"
         view5 = "View 5: Requirements - Vertical"
-        option=st.selectbox('',(view1, view2, view3, view4, view5), label_visibility="collapsed")
-    #create layout for custom dataset --> change the screen real state for better viewing
-    # basically giving different size container to hold the static html
-    if dataset_options == enter_own:
-        upload_col, edit_col = st.columns([3.5, 4.5])
-        with edit_col:
-            container_html = st.container()
-    else:    
-        container_html = st.container()
+        if is_Custom_view: option=st.selectbox('',(view3, view1, view2, view4, view5), label_visibility="collapsed")
+        else: option=st.selectbox('',(view1, view2, view3, view4, view5), label_visibility="collapsed")
+    
     # ToDo: this section could use some refactoring
     # getting data for the existing datasets from Dataset repo's main branch:
     # Fake1001.csv
+    is_custom = False
     if dataset_options == fake_ds:
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/FAKE1001/FAKE1001.csv"
         res = requests.get(url, allow_redirects=True)
@@ -328,6 +333,8 @@ with container:
         uploaded_file = "4462_dataset_overview.csv"
     # custom dataset
     elif dataset_options == enter_own:
+        is_custom = True
+        is_Custom_view = True
         with upload_col:
             dataset = None
              # to write on the file browser itself on streamlit
@@ -490,7 +497,7 @@ with container:
         aer_size = custom_menu.aER_size
         rer_size = custom_menu.rER_size
         view.set_atomic_size_limit(atomic_max_size, atomic_min_size, start_end_size, ier_size, aer_size, rer_size)
-        
+        view.set_is_custom(is_custom)
         # create 5 htmls containing different layout of datasets
         # view1 is used for mobile warning when creating the html -- cannot have warning in streamlit
         __create_html_pages(label, view, bg, font_color, view1, physics, download_dataset_only); 

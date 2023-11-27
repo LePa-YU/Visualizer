@@ -85,3 +85,11 @@ Visualizer/temp_validity_report.txt
 Visualizer/2311_dataset_overview_validity_report.txt
 Visualizer/__pycache__/validity_checker.cpython-310.pyc
 Visualizer/file_name_record.txt
+Visualizer/__pycache__/colors.cpython-311.pyc
+Visualizer/__pycache__/datasetCreator.cpython-311.pyc
+Visualizer/__pycache__/Legend.cpython-311.pyc
+Visualizer/__pycache__/node.cpython-311.pyc
+Visualizer/__pycache__/nxToPyvis.cpython-311.pyc
+Visualizer/__pycache__/pyvisToHtml.cpython-311.pyc
+Visualizer/__pycache__/validity_checker.cpython-311.pyc
+Visualizer/__pycache__/views.cpython-311.pyc

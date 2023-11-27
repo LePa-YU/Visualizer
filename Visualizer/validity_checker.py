@@ -225,10 +225,26 @@ class validity_checker:
                 if ca == None:
                     ca_is_broken = True
         
+        #check if end node is being referred in the CA field
+        for i in range(len(self.df.index)):
+            try: ca = int(self.df["comesAfter"][i])
+            except: ca = None
+            end_node = self.df["identifier"][len(self.df.index)-1]
+            if ca == end_node:
+                self.num = self.num + 1
+                report_file.write(str(self.num)+". There is node after the END node! \n")
+                
         if ca_is_broken:
             self.num = self.num + 1
+# <<<<<<< nias_branch
             report_file.write(str(self.num)+". The Learning Path is broken! please fix comesAfter relations so we have a learning path!")
                        
+# =======
+#             report_file.write(str(self.num)+". The Learning Path is broken! please fix comesAfter relations so we have a learning path! \n")
+
+            
+
+# >>>>>>> development
     def clear_report(self):
         open(self.validity_file_name, 'w').close()
         self.num = 0
