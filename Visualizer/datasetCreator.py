@@ -7,6 +7,8 @@ import time
 
 class datasetCreator:
     def __init__(self, file_name):
+
+        #pass col2 and initial and current option
         self.file_name = file_name
         if "df" not in st.session_state:
             col_list = ['identifier','title','description','url','type','isPartOf','assesses','comesAfter','requires','alternativeContent','references','isFormatOf','duration', "x values", "y values"]
@@ -39,20 +41,74 @@ class datasetCreator:
                     st.session_state.df[col] = ""
             st.session_state.df.to_csv(file_name, index=False)
         # assess, isPartOf, comesAfter must contain one value if not the case then set to empty
+# <<<<<<< nias_branch
+        cleaning_file_name = file_name.replace(".csv", "_cleaning_report.txt")
+        fi = open(cleaning_file_name, "a") 
+
         for i in range(len(st.session_state.df.index)):
             node_type = st.session_state.df["type"][i]
+            title = st.session_state.df["title"][i]
+
             if node_type != "start" and node_type != "end":
-                if node_type != "rER": st.session_state.df["assesses"][i] = "" # if node is not rER then it should not have assess field
+                if node_type != "rER":
+                    
+                    if (pd.isna(st.session_state.df["assesses"][i]) == False):
+                        value = int(st.session_state.df["assesses"][i])
+                        node_type2 = st.session_state.df["type"][value]
+                        title2 = st.session_state.df["title"][value]
+                        fi.write("Removed the assesses relation between " + title + " | ID:" +" "+ str(i) + " | " +" ( "+ node_type +" )" + " and " + title2 + " | ID:" +" "+ str(value) + " | " + " (" + node_type +")"+ "\n")
+                        fi.write('\n')
+                    st.session_state.df["assesses"][i] = "" # if node is not rER then it should not have assess field
                 else: # if node is rER then it must not have comesAfter, requires, and isPartOf
+                    if (pd.isna(st.session_state.df["comesAfter"][i]) == False):
+                        value = int(st.session_state.df["comesAfter"][i])
+                        node_type2 =st.session_state.df["type"][value]
+                        title2 = st.session_state.df["title"][value]
+                        fi.write("Removed the comesAfter relation between " + title + " | ID:" +" "+ str(i) + " | " +" ( "+ node_type +" )" + " and " + title2 + " | ID:" +" "+ str(value) + " | " + " ( " + node_type +" )"+ "\n")
+                        fi.write('\n')
+                    
+                    if (pd.isna(st.session_state.df["isPartOf"][i]) == False):
+                        value = int(st.session_state.df["isPartOf"][i])
+                        node_type2 = st.session_state.df["type"][value]
+                        title2 = st.session_state.df["title"][value]
+                        fi.write("Removed the isPartOf relation between " + title + " | ID:" +" "+ str(i) + " | " +" ( "+ node_type +" )" + " and " + title2 + " | ID:" +" "+ str(value) + " | " + " ( " + node_type +" )"+ "\n")
+                        fi.write('\n')
+
+                    if(pd.isna(st.session_state.df["requires"][i]) == False):
+                        value = int(st.session_state.df["requires"][i])
+                        node_type2 = st.session_state.df["type"][value]
+                        title2 = st.session_state.df["title"][value]
+
+                        fi.write("Removed the requires relation between " + title + " | ID:" +" "+ str(i) + " | " +" ( "+ node_type +" )" + " and " + title2 + " | ID:" +" "+ str(value) + " | " + " ( " + node_type +" )"+ "\n")
+                        fi.write('\n')
+            
                     st.session_state.df["comesAfter"][i] = ""; st.session_state.df["isPartOf"][i] = ""
                     st.session_state.df["requires"][i] = ""
-                
+             
                 # if a node is aER or iER --> might have comesAfter but no assesses, isPartof, requires
-                if node_type != "aER" and node_type!="iER": st.session_state.df["comesAfter"][i] = "" # if node is not aER or rER then doesnt have comesAfter
+                if node_type != "aER" and node_type!="iER": 
+                
+                    st.session_state.df["comesAfter"][i] = "" # if node is not aER or iER then doesnt have comesAfter
                 else:
                     st.session_state.df["assesses"][i] = ""; st.session_state.df["isPartOf"][i] = ""
                     st.session_state.df["requires"][i] = ""
+     
+# =======
+#         for i in range(len(st.session_state.df.index)):
+#             node_type = st.session_state.df["type"][i]
+#             if node_type != "start" and node_type != "end":
+#                 if node_type != "rER": st.session_state.df["assesses"][i] = "" # if node is not rER then it should not have assess field
+#                 else: # if node is rER then it must not have comesAfter, requires, and isPartOf
+#                     st.session_state.df["comesAfter"][i] = ""; st.session_state.df["isPartOf"][i] = ""
+#                     st.session_state.df["requires"][i] = ""
+                
+#                 # if a node is aER or iER --> might have comesAfter but no assesses, isPartof, requires
+#                 if node_type != "aER" and node_type!="iER": st.session_state.df["comesAfter"][i] = "" # if node is not aER or rER then doesnt have comesAfter
+#                 else:
+#                     st.session_state.df["assesses"][i] = ""; st.session_state.df["isPartOf"][i] = ""
+#                     st.session_state.df["requires"][i] = ""
             
+# >>>>>>> developmen
             ## only requires can have multi values for the rest of relation they are set to "" if they have more than one value
             a = st.session_state.df["assesses"][i]; ca = st.session_state.df["comesAfter"][i]; ipo = st.session_state.df["isPartOf"][i]
             if type(a) != int:
@@ -68,7 +124,12 @@ class datasetCreator:
                 except: ipo = None
                 if ipo == None: st.session_state.df["isPartOf"][i] = ""
        
+# <<<<<<< nias_branch
         st.session_state.df.to_csv(file_name, index=False)
+        fi.close()
+# =======
+#         st.session_state.df.to_csv(file_name, index=False)
+# >>>>>>> development
 
     def add_node(self):
         datasetCreator.set_selected_node(self, None)
@@ -1176,6 +1237,25 @@ class datasetCreator:
                         with atomic_col:
                             atomic_type = st.selectbox("atomic type", ('.png', '.jpeg', '.mov', '.mp4', '.exe', '.ipynd', '.app', '.mp3', '.wav', '.txt', '.pdf', '.html', '.md', '.pptx', '.dvi', '.csv', '.xlsx', '.zip' ), disabled=disable)
                             node_type = atomic_type
+# <<<<<<< nias_branch
+#             if(node_type_select != ""):
+#                 if(must_input):
+#                     if(node_type=="iER" or node_type=="aER" or node_type=="rER"):
+#                         des_col, url_col= st.columns(2)
+#                         with des_col:
+#                             node_des = st.text_input("Description", disabled=disable)
+#                         with url_col:
+#                             node_url = st.text_input("URL", disabled=disable)
+#                     else:
+#                         des_col, url_col, dur_col = st.columns(3)
+#                         with des_col:
+#                             node_des = st.text_input("Description", disabled=disable)
+#                         with url_col:
+#                             node_url = st.text_input("URL", disabled=disable)
+#                         with dur_col:
+#                             node_dur = st.number_input('Duration', value = 2, disabled=disable)
+#             if(node_des!="" or node_url!=""):
+# =======
             if(must_input):
                 d = "Add a Description"
                 u = "Add an URL"
@@ -1194,6 +1274,7 @@ class datasetCreator:
                     with dur_col:
                         node_dur = st.number_input('Duration', value = 2, disabled=disable)
             if (True):
+# >>>>>>> development
                 col1, col2 = st.columns([1, 8])
                 with col1:
                     add_node = st.button("Save", key="Save_node", disabled=disable)

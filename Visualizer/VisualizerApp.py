@@ -139,6 +139,7 @@ def download_dataset(uploaded_file):
         report_file = open(validity_file_name, "r")
         report = report_file.read()
         report_file.close()
+        myList = report.splitlines()
         
         #    if report == "": st.write("All issues are solved") 
         # if os.path.getsize(validity_file_name) == 0 and report == "":
@@ -148,8 +149,31 @@ def download_dataset(uploaded_file):
                 if os.path.getsize(validity_file_name) != 0 and report != "":
                     validity_report = st.expander("Please fix the following issues:") 
                     with validity_report:
-                        st.write(report)
-                        st.write("Note that there are some issues with the dataset you are about to download. Check the report above.")
+                        for s in myList:
+                            if 'The following ERs are missing titles' in s:
+                                if st.checkbox("Missing Titles"):
+                                    st.write(s)
+                            if 'The following ERs are missing type' in s:
+                                if st.checkbox("Missing Types"):
+                                    st.write(s)
+                    
+                            if 'The following ERs are missing both description and url' in s:
+                                if st.checkbox("Missing Descriptions/URLs"):
+                                    st.write(s)
+                        
+                            if 'The following ERs are missing an Assesses Relationship' in s:
+                                if st.checkbox("Missing 'Assesses' Relationship"):
+                                    st.write(s)
+
+                            if 'The following ERs are missing a Comes After Relationship' in s:
+                                if st.checkbox("Missing 'Comes After' Relationship"):
+                                    st.write(s)
+                        
+                            if 'The following ERs are missing a IsPartOf Relationship' in s:
+                                if st.checkbox("Missing 'Is Part Of' Relationship"):
+                                    st.write(s)
+
+                    st.warning("Note that there are some issues with the dataset you are about to download. Check the report above.")
                 f_name_col, down_btn_col = st.columns([2.5, 1])
                 with f_name_col:
                     file_name= st.text_input("", value = uploaded_file , placeholder="What do you want to call this dataset?", label_visibility="collapsed")
@@ -173,7 +197,10 @@ def reset_dataset(uploaded_file, delete_file_rec):
         os.remove(uploaded_file)
         validity_file = uploaded_file.replace(".csv", "_validity_report.txt")
         if os.path.exists(validity_file):
-            os.remove(validity_file)  
+            os.remove(validity_file) 
+        cleaning_report = uploaded_file.replace(".csv","_cleaning_report.txt")
+        if os.path.exists(cleaning_report):
+            os.remove(cleaning_report) 
     if os.path.exists(str(uploaded_file) + "_Course_Overview.html"):    
         os.remove(str(uploaded_file) + "_Course_Overview.html") 
     if os.path.exists(str(uploaded_file) +"_requirements.html"): 
@@ -323,13 +350,14 @@ with container:
             # file browser    
             u_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
             # user has entered a file
-            if u_file is not None:
+            if u_file is not None:    
                 # check for file record if it exists remove the previous open files
                 if os.path.exists("file_name_record.txt"):
                     with open("file_name_record.txt","r") as f:
                         pre_file = (f.read())
                         if pre_file != u_file.name:
                             reset_dataset(pre_file, False)  
+
                 with open("file_name_record.txt","w") as f:
                     f.write(u_file.name)
                 uploaded_file = u_file.name
@@ -349,6 +377,52 @@ with container:
                 uploaded_file = f_name
             # instantiating dataset creator to allow customization of new/ entered dataset
             dataset = datasetCreator.datasetCreator(uploaded_file) 
+            
+            #cleaning report
+            cleaning_file_name = uploaded_file.replace(".csv", "_cleaning_report.txt")
+            cleaning_file = open(cleaning_file_name, "r+")            
+            clean = cleaning_file.read()
+            myList2 = clean.splitlines()
+
+            AR =[]
+            RR =[]
+            CR = []
+            IPR = []
+
+            for x in myList2:
+                if 'Removed the assesses relation' in x:
+                    AR.append(x)
+                if 'Removed the requires relation' in x:
+                    RR.append(x)   
+                if 'Removed the comesAfter relation' in x:
+                    CR.append(x)  
+                if 'Removed the isPartOf relation' in x:
+                    IPR.append(x)
+
+            if clean != "":
+                cleaning_report = st.expander("The following issues have been fixed") 
+                with cleaning_report:
+                    if st.checkbox("Assesses Relation"):
+                        for y in AR:
+                            st.write(y) 
+                            st.write('\n')
+
+                    if st.checkbox("Requires Relation"):
+                        for y in RR:
+                            st.write(y) 
+                            st.write('\n')
+
+                    if st.checkbox("Comes After Relation"):
+                        for y in CR:
+                            st.write(y) 
+                            st.write('\n')
+
+                    if st.checkbox("Is Part of Relation"):
+                        for y in IPR:
+                            st.write(y) 
+                            st.write('\n')
+                    
+            cleaning_file.close()      
             new_df_container = st.container() # container containing the options for editing dataset
             with new_df_container:
                 if dataset!=None:
