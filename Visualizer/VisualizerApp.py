@@ -146,7 +146,7 @@ def download_dataset(uploaded_file):
         # save_file = st.checkbox("Download CSV File")
         
         if os.path.getsize(validity_file_name) != 0 and report != "":
-                    validity_report = st.expander("Please fix the following issues:") 
+                    validity_report = st.expander("Warnings:") 
                     with validity_report:
                         for s in myList:
                             if 'The following ERs are missing titles' in s:
@@ -172,7 +172,7 @@ def download_dataset(uploaded_file):
                                 if st.checkbox("Missing 'Is Part Of' Relationship"):
                                     st.write(s)
 
-                    st.warning("Note that there are some issues with the dataset you are about to download. Check the report above.")
+                       # st.warning("Note that there are some issues with the dataset you are about to download. Check the report above.")
         dow_options = st.radio("", ("Download Dataset (.CSV)", "Download Session (.CSV)"))
         if(dow_options == "Download Dataset (.CSV)"):    
                 f_name_col, down_btn_col = st.columns([2.5, 1])

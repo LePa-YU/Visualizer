@@ -51,34 +51,33 @@ class validity_checker:
                 missingDes.append(node_id)
                 missingDesTitle.append(node_title)
 
-            else:
-                if node_type != "start" and node_type != "end":
-                    if node_type == "rER": 
-                        assesses = self.df["assesses"][i]
-                        if pd.isna(self.df.loc[i,'assesses']):
-                            missingAssesses.append(node_id)
-                            missingAssessesTitle.append(node_title)
-                            missingAssessType.append(node_type)
+            if node_type != "start" and node_type != "end":
+                if node_type == "rER": 
+                    assesses = self.df["assesses"][i]
+                    if pd.isna(self.df.loc[i,'assesses']):
+                        missingAssesses.append(node_id)
+                        missingAssessesTitle.append(node_title)
+                        missingAssessType.append(node_type)
 
-                    elif node_type == "iER" or node_type == "aER": 
-                        # ca = self.df["comesAfter"][i]
-                        if pd.isna(self.df.loc[i,'comesAfter']):
-                            missingComesAfter.append(node_id)
-                            missingCAType.append(node_type)
-                            missingCATitle.append(node_title)
+                if node_type == "iER" or node_type == "aER": 
+                # ca = self.df["comesAfter"][i]
+                    if pd.isna(self.df.loc[i,'comesAfter']):
+                        missingComesAfter.append(node_id)
+                        missingCAType.append(node_type)
+                        missingCATitle.append(node_title)
 
-                    else: # node is atomic --> isPartOF
+                else: # node is atomic --> isPartOF
                         if pd.isna(self.df.loc[i,'isPartOf']):
-                            missingIsPartOf.append(node_id)
-                            missingIPTitle.append(node_title)
-                            missingIPType.append(node_type)
-
+                                missingIsPartOf.append(node_id)
+                                missingIPTitle.append(node_title)
+                                missingIPType.append(node_type)
+ 
         missingTitleString = ','.join(map(str, missingTitle))
 
         if(len(missingTitle) != 0):
             self.num = self.num + 1
             self.df.to_csv(self.file_name, index=False)
-            validity_file.write(str(self.num)+". The following ERs are missing titles | ID: "+ missingTitleString + "| Please delete or add title to nodes tagged as `Missing Title` using `Update a ER` option")
+            validity_file.write(str(self.num)+". The following ERs are missing titles | ID: "+ missingTitleString + "| You can update or add title to nodes tagged as `Missing Title` using `Update a ER` option")
             validity_file.write("\n")
 
         if(len(missingType) != 0):
@@ -86,7 +85,7 @@ class validity_checker:
             validity_file.write(str(self.num)+". The following ERs are missing type: ")
             for i in range(len(missingTypeTitle)):
                 validity_file.write(f"**{str(missingTypeTitle[i])}**" + " ( ID: " + str(missingType[i]) + "), " )
-            validity_file.write("Please delete or add type to these ERs using `Update a ER` option")
+            validity_file.write("You can update or add type to these ERs using `Update a ER` option")
             validity_file.write("\n")
 
         if(len(missingDes) != 0):
@@ -94,7 +93,7 @@ class validity_checker:
             validity_file.write(str(self.num)+". The following ERs are missing both description and url: " )
             for i in range(len(missingDes)):
                 validity_file.write(f"**{str(missingDesTitle[i])}**" + " ( ID: " + str(missingDes[i]) + "), ")
-            validity_file.write("Please delete these ERs or update one of these fields using `Update a ER` option")
+            validity_file.write("You can update one of these fields using `Update a ER` option")
             validity_file.write("\n")
 
         if(len(missingAssesses) != 0):     
@@ -102,7 +101,7 @@ class validity_checker:
             validity_file.write(str(self.num)+". The following ERs are missing an Assesses Relationship : " )
             for i in range(len(missingAssesses)):
                 validity_file.write(f"**{str(missingAssessesTitle[i])}**" + " ( Type: " + str(missingAssessType[i]) + ", ID: " + str(missingAssesses[i]) + "), ")
-            validity_file.write("Please create an `Assesses` relation using `Modify Relation'")
+            validity_file.write("You can create an `Assesses` relation using `Modify Relation'")
             validity_file.write("\n")
         
         if(len(missingComesAfter) != 0):
@@ -110,7 +109,7 @@ class validity_checker:
             validity_file.write(str(self.num)+". The following ERs are missing a Comes After Relationship : " )
             for i in range(len(missingComesAfter)):
                 validity_file.write(f"**{str(missingCATitle[i])}**"  + " ( Type: " + str(missingCAType[i]) + ", ID: " + str(missingComesAfter[i]) + "), " )
-            validity_file.write("Please create an `comes After` relation using `Modify Relation")
+            validity_file.write("You can create an `comes After` relation using `Modify Relation")
             validity_file.write("\n")
         
         if(len(missingIsPartOf) != 0 ):
@@ -118,7 +117,7 @@ class validity_checker:
             validity_file.write(str(self.num)+". The following ERs are missing a IsPartOf Relationship : " )
             for i in range(len(missingIsPartOf)):
                 validity_file.write(f"**{str(missingIPTitle[i])}**" + " ( Type: " + str(missingIPType[i]) + ", ID: " + str(missingIsPartOf[i]) + "), ")
-            validity_file.write("These ERs must be part of a composite ER! Please create an `is Part of` relation using `Modify Relation")
+            validity_file.write("These ERs must be part of a composite ER! You can create an `is Part of` relation using `Modify Relation")
             validity_file.write("\n")
 
         validity_checker.__check_comesAfter_validity(self, validity_file)
