@@ -172,30 +172,43 @@ def download_dataset(uploaded_file):
                                 if st.checkbox("Missing 'Is Part Of' Relationship"):
                                     st.write(s)
 
-                       # st.warning("Note that there are some issues with the dataset you are about to download. Check the report above.")
-        dow_options = st.radio("", ("Download Dataset (.CSV)", "Download Session (.CSV)"))
-        if(dow_options == "Download Dataset (.CSV)"):    
-                f_name_col, down_btn_col = st.columns([2.5, 1])
-                with f_name_col:
-                    file_name= st.text_input("", value = uploaded_file , placeholder="What do you want to call this dataset?", label_visibility="collapsed")
-                    if(file_name !=""):
+                    # st.warning("Note that there are some issues with the dataset you are about to download. Check the report above.")
+        
+        df_test = pd.read_csv(uploaded_file)
+        check = False
+        if len(df_test)<=2: check =True
+        dow_options = ""
+        print(check)
+        if not check: 
+            dow_expand = st.expander("Download")
+            with dow_expand:
+                # dow_options = st.radio("", ("Download Dataset (.CSV)", "Download Session (.CSV)"))
+                dow_csv = st.checkbox("Download Dataset (.CSV)")
+                # if(dow_options == "Download Dataset (.CSV)"): 
+                if dow_csv:   
+                        f_name_col, down_btn_col = st.columns([2.5, 1])
+                        with f_name_col:
+                            file_name= st.text_input("", value = uploaded_file , placeholder="What do you want to call this dataset?", label_visibility="collapsed")
+                            if(file_name !=""):
+                                with down_btn_col:
+                                    if not file_name.endswith(".csv"):
+                                        if "." in file_name:
+                                            st.text("please remove .")
+                                        else:
+                                            file_name = file_name + ".csv"
+                                    df_copy = pd.read_csv(uploaded_file)
+                                    csv_file = df_copy.to_csv(index=False).encode('utf-8')
+                                    download_btn = st.download_button(label="Download", data=csv_file, file_name=file_name, mime='text/csv')
+                # else:
+                dow_sess = st.checkbox("Download Session (.CSV)")
+                if dow_sess:
+                    f_name_col, down_btn_col = st.columns([2.5, 1])
+                    with f_name_col:
+                        n = uploaded_file.replace(".csv", "_session.csv")
+                        file_name= st.text_input("", value = n , placeholder="What do you want to call this dataset?", label_visibility="collapsed")
                         with down_btn_col:
-                            if not file_name.endswith(".csv"):
-                                if "." in file_name:
-                                    st.text("please remove .")
-                                else:
-                                    file_name = file_name + ".csv"
-                            df_copy = pd.read_csv(uploaded_file)
-                            csv_file = df_copy.to_csv(index=False).encode('utf-8')
-                            download_btn = st.download_button(label="Download", data=csv_file, file_name=file_name, mime='text/csv')
-        else:
-            f_name_col, down_btn_col = st.columns([2.5, 1])
-            with f_name_col:
-                n = uploaded_file.replace(".csv", "_session.csv")
-                file_name= st.text_input("", value = n , placeholder="What do you want to call this dataset?", label_visibility="collapsed")
-                with down_btn_col:
-                    download_session_btn = st.button(label="Download")
-    return download_session_btn
+                            download_session_btn = st.button(label="Download")
+        return download_session_btn
    
 ##############################################################################################
 # function that removes existing dataset and corresponding html and validity files. 
@@ -459,7 +472,7 @@ with container:
                             uploaded_file = f_name
                             dataset = datasetCreator.datasetCreator(f_name)  
                     #flag that indicates user want to download the dataset
-                    dow_session_btn = download_dataset(uploaded_file)           
+            dow_session_btn = download_dataset(uploaded_file)           
     if (uploaded_file is not None):
         # store file in a dataframe  used for views --> Visualization file
         dataframe = pd.read_csv(uploaded_file)
