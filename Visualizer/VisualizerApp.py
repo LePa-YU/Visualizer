@@ -146,7 +146,7 @@ def download_dataset(uploaded_file):
         # save_file = st.checkbox("Download CSV File")
         
         if os.path.getsize(validity_file_name) != 0 and report != "":
-                    validity_report = st.expander("Please fix the following issues:") 
+                    validity_report = st.expander("Warnings:") 
                     with validity_report:
                         for s in myList:
                             if 'The following ERs are missing titles' in s:
