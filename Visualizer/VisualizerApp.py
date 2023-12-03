@@ -422,25 +422,29 @@ with container:
             if clean != "":
                 cleaning_report = st.expander("The following issues have been fixed") 
                 with cleaning_report:
-                    if st.checkbox("Assesses Relation"):
-                        for y in AR:
-                            st.write(y) 
-                            st.write('\n')
+                    if(len(AR)!= 0):
+                        if st.checkbox("Assesses Relation"):
+                                for a in AR:
+                                    st.write(a) 
+                                    st.write('\n')
+                    
+                    if(len(RR)!= 0):
+                        if st.checkbox("Requires Relation"):
+                            for b in RR:
+                                st.write(b) 
+                                st.write('\n')
 
-                    if st.checkbox("Requires Relation"):
-                        for y in RR:
-                            st.write(y) 
-                            st.write('\n')
+                    if(len(CR)!= 0):
+                        if st.checkbox("Comes After Relation"):
+                            for c in CR:
+                                st.write(c) 
+                                st.write('\n')
 
-                    if st.checkbox("Comes After Relation"):
-                        for y in CR:
-                            st.write(y) 
-                            st.write('\n')
-
-                    if st.checkbox("Is Part of Relation"):
-                        for y in IPR:
-                            st.write(y) 
-                            st.write('\n')
+                    if(len(IPR)!= 0):
+                        if st.checkbox("Is Part of Relation"):
+                            for d in IPR:
+                                st.write(d) 
+                                st.write('\n')
                     
             cleaning_file.close()      
             new_df_container = st.container() # container containing the options for editing dataset
