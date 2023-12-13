@@ -1,3 +1,6 @@
+# this class convert a given networkX to data and pass to pyvisToHtml.convertToHtml
+# the length of node title are set here to 15
+
 # required imports
 import networkx as nx
 import pyvisToHtml
@@ -13,7 +16,7 @@ def convert_to_pyvis(G, file_name, bg, font_color,file_label, view, physics, isH
     # if (physics):  G2.show_buttons()
     G2.from_nx(G)
   
-    # wrap the long title aka node labels to fit in 15
+    # wrap the long title aka node labels to fit in 15 character at each row
     for node in G2.nodes:
         id_string = node["label"]
         width = 15
