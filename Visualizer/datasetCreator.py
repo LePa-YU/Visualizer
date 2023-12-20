@@ -10,8 +10,10 @@ class datasetCreator:
 
         #pass col2 and initial and current option
         self.file_name = file_name
+        # initializing the DF
         if "df" not in st.session_state:
             col_list = ['identifier','title','description','url','type','isPartOf','assesses','comesAfter','requires','alternativeContent','references','isFormatOf','duration', "x values", "y values"]
+            # create the csv file if it doesnt exist
             if(not os.path.isfile(file_name)): 
                 st.session_state.df = pd.DataFrame(columns=col_list)
                 # add start and end node
@@ -41,10 +43,9 @@ class datasetCreator:
                     st.session_state.df[col] = ""
             st.session_state.df.to_csv(file_name, index=False)
         # assess, isPartOf, comesAfter must contain one value if not the case then set to empty
-# <<<<<<< nias_branch
+        # cleaning the given dataset
         cleaning_file_name = file_name.replace(".csv", "_cleaning_report.txt")
         fi = open(cleaning_file_name, "a") 
-
         for i in range(len(st.session_state.df.index)):
             node_type = st.session_state.df["type"][i]
             title = st.session_state.df["title"][i]
@@ -92,23 +93,6 @@ class datasetCreator:
                 else:
                     st.session_state.df["assesses"][i] = ""; st.session_state.df["isPartOf"][i] = ""
                     st.session_state.df["requires"][i] = ""
-     
-# =======
-#         for i in range(len(st.session_state.df.index)):
-#             node_type = st.session_state.df["type"][i]
-#             if node_type != "start" and node_type != "end":
-#                 if node_type != "rER": st.session_state.df["assesses"][i] = "" # if node is not rER then it should not have assess field
-#                 else: # if node is rER then it must not have comesAfter, requires, and isPartOf
-#                     st.session_state.df["comesAfter"][i] = ""; st.session_state.df["isPartOf"][i] = ""
-#                     st.session_state.df["requires"][i] = ""
-                
-#                 # if a node is aER or iER --> might have comesAfter but no assesses, isPartof, requires
-#                 if node_type != "aER" and node_type!="iER": st.session_state.df["comesAfter"][i] = "" # if node is not aER or rER then doesnt have comesAfter
-#                 else:
-#                     st.session_state.df["assesses"][i] = ""; st.session_state.df["isPartOf"][i] = ""
-#                     st.session_state.df["requires"][i] = ""
-            
-# >>>>>>> developmen
             ## only requires can have multi values for the rest of relation they are set to "" if they have more than one value
             a = st.session_state.df["assesses"][i]; ca = st.session_state.df["comesAfter"][i]; ipo = st.session_state.df["isPartOf"][i]
             if type(a) != int:
@@ -123,16 +107,14 @@ class datasetCreator:
                 try: ipo = int(float(st.session_state.df["isPartOf"][i]))
                 except: ipo = None
                 if ipo == None: st.session_state.df["isPartOf"][i] = ""
-       
-# <<<<<<< nias_branch
+
         st.session_state.df.to_csv(file_name, index=False)
         fi.close()
-# =======
-#         st.session_state.df.to_csv(file_name, index=False)
-# >>>>>>> development
 
+    # add a single node
     def add_node(self):
         datasetCreator.set_selected_node(self, None)
+        # create the fields required for a node return a dictionary of values for the new node
         node_dict = datasetCreator.__create_node_addition_fields(self)
         if(node_dict):
             end_node_comesAfter = st.session_state.df["comesAfter"].iloc[-1] # keep end node connected to its comesAfter
@@ -141,10 +123,12 @@ class datasetCreator:
             end_dict = {"identifier": node_dict["identifier"]+1, "title": "End", "description": "end", "url":"", "type":"end"
                     ,"isPartOf": '', "assesses":'','comesAfter':end_node_comesAfter,"requires":'', "alternativeContent":'', "references":'',
                     "isFormatOf": "", "duration": "", "x values":'', "y values":""}
+            # readd the end node to the end of csv
             datasetCreator.__add_node_from_dict(self, end_dict, len(st.session_state.df.index))
             st.session_state.df.to_csv(self.file_name, index=False)
             st.session_state.df = pd.read_csv(self.file_name)
-       
+    
+    # given a dictionary of values and index in csv it adds the values of the node
     def __add_node_from_dict(self, node_dict, index):
         try: n_id = int(node_dict["identifier"])
         except: n_id = int(float(node_dict["identifier"]))
@@ -164,6 +148,7 @@ class datasetCreator:
         st.session_state.df.loc[index, "x values"] = node_dict["x values"]
         st.session_state.df.loc[index, "y values"] = node_dict["y values"]
         
+    # find and edit an existing node
     def edit_node(self):
         st.session_state.df = pd.read_csv(self.file_name)
         datasetCreator.set_selected_node(self, None)
@@ -172,9 +157,11 @@ class datasetCreator:
         else:
             st.divider()
             st.text("find the node you want to edit:")
+            # find and return the id of node to be edited
             node = datasetCreator.__find_node_list(self)
             if(node != None):
                 node = np.int16(node).item()
+            # highlight the selected node
             datasetCreator.set_selected_node(self, node)
             disable = False
             if("delete_node" in st.session_state):

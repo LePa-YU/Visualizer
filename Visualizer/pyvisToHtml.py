@@ -2,7 +2,7 @@ import json
 
 def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_dataset_only, csvRows,  needsStabilization, physics, select_edit_node_id, select_edit_node2_id, is_custom):
     file_html = open(file_name , "w")
-    # Adding the input data to the HTML file
+    # top part of html
     file_html.write('''
     <!DOCTYPE html>
     <html>
@@ -45,44 +45,42 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
      </div>   
    
     <script type="text/javascript"> 
+    // list of nodes
      var nodeList = new vis.DataSet();
+     // list of edges
      var edgeList = new vis.DataSet();
      var csvRows = []; \n''')
-
-    # file label 
+    
+    # Adding the input data to the HTML file
+    # file label: used to create the label for the html window
     jsonOb_file_label = json.dumps(file_label)
     jsonOb_file_label_format = format(jsonOb_file_label)
     file_html.write("\t\t var fileLabel = "+str(jsonOb_file_label_format) +";"+"\n")
 
-      # physics
+    # physics
     jsonOb_physics = json.dumps(physics)
     jsonOb_physics_format = format(jsonOb_physics)
     file_html.write("\t\t var physics = "+str(jsonOb_physics_format) +";"+"\n")
 
-    #view name
+    #view name: name of the view based on the selected view from the drop down menu
     jsonOb_view = json.dumps(view)
     jsonOb_view_format = format(jsonOb_view)
     file_html.write("\t\t var view = "+str(jsonOb_view_format) +";"+"\n")
 
-    # heading from the network
-    heading_data = data[2]
-    jsonOb_heading = json.dumps(heading_data)
-    jsonOb_heading_format = format(jsonOb_heading)
-    file_html.write("\t\t var heading = "+str(jsonOb_heading_format) +";"+"\n")
-
-    # height of network
+    # height of network: initial height of the network
     height_data = data[3]
     jsonOb_height = json.dumps(height_data)
     jsonOb_height_format = format(jsonOb_height)
     file_html.write("\t\t var height = "+str(jsonOb_height_format) +";"+"\n")
 
-    #width of the network
+    #width of the network: initial width of the network
     width_data = data[4]
     jsonOb_width = json.dumps(width_data)
     jsonOb_width_format = format(jsonOb_width)
     file_html.write("\t\t var width = "+str(jsonOb_width_format) +";"+"\n")
 
-    #network options such as nodes, edge, interaction, physics, etc. 
+    #initial network options such as nodes, edge, interaction, physics, etc. 
+    # these are set using vis.js
     options_data = data[5]
     jsonOb_options = json.dumps(options_data)
     jsonOb_options_format = format(jsonOb_options)  
@@ -93,12 +91,12 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
     jsonOb_isHorizontal_format = format(jsonOb_isHorizontal)  
     file_html.write("\t\t var isHorizontal = "+str(jsonOb_isHorizontal_format) +";"+"\n\n")
 
-    #download_dataset_only
+    #download_dataset_only: inidcates that user has requested to download data with coordinates
     jsonOb_download_dataset_only = json.dumps(download_dataset_only)
     jsonOb_download_dataset_only_format = format(jsonOb_download_dataset_only)  
     file_html.write("\t\t var download_button_clicked = "+str(jsonOb_download_dataset_only_format) +";"+"\n\n")
 
-    # needsStabilization
+    # needsStabilization used to decided whether or not limit the iteration time (used when there is x and y value)
     jsonOb_needsStabilization = json.dumps(needsStabilization)
     jsonOb_needsStabilization_format = format(jsonOb_needsStabilization)  
     file_html.write("\t\t var needsStabilization = "+str(jsonOb_needsStabilization_format) +";"+"\n\n")
@@ -108,7 +106,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
     jsonOb_select_edit_node_id_format = format(jsonOb_select_edit_node_id)  
     file_html.write("\t\t var select_edit_node_id = "+str(jsonOb_select_edit_node_id_format) +";"+"\n\n")
 
-    # select_edit_node2_id used for relation creation/ modification
+    # select_edit_node2_id used for relation creation/ modification so the a 2nd selected node is highlighted
     jsonOb_select_edit_node2_id = json.dumps(select_edit_node2_id)
     jsonOb_select_edit_node2_id_format = format(jsonOb_select_edit_node2_id)  
     file_html.write("\t\t var select_edit_node2_id = "+str(jsonOb_select_edit_node2_id_format) +";"+"\n\n")
@@ -121,16 +119,11 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
         document.getElementById('mynetwork').style.background = bg; 
      ''')
 
-    # csvRows for download
-    # for row in csvRows:
-    #     jsonOb_node = json.dumps(n)
-    #     jsonOb_node_format = format(jsonOb_node)
-    #     file_html.write("\t\t nodeList.add("+str(jsonOb_node_format) +");"+"\n")
     jsonOb_csvRows = json.dumps(csvRows)
     jsonOb_csvRows_format = format(jsonOb_csvRows)
     file_html.write("\t\t var csvRows= "+str(jsonOb_csvRows_format) +";"+"\n")
 
-    #is_custom
+    #is_custom: we are in creator mode
     jsonOb_is_custom = json.dumps(is_custom)
     jsonOb_is_custom_format = format(jsonOb_is_custom)
     file_html.write("\t\t var is_custom= "+str(jsonOb_is_custom_format) +";"+"\n")
@@ -154,6 +147,8 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
     # add rest of the html
     file_html.write('''
    
+    // changing the layout if customization mode user has selected physics option.
+    // allow menu to be on the right side of the network
     if(physics){
       var physicsContainer = document.createElement("div");
       physicsContainer.style.overflow = "scroll";
@@ -161,10 +156,12 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
       document.getElementById("container").appendChild(physicsContainer);
     }
     
+    // html view label (top left corner)
     document.getElementById("label").innerHTML = fileLabel +" (" + view + ")";
     if(bg == "black"){
       document.getElementById("label").style.color = 'white';
     }
+    // warning for the mobile users: always on the view 1 of fake1001
     window.onload=function(){
     var mobile = (/iphone|ipad|ipod|android|blackberry|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
       if (mobile && fileLabel == "FAKE1001.csv" && view =="View 1: Summative assessment only") {
@@ -172,11 +169,12 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
       } 
     }
 
-    window.addEventListener("load", (event) => {
+   /* window.addEventListener("load", (event) => {
       document.getElementById("label").click();
-    });
+    });*/
     
-    /*console.log(is_custom); 
+    /*//stopping the reload -- not working as expected runs for every reload of the html compo
+    console.log(is_custom); 
     window.addEventListener('beforeunload', function (e) {
       if (is_custom == true){  
         // Cancel the event
@@ -199,7 +197,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
         nodes: nodeList,
         edges: edgeList
     };
-   //options:
+   //vis.js network options:
       var options = {
         configure:{
           enabled: physics,
@@ -257,13 +255,18 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
 		}
 
 	}
+
   /*
+  // lower iterations-- faster shown to users
   stabilization:{
         enabled: true, 
         iterations: 800
       }
   */
-  //var needsStabilization = true; 
+
+
+  // if there are x and y then the we can decrease the iterations so users can see the graph
+  // faster and allow the stabilization to continue in the background
   if(needsStabilization == false){
     options.physics["stabilization"] = {
         enabled: true, 
@@ -278,10 +281,13 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
       };  
       //console.log("stabilization did not happen"); 
   }
+
+
     //creating the vis network
     var network = new vis.Network(container, data, options);
     network.setSize(width, height);
-    //Focus 
+    
+    //Focus + highlight ERs for the custom mode
     network.once("beforeDrawing", function () {
       /*Highlightling select node automatically*/
       nodeList.forEach(function(item) 
@@ -317,32 +323,16 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
             }
         }
         
-      }); 
-
-      
-      //if (fileLabel == 'temp.csv'){
+      });  
       if (select_edit_node2_id == null && select_edit_node_id !=null ){
             network.focus(select_edit_node_id , {
             scale: 0.5,
             offset: {x:100, y:0}
           });
         }
-      //}
-     /* else{
-        if(isHorizontal){
-        network.focus(0, {
-          scale: 0.5,
-          offset: {x:-300, y:0}
-        });
-      }
-      else{
-        network.focus(0, {
-          scale: 0.5,
-          offset: {x:0, y:-300}
-        });
-      }*/
-      //}
     }); 
+
+
     // node collapse. if only one node is selected if the node is clustred (collapsed) then the cluster is open
     // else the node is collapsed if if they have the isPartOf relation corresponding to this node's id (var v)
     network.on("selectNode", function (params) {
@@ -356,7 +346,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
             network.cluster(getC(v));
         }
       
-        //url opening
+        //url opening if it exist when node is selected and user presses enter
       nodeId = params.nodes;
       node = nodeList.get(nodeId)[0];
       nodeUrl = node.url;
@@ -369,12 +359,11 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
             delete nodeUrl;  
 				  }
 			}); 
-        
-      
       }
 
         
     });
+    // stabilization analysis
    /* network.on('startStabilizing', function(params) {
       let s = nodeList.length; 
       console.log("node number: "+String(s)); 
@@ -392,7 +381,7 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
       console.log("end time: " + String(time)); 
       console.log("number of iteration: "+ String(params.iterations));*/
 
-
+    // Save the x and y corridnates in views 3 which can be downloaded by the user
      if(flag == false){
         const jsonData = {}; 
         if(view =="View 3: All ERs")
@@ -428,71 +417,15 @@ def convertToHtml(data, file_name, bg, file_label, view, isHorizontal, download_
             }); 
           } 
         }
+        // downloaded the session csv file
         if (download_button_clicked == true)
         {
-          	/*const jsonData = {
-              name: "Jonth",
-              email: "jobtd@mail.com",
-              website: "www.4codev.com"
-            };*/
-            //download(JSON.stringify(jsonData), "yourfile.json", "text/plain");
-            //function download(content, fileName, contentType)
-            
-
-            //download json
-           /* const a = document.createElement("a");
-            const content = JSON.stringify(jsonData); 
-            const contentType = "text/plain"; 
-            const file = new Blob([content], { type: contentType });
-            a.href = URL.createObjectURL(file);
-            a.download = "coordinates.json";
-            a.click();*/
-        
-
-          //download csv file
          exportToCsv(fileLabel, csvRows) ; 
         }
         flag = true; 
       }
-      // select given nodes for creating dataset
-   // if (fileLabel == 'temp.csv'){
-     /* nodeList.forEach(function(item) 
-      {
-        if(view == "View 4: Requirements" || view == "View 5: Requirements - Vertical"){
-            if(select_edit_node_id == item.id)
-            {
-              if (item.title == "iER" ||item.title == "aER" || item.title == "rER" || item.title == "start"|| item.title == "end"){
-                nodeList.update([{id: select_edit_node_id, color: {background: '#cde4f7'}}]);
-              }
-              else{
-                nodeList.update([{id: select_edit_node_id, color: {"border": "black", background: '#cde4f7'}}]);
-              }
-            }
-            if(select_edit_node2_id == item.id)
-            {
-              if (item.title == "iER" ||item.title == "aER" || item.title == "rER" || item.title == "start"|| item.title == "end"){
-                nodeList.update([{id: select_edit_node2_id, color: {background: '#cde4f7'}}]);
-              }
-              else{
-                nodeList.update([{id: select_edit_node2_id, color: {"border": "black", background: '#cde4f7'}}]);
-              }
-            }
-        }
-        else{
-            if(select_edit_node_id == item.id)
-            {
-              nodeList.update([{id: select_edit_node_id, color: {background: '#cde4f7'}}]);
-            }
-            if(select_edit_node2_id == item.id)
-            {
-              nodeList.update([{id: select_edit_node2_id, color: {background: '#cde4f7'}}]);
-            }
-        }
-        
-      }); */
-    //}
     });  
-
+    // function to download the session file when user click on download session button
     function exportToCsv(filename, rows) {
         var processRow = function (row) {
             var finalVal = '';
