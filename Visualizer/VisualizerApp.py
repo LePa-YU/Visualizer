@@ -234,13 +234,18 @@ def reset_dataset(uploaded_file, delete_file_rec):
         
     if delete_file_rec:
             if os.path.exists("file_name_record.txt"): 
-                os.remove("file_name_record.txt")      
+                os.remove("file_name_record.txt")    
+
+def onChange():
+    st.session_state['edit'] = 'not'
 ##########################################################################################################
 # Start:    
 #global variables:
 uploaded_file = None # file that contains the csv file used for visualization/ customization
 global df # dataframe of the csv file
 dow_session_btn = False
+if 'edit' not in st.session_state:
+    st.session_state['edit'] = 'not'
 # initial settings for the streamlit app:
 # the "wide" layout allows the elements to be stretched to the size of the screen 
 st.set_page_config(page_title = "LePa Visualizer", layout="wide", initial_sidebar_state="collapsed")
@@ -259,15 +264,32 @@ with container:
         ds_1530 = "EECS 1530"
         ds_4462 = "EECS 4462"
         enter_own = "Custom dataset"
-        dataset_options=st.selectbox('',(fake_ds, ds_2311, ds_3461, ds_1530, ds_4462, enter_own), label_visibility="collapsed")
+        dataset_options=st.selectbox('',(fake_ds, ds_2311, ds_3461, ds_1530, ds_4462, enter_own), label_visibility="collapsed",on_change=onChange)
+        placeholder = st.empty()
+        editb = placeholder.button("Edit", type ="primary")
+        if editb:
+            st.session_state['edit'] = 'clicked'
+            is_custom = True
+            is_Custom_view = True
+            placeholder.empty()
+
     #col2: current views, view 3-5 are same with different layouts
     #create layout for custom dataset --> change the screen real state for better viewing
     # basically giving different size container to hold the static html
+    
+    
     if dataset_options == enter_own:
         is_Custom_view = True
         upload_col, edit_col = st.columns([3.5, 4.5])
         with edit_col:
             container_html = st.container()
+
+    elif st.session_state['edit'] == 'clicked':
+        is_Custom_view = True
+        upload_col, edit_col = st.columns([3.5, 4.5])
+        with edit_col:
+            container_html = st.container()
+    
     else:    
         container_html = st.container()
         is_Custom_view = False
@@ -284,7 +306,7 @@ with container:
     # getting data for the existing datasets from Dataset repo's main branch:
     # Fake1001.csv
     is_custom = False
-    if dataset_options == fake_ds:
+    if dataset_options == fake_ds and st.session_state['edit'] == 'not':
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/FAKE1001/FAKE1001.csv"
         res = requests.get(url, allow_redirects=True)
         #if record of this file exists in the system (duplicate names)--> remove it
@@ -300,7 +322,7 @@ with container:
             file.write(res.content)
         uploaded_file = "FAKE1001.csv"
     # EECS 2311
-    elif dataset_options == ds_2311:
+    elif dataset_options == ds_2311 and st.session_state['edit'] == 'not':
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS2311/2311_dataset_overview.csv"
         res = requests.get(url, allow_redirects=True)
         if os.path.exists("file_name_record.txt"):
@@ -313,7 +335,7 @@ with container:
             file.write(res.content)
         uploaded_file = "2311_dataset_overview.csv"
     # EECS3461
-    elif dataset_options == ds_3461:
+    elif dataset_options == ds_3461 and st.session_state['edit'] == 'not':
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS3461/3461_dataset_overview.csv"
         res = requests.get(url, allow_redirects=True)
         if os.path.exists("file_name_record.txt"):
@@ -326,7 +348,7 @@ with container:
             file.write(res.content)
         uploaded_file = "3461_dataset_overview.csv"
     #EECS 1530
-    elif dataset_options == ds_1530:
+    elif dataset_options == ds_1530 and st.session_state['edit'] == 'not':
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS1530/1530_dataset_overview.csv"
         res = requests.get(url, allow_redirects=True)
         if os.path.exists("file_name_record.txt"):
@@ -339,7 +361,7 @@ with container:
             file.write(res.content)
         uploaded_file = "1530_dataset_overview.csv"
     # EECS4462
-    elif dataset_options == ds_4462: 
+    elif dataset_options == ds_4462 and st.session_state['edit'] == 'not': 
         url = "https://raw.githubusercontent.com/LePa-YU/Datasets/main/EECS4462/4462_dataset_overview.csv"
         res = requests.get(url, allow_redirects=True)
         if os.path.exists("file_name_record.txt"):
@@ -448,6 +470,7 @@ with container:
                     
             cleaning_file.close()      
             new_df_container = st.container() # container containing the options for editing dataset
+            
             with new_df_container:
                 if dataset!=None:
                     st.divider() # creating a line
@@ -477,6 +500,52 @@ with container:
                             dataset = datasetCreator.datasetCreator(f_name)  
                     #flag that indicates user want to download the dataset
             dow_session_btn = download_dataset(uploaded_file)           
+    
+    if st.session_state['edit'] == 'clicked':
+        if dataset_options == fake_ds:
+            uploaded_file = "FAKE1001.csv"
+
+        elif dataset_options == ds_2311:
+            uploaded_file = "2311_dataset_overview.csv"
+
+        elif dataset_options == ds_3461:
+            uploaded_file = "3461_dataset_overview.csv"
+
+        elif dataset_options == ds_1530:
+            uploaded_file = "1530_dataset_overview.csv"
+
+        elif dataset_options == ds_4462:
+            uploaded_file = "4462_dataset_overview.csv"
+
+        dataset = datasetCreator.datasetCreator(uploaded_file) 
+        with upload_col:
+            new_df_container = st.container() # container containing the options for editing dataset
+            with new_df_container:
+                        node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab") 
+                        if(node_option == "Add a new ER"):
+                            dataset.add_node()
+                        elif(node_option == "Update a ER"):
+                            dataset.edit_node()
+                        elif(node_option == "Modify Relations"):
+                            dataset.add_relation()
+                        elif(node_option == "Delete Dataset"):
+                            del_btn = st.button("Delete Dataset?")
+                            if del_btn: 
+                                if os.path.exists("file_name_record.txt"):
+                                    with open("file_name_record.txt","r") as f:
+                                        pre_file = (f.read())
+                                        reset_dataset(pre_file, False)
+                                f_name = "New Dataset.csv"
+                                with open("file_name_record.txt","w") as f:
+                                    f.write(f_name)
+                                uploaded_file = f_name
+                                dataset = datasetCreator.datasetCreator(f_name)  
+                        #flag that indicates user want to download the dataset
+            dow_session_btn = download_dataset(uploaded_file)           
+        
+        
+        
+    
     if (uploaded_file is not None):
         # store file in a dataframe  used for views --> Visualization file
         dataframe = pd.read_csv(uploaded_file)
