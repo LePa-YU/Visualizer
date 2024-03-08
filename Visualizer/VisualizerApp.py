@@ -208,7 +208,12 @@ def download_dataset(uploaded_file):
                         file_name= st.text_input("", value = n , placeholder="What do you want to call this dataset?", label_visibility="collapsed")
                         with down_btn_col:
                             download_session_btn = st.button(label="Download")
+        
+        
+    
+        
         return download_session_btn
+        
    
 ##############################################################################################
 # function that removes existing dataset and corresponding html and validity files. 
@@ -244,6 +249,14 @@ def onChange():
 uploaded_file = None # file that contains the csv file used for visualization/ customization
 global df # dataframe of the csv file
 dow_session_btn = False
+dele = False
+up = False 
+if "file_uploader_key" not in st.session_state:
+    st.session_state["file_uploader_key"] = 0
+
+if "uploaded_files" not in st.session_state:
+    st.session_state["uploaded_files"] = []
+
 if 'edit' not in st.session_state:
     st.session_state['edit'] = 'not'
 # initial settings for the streamlit app:
@@ -263,8 +276,9 @@ with container:
         ds_3461 = "EECS 3461"
         ds_1530 = "EECS 1530"
         ds_4462 = "EECS 4462"
-        enter_own = "Custom dataset"
-        dataset_options=st.selectbox('',(fake_ds, ds_2311, ds_3461, ds_1530, ds_4462, enter_own), label_visibility="collapsed",on_change=onChange)
+        enter_own = "Load your Own Dataset"
+        empty = "Empty Dataset"
+        dataset_options=st.selectbox('',(fake_ds, ds_2311, ds_3461, ds_1530, ds_4462, enter_own, empty), label_visibility="collapsed",on_change=onChange)
         placeholder = st.empty()
         editb = placeholder.button("Edit", type ="primary")
         if editb:
@@ -278,7 +292,7 @@ with container:
     # basically giving different size container to hold the static html
     
     
-    if dataset_options == enter_own:
+    if dataset_options == enter_own or dataset_options == empty:
         is_Custom_view = True
         upload_col, edit_col = st.columns([3.5, 4.5])
         with edit_col:
@@ -374,6 +388,58 @@ with container:
             file.write(res.content)
         uploaded_file = "4462_dataset_overview.csv"
     # custom dataset
+    elif dataset_options == empty:
+        is_custom = True
+        is_Custom_view = True
+        with upload_col:
+            dataset = None
+            f_name = "New Empty Dataset.csv"
+            if os.path.exists("file_name_record.txt"):
+                with open("file_name_record.txt","r") as f:
+                    pre_file = (f.read())
+                    if pre_file != f_name:
+                        reset_dataset(pre_file, False)
+            with open("file_name_record.txt","w") as f:
+                f.write(f_name)
+            uploaded_file = f_name
+            # instantiating dataset creator to allow customization of new/ entered dataset
+            dataset = datasetCreator.datasetCreator(uploaded_file) 
+            new_df_container = st.container() 
+            with new_df_container:
+                    if dataset!=None:
+                        st.divider() # creating a line
+                        # if the user is uploading a dataset then they remove it by removing it from the file uploader
+                        # else a delete option avaiable for them
+                        if uploaded_file == "New Empty Dataset.csv":
+                            node_option2 = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab")
+                        else:
+                            node_option2 = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab") 
+                        if(node_option2 == "Add a new ER"):
+                            dataset.add_node()
+                        elif(node_option2 == "Update a ER"):
+                            dataset.edit_node()
+                        elif(node_option2 == "Modify Relations"):
+                            dataset.add_relation()
+                        
+                    #flag that indicates user want to download the dataset
+                    del_expand = st.expander("Delete")
+                    if del_expand:
+                                    del_btn = st.button("Reset Dataset?", type ="primary")
+                                    if del_btn: 
+                                        if os.path.exists("file_name_record.txt"):
+                                            with open("file_name_record.txt","r") as f:
+                                                pre_file = (f.read())
+                                                reset_dataset(pre_file, False)
+                                        f_name = "New Dataset.csv"
+                                        with open("file_name_record.txt","w") as f:
+                                            f.write(f_name)
+                                        uploaded_file = f_name
+                                        dataset = datasetCreator.datasetCreator(f_name)  
+                                        st.session_state["file_uploader_key"] += 1
+                                        st.experimental_rerun()  
+        dow_session_btn = download_dataset(uploaded_file)
+        
+       
     elif dataset_options == enter_own:
         is_custom = True
         is_Custom_view = True
@@ -389,10 +455,12 @@ with container:
                         <style>
                         """
                 , unsafe_allow_html=True)
-            # file browser    
-            u_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden")
+            # file browser  
+            #  
+            u_file = st.file_uploader(label="Load Dataset:", type="csv", help = "Load your dataset  here", label_visibility= "hidden",key=st.session_state["file_uploader_key"])
             # user has entered a file
-            if u_file is not None:    
+            if u_file is not None:
+                up = True    
                 # check for file record if it exists remove the previous open files
                 if os.path.exists("file_name_record.txt"):
                     with open("file_name_record.txt","r") as f:
@@ -477,7 +545,7 @@ with container:
                     # if the user is uploading a dataset then they remove it by removing it from the file uploader
                     # else a delete option avaiable for them
                     if uploaded_file == "New Dataset.csv":
-                        node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations", "Delete Dataset"), key="node_tab")
+                        node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab")
                     else:
                         node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab") 
                     if(node_option == "Add a new ER"):
@@ -486,20 +554,26 @@ with container:
                         dataset.edit_node()
                     elif(node_option == "Modify Relations"):
                         dataset.add_relation()
-                    elif(node_option == "Delete Dataset"):
-                        del_btn = st.button("Delete Dataset?")
-                        if del_btn: 
-                            if os.path.exists("file_name_record.txt"):
-                                with open("file_name_record.txt","r") as f:
-                                    pre_file = (f.read())
-                                    reset_dataset(pre_file, False)
-                            f_name = "New Dataset.csv"
-                            with open("file_name_record.txt","w") as f:
-                                f.write(f_name)
-                            uploaded_file = f_name
-                            dataset = datasetCreator.datasetCreator(f_name)  
+                    
                     #flag that indicates user want to download the dataset
+            if up == True:
+                del_expand = st.expander("Delete")
+                if del_expand:
+                            del_btn = st.button("Delete Dataset?", type = "primary")
+                            if del_btn: 
+                                if os.path.exists("file_name_record.txt"):
+                                    with open("file_name_record.txt","r") as f:
+                                        pre_file = (f.read())
+                                        reset_dataset(pre_file, False)
+                                f_name = "New Dataset.csv"
+                                with open("file_name_record.txt","w") as f:
+                                    f.write(f_name)
+                                uploaded_file = f_name
+                                dataset = datasetCreator.datasetCreator(f_name)  
+                                st.session_state["file_uploader_key"] += 1
+                                st.experimental_rerun()  
             dow_session_btn = download_dataset(uploaded_file)           
+
     
     if st.session_state['edit'] == 'clicked':
         if dataset_options == fake_ds:
@@ -521,16 +595,17 @@ with container:
         with upload_col:
             new_df_container = st.container() # container containing the options for editing dataset
             with new_df_container:
-                        node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab") 
-                        if(node_option == "Add a new ER"):
+                        node_option3 = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab") 
+                        if(node_option3 == "Add a new ER"):
                             dataset.add_node()
-                        elif(node_option == "Update a ER"):
+                        elif(node_option3 == "Update a ER"):
                             dataset.edit_node()
-                        elif(node_option == "Modify Relations"):
+                        elif(node_option3 == "Modify Relations"):
                             dataset.add_relation()
-                        elif(node_option == "Delete Dataset"):
+                        elif(node_option3 == "Delete Dataset"):
                             del_btn = st.button("Delete Dataset?")
-                            if del_btn: 
+                            if del_btn:
+                                dele = True 
                                 if os.path.exists("file_name_record.txt"):
                                     with open("file_name_record.txt","r") as f:
                                         pre_file = (f.read())
@@ -543,8 +618,7 @@ with container:
                         #flag that indicates user want to download the dataset
             dow_session_btn = download_dataset(uploaded_file)           
         
-        
-        
+
     
     if (uploaded_file is not None):
         # store file in a dataframe  used for views --> Visualization file
@@ -575,6 +649,22 @@ with container:
             select_node_edit2 = None
         # pass selected nodes to views so they can be visualized 
         view.set_select_edit_node(select_node_edit, select_node_edit2)
+    
+        # del_expand = st.expander("Delete")
+        # if del_expand:
+        #                 del_btn = st.button("Delete Dataset?")
+        #                 if del_btn: 
+        #                     if os.path.exists("file_name_record.txt"):
+        #                         with open("file_name_record.txt","r") as f:
+        #                             pre_file = (f.read())
+        #                             reset_dataset(pre_file, False)
+        #                     f_name = "New Dataset.csv"
+        #                     with open("file_name_record.txt","w") as f:
+        #                         f.write(f_name)
+        #                     uploaded_file = f_name
+                            
+        #                     dataset = datasetCreator.datasetCreator(f_name)  
+            
 
         # Customization menu -- color, size, physics, etc. 
         # get the background color of the canvas. if true creates customization menu and if false set the colors to the pumpkin color palette
