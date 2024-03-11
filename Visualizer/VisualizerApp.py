@@ -561,9 +561,9 @@ with container:
                         # if the user is uploading a dataset then they remove it by removing it from the file uploader
                         # else a delete option avaiable for them
                         if uploaded_file == "New Dataset.csv":
-                            node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab")
+                            node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab2")
                         else:
-                            node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab") 
+                            node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab2") 
                         if(node_option == "Add a new ER"):
                             dataset.add_node()
                         elif(node_option == "Update a ER"):
