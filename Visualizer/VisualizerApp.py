@@ -245,6 +245,8 @@ def onChange():
     st.session_state['edit'] = 'not'
     st.session_state['mod'] = 'not'
 
+def idk():
+    return True;
 
 
 ##########################################################################################################
