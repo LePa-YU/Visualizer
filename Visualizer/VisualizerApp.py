@@ -269,7 +269,13 @@ with container:
     # link to other dataset
     st.write("[Other datasets](https://github.com/LePa-YU/Datasets)")
     #col1: existing dataset linked to `Dataset` repo
-    col1, col2= st.columns(2)
+    col1, col2, col3= st.columns(3)
+
+    with col2:
+        default = "Explore"
+        edit = "Modify"
+        mode_options=st.selectbox('',(default, edit), label_visibility="collapsed",on_change=onChange())
+
     with col1:
         fake_ds = "FAKE1001"
         ds_2311 = "EECS 2311"
@@ -278,20 +284,22 @@ with container:
         ds_4462 = "EECS 4462"
         enter_own = "Load your Own Dataset"
         empty = "Empty Dataset"
-        dataset_options=st.selectbox('',(fake_ds, ds_2311, ds_3461, ds_1530, ds_4462, enter_own, empty), label_visibility="collapsed",on_change=onChange)
-        placeholder = st.empty()
-        editb = placeholder.button("Edit", type ="primary")
-        if editb:
-            st.session_state['edit'] = 'clicked'
-            is_custom = True
-            is_Custom_view = True
-            placeholder.empty()
+        
+        if mode_options == default:
+            dataset_options=st.selectbox('',(fake_ds, ds_2311, ds_3461, ds_1530, ds_4462, enter_own, empty), label_visibility="collapsed", on_change = onChange())
+        else:
+            dataset_options=st.selectbox('',(fake_ds, ds_2311, ds_3461, ds_1530, ds_4462), label_visibility="collapsed", on_change = onChange())
 
-    #col2: current views, view 3-5 are same with different layouts
+
+
+    #col3: current views, view 3-5 are same with different layouts
     #create layout for custom dataset --> change the screen real state for better viewing
     # basically giving different size container to hold the static html
-    
-    
+    if mode_options == edit:
+        st.session_state['mod'] = 'clicked'
+        is_custom = True
+        is_Custom_view = True
+        
     if dataset_options == enter_own or dataset_options == empty:
         is_Custom_view = True
         upload_col, edit_col = st.columns([3.5, 4.5])
@@ -307,7 +315,9 @@ with container:
     else:    
         container_html = st.container()
         is_Custom_view = False
-    with col2:
+        st.session_state['mod'] = 'not'
+
+    with col3:
         view1 = 'View 1: Summative assessment only'
         view2 = 'View 2: Course Overview'
         view3 = 'View 3: All ERs'
