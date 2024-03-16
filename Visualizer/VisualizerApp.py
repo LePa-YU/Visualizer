@@ -283,7 +283,9 @@ with container:
     with col2:
         default = "Explore"
         edit = "Modify"
-        mode_options=st.selectbox('',(default, edit), label_visibility="collapsed",on_change=onChange())
+        list = [default,edit]
+        pl = st.empty()
+        mode_options=pl.selectbox('',list, label_visibility="collapsed",on_change=onChange())
 
     with col1:
         fake_ds = "FAKE1001"
@@ -408,6 +410,13 @@ with container:
         uploaded_file = "4462_dataset_overview.csv"
     # custom dataset
     elif dataset_options == empty:
+        with col2:
+            with pl.container():
+           
+                edit = "Modify"
+                list = [edit]
+                mode_options=st.selectbox('',list, label_visibility="collapsed",on_change=onChange())
+
         is_custom = True
         is_Custom_view = True
         with upload_col:
