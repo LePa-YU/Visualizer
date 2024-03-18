@@ -241,6 +241,10 @@ def reset_dataset(uploaded_file, delete_file_rec):
             if os.path.exists("file_name_record.txt"): 
                 os.remove("file_name_record.txt")    
 
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
+
 def onChange():
     st.session_state['edit'] = 'not'
     st.session_state['mod'] = 'not'
@@ -252,6 +256,7 @@ def idk():
 ##########################################################################################################
 # Start:    
 #global variables:
+
 uploaded_file = None # file that contains the csv file used for visualization/ customization
 global df # dataframe of the csv file
 dow_session_btn = False
@@ -313,15 +318,15 @@ with container:
         
     if dataset_options == enter_own or dataset_options == empty:
         is_Custom_view = True
-        upload_col, edit_col = st.columns([3.5, 4.5])
-        with edit_col:
-            container_html = st.container()
+        #upload_col, edit_col = st.columns([3.5, 4.5])
+        #with edit_col:
+        #container_html = st.container()
 
     elif st.session_state['edit'] == 'clicked' or  st.session_state['mod'] == 'clicked':
         is_Custom_view = True
-        upload_col, edit_col = st.columns([3.5, 4.5])
-        with edit_col:
-            container_html = st.container()
+        #upload_col, edit_col = st.columns([3.5, 4.5])
+        #with edit_col:
+        #container_html = st.container()
     
     else:    
         container_html = st.container()
@@ -334,8 +339,9 @@ with container:
         view3 = 'View 3: All ERs'
         view4 = "View 4: Requirements"
         view5 = "View 5: Requirements - Vertical"
-        if is_Custom_view: option=st.selectbox('',(view3, view1, view2, view4, view5), label_visibility="collapsed")
-        else: option=st.selectbox('',(view1, view2, view3, view4, view5), label_visibility="collapsed")
+        ph = st.empty()
+        if is_Custom_view: option=ph.selectbox('',(view3, view1, view2, view4, view5), label_visibility="collapsed")
+        else: option=ph.selectbox('',(view1, view2, view3, view4, view5), label_visibility="collapsed")
     
     # ToDo: this section could use some refactoring
     # getting data for the existing datasets from Dataset repo's main branch:
@@ -410,16 +416,15 @@ with container:
         uploaded_file = "4462_dataset_overview.csv"
     # custom dataset
     elif dataset_options == empty:
-        with col2:
-            with pl.container():
-           
-                edit = "Modify"
-                list = [edit]
-                mode_options=st.selectbox('',list, label_visibility="collapsed",on_change=onChange())
+            with col2:
+                with pl.container():
+                    edit = "Modify"
+                    list = [edit]
+                    mode_options=st.selectbox('',list, label_visibility="collapsed",on_change=onChange())
 
-        is_custom = True
-        is_Custom_view = True
-        with upload_col:
+            is_custom = True
+            is_Custom_view = True
+        #with upload_col:
             dataset = None
             f_name = "New Empty Dataset.csv"
             if os.path.exists("file_name_record.txt"):
@@ -433,23 +438,22 @@ with container:
             # instantiating dataset creator to allow customization of new/ entered dataset
             dataset = datasetCreator.datasetCreator(uploaded_file) 
             new_df_container = st.container() 
-            with new_df_container:
-                    if dataset!=None:
-                        st.divider() # creating a line
-                        # if the user is uploading a dataset then they remove it by removing it from the file uploader
-                        # else a delete option avaiable for them
-                        if uploaded_file == "New Empty Dataset.csv":
-                            node_option2 = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab")
-                        else:
-                            node_option2 = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab") 
+            
+            with col3:
+                with ph.container():
+                        node_option2 = st.selectbox('', ("Add a new ER", "Update a ER", "Modify Relations"), label_visibility="collapsed",key="node_tab") 
                         if(node_option2 == "Add a new ER"):
-                            dataset.add_node()
+                            with new_df_container:
+                                dataset.add_node()
                         elif(node_option2 == "Update a ER"):
-                            dataset.edit_node()
+                            with new_df_container:
+                                dataset.edit_node()
                         elif(node_option2 == "Modify Relations"):
-                            dataset.add_relation()
-                        
-                    #flag that indicates user want to download the dataset
+                            with new_df_container:
+                                dataset.add_relation()
+
+            with new_df_container:
+                    container_html = st.container()
                     del_expands = st.expander("Delete Dataset")
                     with del_expands:
                                             st.warning("Are you sure you want to delete this datset? You will lose all unsaved data")
@@ -467,13 +471,14 @@ with container:
                                                 st.session_state["file_uploader_key"] += 1
                                                 st.experimental_rerun()      
         
-        dow_session_btn = download_dataset(uploaded_file)
+            dow_session_btn = download_dataset(uploaded_file)
+
         
        
     elif dataset_options == enter_own:
-        is_custom = True
-        is_Custom_view = True
-        with upload_col:
+            is_custom = True
+            is_Custom_view = True
+        #with upload_col:
             dataset = None
              # to write on the file browser itself on streamlit
             st.markdown(
@@ -569,75 +574,92 @@ with container:
                 cleaning_file.close()      
                 new_df_container = st.container() # container containing the options for editing dataset
                 
+                with col3:
+                    with ph.container():
+                            
+                            node_option2 = st.selectbox('', ("Add a new ER", "Update a ER", "Modify Relations"), label_visibility="collapsed",key="node_tab") 
+                            if(node_option2 == "Add a new ER"):
+                                with new_df_container:
+                                    dataset.add_node()
+                            elif(node_option2 == "Update a ER"):
+                                with new_df_container:
+                                
+                                    dataset.edit_node()
+                            elif(node_option2 == "Modify Relations"):
+                                with new_df_container:
+                                    dataset.add_relation()
+
+        
                 with new_df_container:
-                    if dataset!=None:
-                        st.divider() # creating a line
-                        # if the user is uploading a dataset then they remove it by removing it from the file uploader
-                        # else a delete option avaiable for them
-                        if uploaded_file == "New Dataset.csv":
-                            node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab")
-                        else:
-                            node_option = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab") 
-                        if(node_option == "Add a new ER"):
-                            dataset.add_node()
-                        elif(node_option == "Update a ER"):
-                            dataset.edit_node()
-                        elif(node_option == "Modify Relations"):
-                            dataset.add_relation()
-                        
+                    container_html = st.container()
+                    del_expands = st.expander("Delete Dataset")
+
                         #flag that indicates user want to download the dataset
                 
                           
-                dow_session_btn = download_dataset(uploaded_file)
-                del_expands = st.expander("Delete Dataset")
-                with del_expands:
-                        st.warning("Are you sure you want to delete this datset? You will lose all unsaved data")
-                        del_btn = st.button("Delete Dataset", type = "primary")
-                        if del_btn:
-                            if os.path.exists("file_name_record.txt"):
-                                with open("file_name_record.txt","r") as f:
-                                    pre_file = (f.read())
-                                    reset_dataset(pre_file, False)
-                            f_name = "New Dataset.csv"
-                            with open("file_name_record.txt","w") as f:
-                                f.write(f_name)
-                            uploaded_file = f_name
-                            dataset = datasetCreator.datasetCreator(f_name)  
-                            st.session_state["file_uploader_key"] += 1
-                            st.experimental_rerun()           
+                    dow_session_btn = download_dataset(uploaded_file)
+                    del_expands = st.expander("Delete Dataset")
+                    with del_expands:
+                            st.warning("Are you sure you want to delete this datset? You will lose all unsaved data")
+                            del_btn = st.button("Delete Dataset", type = "primary")
+                            if del_btn:
+                                if os.path.exists("file_name_record.txt"):
+                                    with open("file_name_record.txt","r") as f:
+                                        pre_file = (f.read())
+                                        reset_dataset(pre_file, False)
+                                f_name = "New Dataset.csv"
+                                with open("file_name_record.txt","w") as f:
+                                    f.write(f_name)
+                                uploaded_file = f_name
+                                dataset = datasetCreator.datasetCreator(f_name)  
+                                st.session_state["file_uploader_key"] += 1
+                                st.experimental_rerun() 
+                
 
         
     if st.session_state['edit'] == 'clicked' or  st.session_state['mod'] == 'clicked':
-        if dataset_options == fake_ds:
-            uploaded_file = "FAKE1001.csv"
+            if dataset_options == fake_ds:
+                uploaded_file = "FAKE1001.csv"
 
-        elif dataset_options == ds_2311:
-            uploaded_file = "2311_dataset_overview.csv"
+            elif dataset_options == ds_2311:
+                uploaded_file = "2311_dataset_overview.csv"
 
-        elif dataset_options == ds_3461:
-            uploaded_file = "3461_dataset_overview.csv"
+            elif dataset_options == ds_3461:
+                uploaded_file = "3461_dataset_overview.csv"
 
-        elif dataset_options == ds_1530:
-            uploaded_file = "1530_dataset_overview.csv"
+            elif dataset_options == ds_1530:
+                uploaded_file = "1530_dataset_overview.csv"
 
-        elif dataset_options == ds_4462:
-            uploaded_file = "4462_dataset_overview.csv"
+            elif dataset_options == ds_4462:
+                uploaded_file = "4462_dataset_overview.csv"
 
-        dataset = datasetCreator.datasetCreator(uploaded_file) 
-
-        with upload_col:
+            dataset = datasetCreator.datasetCreator(uploaded_file) 
             new_df_container = st.container() # container containing the options for editing dataset
+
+            with col3:
+                    with ph.container():
+                            
+                            node_option2 = st.selectbox('', ("Add a new ER", "Update a ER", "Modify Relations"), label_visibility="collapsed",key="node_tab") 
+                            if(node_option2 == "Add a new ER"):
+                                with new_df_container:
+                                    dataset.add_node()
+                            elif(node_option2 == "Update a ER"):
+                                with new_df_container:
+                                
+                                    dataset.edit_node()
+                            elif(node_option2 == "Modify Relations"):
+                                with new_df_container:
+                                    dataset.add_relation()
+
+        #with upload_col: 
+                    
             with new_df_container:
-                        node_option3 = st.radio("What do you want to do?", ("Add a new ER", "Update a ER", "Modify Relations"), key="node_tab") 
-                        if(node_option3 == "Add a new ER"):
-                            dataset.add_node()
-                        elif(node_option3 == "Update a ER"):
-                            dataset.edit_node()
-                        elif(node_option3 == "Modify Relations"):
-                            dataset.add_relation()
-                        
+                container_html = st.container()
+                del_expands = st.expander("Delete Dataset")
+ 
                         #flag that indicates user want to download the dataset
-            dow_session_btn = download_dataset(uploaded_file)           
+                dow_session_btn = download_dataset(uploaded_file)
+                   
         
 
     
@@ -744,3 +766,4 @@ with container:
             source_code = HtmlFile.read() 
             # the Static html file is added to the streamlit using the components
             st.components.v1.html(source_code, height = 300)  
+    
